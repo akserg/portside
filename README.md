@@ -1,117 +1,117 @@
-# Container Desktop
+# Portside
 
-A native macOS desktop application providing a user-friendly graphical interface for managing containers using Apple's [`apple/container`](https://github.com/apple/container) project.
+**The AI-native container manager for macOS.**
 
-## Overview
+Portside is a native SwiftUI desktop app for managing containers built on Apple's
+[`apple/container`](https://github.com/apple/container) runtime — with on-device
+intelligence powered by Apple's
+[Foundation Models](https://developer.apple.com/documentation/foundationmodels) framework.
 
-**Container Desktop** is a professional container management tool for macOS, similar to Docker Desktop but optimized for Apple's lightweight container runtime. Built with SwiftUI, it offers real-time monitoring, intuitive container operations, and intelligent AI-powered recommendations using Apple's Foundation Models.
+Ask it *why a container crashed* and get a diagnosis. Type *"stop everything using more
+than 2 GB"* and it does. All of it runs on-device: no API keys, no cloud, no data ever
+leaves your Mac.
 
-## Key Features
+## Why Portside
 
-🐳 **Container Management** - Create, start, stop, delete, and inspect containers with ease  
-📦 **Image Management** - Pull, build, tag, and manage container images  
-💾 **Volume Management** - Create and manage persistent data volumes  
-🖥️ **Machine Management** - Create and manage persistent container machines  
-📊 **Real-Time Monitoring** - Dashboard with CPU, memory, and resource tracking  
-🤖 **AI-Powered Insights** - Smart recommendations and anomaly detection using Foundation Models  
-🔍 **Advanced Tools** - Built-in logs viewer, terminal access, and detailed inspection panels  
-⚡ **Performance** - Lightweight (~30 MB), fast startup (<1 second), minimal resource usage  
+Several good GUIs exist for `apple/container`. Portside is different in one way that
+matters: it pairs a full-featured manager with the on-device LLM that ships with
+Apple Intelligence.
+
+- 🩺 **Crash diagnosis** — one click on a failed container produces a root-cause
+  summary, category, and concrete next steps, generated on-device from a digest of its
+  logs and state
+- ⌘K **Natural-language commands** — a command palette that resolves requests like
+  *"restart the noisy one"* or *"show me postgres logs"* into real operations, with
+  confirmation before anything destructive
+- 📈 **Honest recommendations** — deterministic heuristics flag idle CPU allocations,
+  memory-growth trends, and crash loops; the model prioritizes and explains them.
+  Heuristics are labeled heuristics — only LLM output is labeled AI
+- 🔒 **Private by design** — every AI feature uses the FoundationModels framework.
+  Nothing is sent to any server, and the app is fully functional (minus the AI tier)
+  when Apple Intelligence is unavailable
+
+## Core features
+
+- 🐳 **Containers** — create, start, stop, delete, inspect, exec
+- 📦 **Images** — pull, build, tag, delete; registry login
+- 💾 **Volumes** — create and manage persistent data volumes
+- 🖥️ **Machines** — manage the lightweight VMs that host containers
+- 📊 **Dashboard** — live CPU, memory, and resource tracking across containers
+- 🔍 **Tools** — streaming log viewer, embedded terminal, detail inspectors
+- ⚡ **Native** — SwiftUI throughout; small footprint, sub-second launch
 
 ## Requirements
 
-- **macOS**: 15+ (Apple silicon)
-- **Dependencies**: apple/container v0.3.0+
-- **Development**: Xcode 15+, Swift 5.9+
+- **macOS 26+** on Apple silicon (required by `apple/container` itself)
+- **apple/container** installed (`brew install --cask container` or the
+  [signed installer](https://github.com/apple/container/releases))
+- **Apple Intelligence enabled** — for AI features only; everything else works without it
+- **Development**: Xcode 26+, Swift 6
 
-## Getting Started
+## Getting started
 
 ```bash
 # Clone the repository
-git clone https://github.com/akserg/container-desktop.git
-cd container-desktop
+git clone https://github.com/akserg/portside.git
+cd portside
 
-# Build the project
-xcodebuild -scheme ContainerDesktop -configuration Release build
+# Build
+xcodebuild -scheme Portside -configuration Release build
 
-# Run the application
-open build/Release/ContainerDesktop.app
+# Run
+open build/Release/Portside.app
 ```
+
+On first launch Portside locates the `container` CLI (default `/usr/local/bin/container`),
+starts the system service if needed, and checks Foundation Models availability. If Apple
+Intelligence is off, AI panels explain how to enable it — nothing else is blocked.
 
 ## Architecture
 
-**MVVM Design Pattern** with clean separation of concerns:
-- **Views** - SwiftUI components for UI rendering
-- **ViewModels** - Business logic and state management
-- **Services** - API communication layer
-- **Models** - Data structures and domain models
+**MVVM** with a strict separation between deterministic logic and AI synthesis:
 
-**API Communication** via XPC (Inter-Process Communication) to the container-apiserver background daemon.
+- **Views** — SwiftUI
+- **ViewModels** — state management (`@Observable`, async/await)
+- **Services** — container operations via `ContainerAPIClient` (XPC to
+  `container-apiserver`), with CLI fallback for operations not yet exposed over XPC
+- **Analysis layer** — pure-Swift log digestion, pattern clustering, and resource
+  statistics; fully unit-tested, works without any model
+- **AI layer** — `LanguageModelSession` with guided generation (`@Generable` typed
+  outputs) for diagnosis and advice, and tool calling for the command palette.
+  Destructive tool calls are queued for user confirmation — the model never mutates
+  state directly
 
-**AI Integration** using Apple Foundation Models:
-- Natural Language Processing for log analysis
-- Anomaly detection for unusual container behavior
-- Smart resource optimization recommendations
+See [SPECIFICATION.md](SPECIFICATION.md) for the full product specification and
+[AI_INTEGRATION.md](AI_INTEGRATION.md) for the Foundation Models design in detail.
 
-## Project Structure
+## Roadmap
 
-```
-container-desktop/
-├── Sources/
-│   └── ContainerDesktop/
-│       ├── App/          - Application entry points
-│       ├── Views/        - SwiftUI views and components
-│       ├── ViewModels/   - State management and logic
-│       ├── Services/     - API and service layer
-│       ├── Models/       - Data structures
-│       └── Utilities/    - Helper functions and extensions
-├── Tests/                - Unit and UI tests
-├── SPECIFICATION.md      - Detailed product specification
-└── Package.swift         - Swift package configuration
-```
+**Phase 1 (MVP)** — containers, images, and logs views; log digestion pipeline;
+one-click crash diagnosis
 
-## Development Phases
+**Phase 2** — volumes, machines, dashboard; resource recommendations; monitoring charts
 
-**Phase 1 (MVP)** - 6-8 weeks
-- Core container operations (6 main views)
-- Basic monitoring dashboard
-- Service layer integration
-
-**Phase 2 (Advanced)** - 4-6 weeks
-- Real-time logs and terminal
-- Resource monitoring with charts
-- AI recommendations and notifications
-
-**Phase 3 (Release)** - 2-3 weeks
-- Testing, polishing, and distribution
-- Code signing and notarization
-- GitHub/Homebrew deployment
+**Phase 3** — ⌘K natural-language command palette with tool calling; multi-container
+correlation; notarized releases via GitHub and Homebrew
 
 ## Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-Apache License 2.0 - See [LICENSE](LICENSE) for details.
+Apache License 2.0 — see [LICENSE](LICENSE).
 
-## Documentation
+## Related projects
 
-- [**SPECIFICATION.md**](SPECIFICATION.md) - Complete product specification and technical details
-- [**Architecture Overview**](SPECIFICATION.md#2-architecture-overview) - System design and patterns
-- [**API Documentation**](https://apple.github.io/container/documentation/) - apple/container API reference
-
-## Related Projects
-
-- [apple/container](https://github.com/apple/container) - The container runtime this GUI manages
-- [apple/containerization](https://github.com/apple/containerization) - Low-level containerization framework
+- [apple/container](https://github.com/apple/container) — the container runtime Portside manages
+- [apple/containerization](https://github.com/apple/containerization) — the underlying framework
+- [FoundationModels](https://developer.apple.com/documentation/foundationmodels) — Apple's on-device LLM framework
 
 ## Status
 
-🚀 **In Active Development** - Core architecture and specification complete. Ready for implementation.
+🚀 **In active development** — specification complete, implementation underway.
 
 ---
 
-**Version**: 1.0  
-**Platform**: macOS 15+ (Apple silicon)  
-**Language**: Swift + SwiftUI  
-**Latest Update**: 2026-07-02
+**Platform**: macOS 26+ (Apple silicon) · **Language**: Swift + SwiftUI · **AI**: on-device only
