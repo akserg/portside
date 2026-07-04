@@ -203,7 +203,7 @@ SwiftUI View re-renders with new state
 
 2. **Filter Toggle**
    - "Only show running containers" checkbox
-   - Optional dropdown: All / Running / Stopped / Paused
+   - Optional dropdown: All / Running / Stopped
 
 3. **Bulk Actions**
    - "Start All" button (if any stopped)
@@ -220,7 +220,6 @@ SwiftUI View re-renders with new state
    **Action Menu** (⋯ button):
    - Start (if stopped)
    - Stop (if running)
-   - Pause / Unpause
    - Restart
    - Kill (force stop)
    - Exec/Open Terminal
@@ -242,7 +241,8 @@ SwiftUI View re-renders with new state
 #### State Badges
 - 🟢 **Running**: Container is executing
 - ⚪ **Stopped**: Container exited or never started
-- 🟡 **Paused**: Container paused — only if apple/container exposes pause; verify in M0 XPC spike, otherwise drop the state
+
+> Note: apple/container 1.0 has no pause capability (`RuntimeStatus` is unknown/stopped/running/stopping — verified in [XPC_CAPABILITY_MAP.md](Spikes/XPC_CAPABILITY_MAP.md) row 8). Wharfside has no Paused state.
 - 🔴 **Error**: Last start/run failed
 
 ### 3.4 Images View
@@ -321,9 +321,14 @@ SwiftUI View re-renders with new state
    - Delete multiple volumes
    - Batch rename
 
-### 3.6 Builds View
+### 3.6 Builds View *(deferred past 0.3 — CLI-only in runtime 1.0)*
 
-**Purpose**: Track and manage container image builds  
+**Purpose**: Track and manage container image builds
+
+> Spike finding (row 14): image build has **no XPC surface** in apple/container 1.0 —
+> `ContainerBuild` orchestrates via the CLI and a builder container. This view must
+> shell out to `container build`, and it depends on the builder image being present.
+> Deferred per PLAN.md; specification below retained for the future implementation.
 
 #### Features
 
@@ -513,8 +518,12 @@ SwiftUI View re-renders with new state
 
 **Features**:
 
+> Spike finding (row 9): XPC `logs(id:)` returns **FileHandle snapshots** (stdio + boot
+> log), not an AsyncSequence. "Streaming" below is implemented app-side: poll
+> `availableData` on the handles and bridge into an `AsyncStream` in the service layer.
+
 1. **Log Viewer**
-   - Real-time streaming output
+   - Real-time streaming output (app-side tail over FileHandle polling)
    - Autoscroll (with manual control)
    - Timestamp for each line
    - Line numbers (optional)
@@ -586,6 +595,9 @@ SwiftUI View re-renders with new state
 - Use Apple's built-in Swift Charts framework
 - Efficient data point sampling for large time ranges
 - Background update task
+- Data source: `stats(id:)` is a **one-shot RPC (~4–10 ms)** and there is **no
+  event/subscription API** in runtime 1.0 (rows 10, 20) — the MonitoringService polls
+  on a 1–2 s interval and maintains its own ring-buffer history
 
 ### 4.5 Notifications
 
@@ -922,25 +934,43 @@ actor ContainerService: ContainerServicing {
 
 ### 5.6 XPC Integration
 
-**Communication Protocol**:
+Verified against apple/container 1.0.0 — full evidence in
+[XPC_CAPABILITY_MAP.md](Spikes/XPC_CAPABILITY_MAP.md).
+
+SPM products: **`ContainerAPIClient`** (containers, images via `ClientImage`, volumes
+via `ClientVolume`, health via `ClientHealthCheck`) and **`MachineAPIClient`**
+(machines). Three XPC services: `com.apple.container.apiserver`,
+`…container-core-images`, `…machine-apiserver`.
 
 ```swift
-// Using ContainerAPIClient from apple/container
-let client = ContainerAPIClient()
+import ContainerAPIClient
 
-// Create container
-try await client.create(
-    configuration: ContainerConfiguration(id: "my-app"),
-    kernel: kernel,
-    options: .default
-)
+// List containers (returns stopped + running)
+let snapshots = try await ContainerClient.list(filters: .all)
 
-// List containers
-let containers = try await client.list(options: ContainerListOptions())
+// Inspect
+let snapshot = try await ContainerClient.get(id: "my-app")
 
-// Get statistics
-let stats = try await client.statistics(id: "container-id")
+// Start is NOT a single RPC: bootstrap, then start the client process
+let process = try await ContainerClient.bootstrap(id: "my-app", stdio: detachedStdio)
+try await process.start()
+
+// Stop / kill / delete
+try await ContainerClient.stop(id: "my-app", opts: ContainerStopOptions())  // default 5 s timeout
+try await ContainerClient.kill(id: "my-app", signal: "KILL")
+try await ContainerClient.delete(id: "my-app", force: false)
+
+// One-shot stats (poll for live UI — no subscription API exists)
+let stats = try await ContainerClient.stats(id: "my-app")
+
+// Logs: FileHandle snapshots [stdio, bootlog] — app-side tailing
+let handles = try await ContainerClient.logs(id: "my-app")
 ```
+
+Known constraints (spike §5): recreate the client after `interrupted` errors — no
+auto-reconnect; container create requires a default kernel
+(`ClientKernel.getDefaultKernel`); image ops need the `container-core-images` plugin
+running; unknown XPC routes drop the connection rather than erroring.
 
 ### 5.7 Concurrency Model
 
@@ -1009,6 +1039,12 @@ class MonitoringViewModel: ObservableObject {
 **Custom Error Types**:
 
 ```swift
+// Server errors arrive as ContainerizationError with typed codes (.notFound,
+// .invalidState, .interrupted, .invalidArgument), but are frequently re-wrapped in
+// .internalError with the root cause in `.cause` — WharfsideError.map() must unwrap
+// recursively before matching. Daemon-down manifests as .interrupted /
+// "Connection invalid". (Spike §4.)
+
 enum WharfsideError: LocalizedError {
     case serviceNotRunning
     case connectionFailed(String)
@@ -1108,7 +1144,7 @@ func withRetry<T>(maxAttempts: Int = 3, delay: TimeInterval = 1.0, operation: ()
 | ⌘, | Open Settings |
 | ⌘W | Close window |
 | ⌘Q | Quit app |
-| Space | Play/pause container |
+| Space | Start/stop selected container |
 | Delete | Delete selected item |
 | ⌘T | Open terminal |
 
@@ -1477,7 +1513,7 @@ Global
   ⌘W      Close window
 
 Containers View
-  Space   Play/Pause
+  Space   Start/Stop selected
   Delete  Delete selected
   ⌘T      Terminal
 
