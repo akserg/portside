@@ -1,8 +1,8 @@
-# Portside
+# Wharfside
 
 **The AI-native container manager for macOS.**
 
-Portside is a native SwiftUI desktop app for managing containers built on Apple's
+Wharfside is a native SwiftUI desktop app for managing containers built on Apple's
 [`apple/container`](https://github.com/apple/container) runtime — with on-device
 intelligence powered by Apple's
 [Foundation Models](https://developer.apple.com/documentation/foundationmodels) framework.
@@ -11,9 +11,9 @@ Ask it *why a container crashed* and get a diagnosis. Type *"stop everything usi
 than 2 GB"* and it does. All of it runs on-device: no API keys, no cloud, no data ever
 leaves your Mac.
 
-## Why Portside
+## Why Wharfside
 
-Several good GUIs exist for `apple/container`. Portside is different in one way that
+Several good GUIs exist for `apple/container`. Wharfside is different in one way that
 matters: it pairs a full-featured manager with the on-device LLM that ships with
 Apple Intelligence.
 
@@ -52,17 +52,17 @@ Apple Intelligence.
 
 ```bash
 # Clone the repository
-git clone https://github.com/akserg/portside.git
-cd portside
+git clone https://github.com/akserg/wharfside.git
+cd wharfside
 
 # Build
-xcodebuild -scheme Portside -configuration Release build
+xcodebuild -scheme Wharfside -configuration Release build
 
 # Run
-open build/Release/Portside.app
+open build/Release/Wharfside.app
 ```
 
-On first launch Portside locates the `container` CLI (default `/usr/local/bin/container`),
+On first launch Wharfside locates the `container` CLI (default `/usr/local/bin/container`),
 starts the system service if needed, and checks Foundation Models availability. If Apple
 Intelligence is off, AI panels explain how to enable it — nothing else is blocked.
 
@@ -100,11 +100,11 @@ Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE).
+MIT License — see [LICENSE](LICENSE).
 
 ## Related projects
 
-- [apple/container](https://github.com/apple/container) — the container runtime Portside manages
+- [apple/container](https://github.com/apple/container) — the container runtime Wharfside manages
 - [apple/containerization](https://github.com/apple/containerization) — the underlying framework
 - [FoundationModels](https://developer.apple.com/documentation/foundationmodels) — Apple's on-device LLM framework
 

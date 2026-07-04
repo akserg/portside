@@ -1,16 +1,17 @@
-# Container Desktop GUI - Product Specification
+# Wharfside — Product Specification
 
-**Version**: 1.0  
-**Date**: 2026-07-02  
-**Project**: Container Desktop for apple/container  
-**Platform**: macOS 15+ (Apple silicon)  
-**Language**: Swift + SwiftUI
+**Version**: 1.1  
+**Date**: 2026-07-04  
+**Project**: Wharfside — AI-native container manager for apple/container  
+**Platform**: macOS 26+ (Apple silicon)  
+**Language**: Swift 6 + SwiftUI  
+**AI**: Apple FoundationModels (on-device) — see [AI_INTEGRATION.md](AI_INTEGRATION.md)
 
 ---
 
 ## 1. Executive Summary
 
-Container Desktop is a native macOS desktop application that provides a user-friendly graphical interface for managing containers using Apple's [`apple/container`](https://github.com/apple/container) project. The application follows the design patterns and user experience principles of Docker Desktop, delivering an intuitive experience for developers and DevOps engineers.
+Wharfside is a native macOS desktop application for managing containers built on Apple's [`apple/container`](https://github.com/apple/container) runtime (v1.0+). It provides the full management surface expected of a Docker-Desktop-class tool — and differentiates through on-device AI: one-click crash diagnosis, resource advice, and a natural-language command palette, all powered by the FoundationModels framework. No API keys, no cloud; logs and metrics never leave the Mac. Several free GUIs for apple/container exist; the AI layer plus professionally distributed (signed, notarized, auto-updating) releases are Wharfside's positioning.
 
 ### Target Audience
 - Developers managing containerized applications on macOS
@@ -24,6 +25,8 @@ Container Desktop is a native macOS desktop application that provides a user-fri
 - ✅ Enable quick container operations (start, stop, delete, exec)
 - ✅ Maintain performance and efficiency (lightweight, <30 MB)
 - ✅ Ensure seamless integration with apple/container ecosystem
+- ✅ Differentiate through on-device AI: crash diagnosis, resource advice, ⌘K natural-language commands
+- ✅ Ship signed, notarized releases with auto-update from day one
 
 ---
 
@@ -33,7 +36,7 @@ Container Desktop is a native macOS desktop application that provides a user-fri
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                 Container Desktop App                       │
+│                 Wharfside App                       │
 │                    (SwiftUI Frontend)                       │
 ├─────────────────────────────────────────────────────────────┤
 │  Views Layer (SwiftUI)                                      │
@@ -51,6 +54,14 @@ Container Desktop is a native macOS desktop application that provides a user-fri
 │  ├── ContainerService        ├── ImageService               │
 │  ├── MachineService          ├── MonitoringService          │
 │  └── PreferencesService                                     │
+├─────────────────────────────────────────────────────────────┤
+│  Analysis Layer (deterministic — WharfsideAnalysis package) │
+│  ├── LogDigestion            ├── PatternClustering          │
+│  └── HeuristicEngine (stats, trends, crash loops)           │
+├─────────────────────────────────────────────────────────────┤
+│  AI Layer (FoundationModels, on-device — AI_INTEGRATION.md) │
+│  ├── AIAvailabilityService   ├── LogDiagnosisService        │
+│  └── CommandPalette tools + PendingActionQueue              │
 ├─────────────────────────────────────────────────────────────┤
 │  API Client Layer                                           │
 │  └── ContainerAPIClient (XPC Communication)                 │
@@ -102,11 +113,12 @@ SwiftUI View re-renders with new state
 | Component | Technology | Rationale |
 |-----------|-----------|-----------|
 | **UI Framework** | SwiftUI | Native macOS, declarative, modern |
-| **State Management** | Combine + @StateObject | Reactive, integrated with SwiftUI |
+| **State Management** | @Observable (Observation framework) | Modern replacement for Combine/@StateObject on macOS 26 |
 | **Concurrency** | async/await | Modern Swift concurrency model |
 | **API Communication** | ContainerAPIClient | Direct XPC, type-safe |
 | **Data Persistence** | UserDefaults, Codable | Simple preferences storage |
 | **Networking** | URLSession (HTTP fallback) | Fallback for remote connections |
+| **AI** | FoundationModels (`SystemLanguageModel`, `LanguageModelSession`, `@Generable`, tools) | On-device LLM; availability-gated with heuristic fallback |
 
 ---
 
@@ -117,7 +129,7 @@ SwiftUI View re-renders with new state
 #### Main Window Layout
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  📦 Container Desktop                  🔍  ⚙️  🔔  ☰         │
+│  📦 Wharfside                  🔍  ⚙️  🔔  ☰         │
 ├──────────────┬──────────────────────────────────────────────┤
 │              │                                               │
 │  🐳 Containers (nav)                  CPU: 0.01% / 1200%    │
@@ -230,7 +242,7 @@ SwiftUI View re-renders with new state
 #### State Badges
 - 🟢 **Running**: Container is executing
 - ⚪ **Stopped**: Container exited or never started
-- 🟡 **Paused**: Container paused (if supported)
+- 🟡 **Paused**: Container paused — only if apple/container exposes pause; verify in M0 XPC spike, otherwise drop the state
 - 🔴 **Error**: Last start/run failed
 
 ### 3.4 Images View
@@ -415,7 +427,7 @@ SwiftUI View re-renders with new state
 #### Sections
 
 **1. General**
-- ☐ Start Container Desktop at login
+- ☐ Start Wharfside at login
 - ☐ Show in menu bar
 - ☐ Check for updates automatically
 - 📌 Update Interval: (Every day / Every week / Manual)
@@ -442,7 +454,7 @@ SwiftUI View re-renders with new state
 - Check for updates: [button]
 - GitHub link
 - Report issue: [link]
-- License: Apache 2.0
+- License: MIT
 
 **5. Privacy & Security**
 - ☐ Send anonymous usage statistics
@@ -571,7 +583,7 @@ SwiftUI View re-renders with new state
    - Per-container if applicable
 
 **Implementation**:
-- Use `Charts` library or custom SwiftUI views
+- Use Apple's built-in Swift Charts framework
 - Efficient data point sampling for large time ranges
 - Background update task
 
@@ -595,11 +607,11 @@ SwiftUI View re-renders with new state
 ### 5.1 Project Structure
 
 ```
-container-desktop/
+wharfside/
 ├── Sources/
-│   └── ContainerDesktop/
+│   └── Wharfside/
 │       ├── App/
-│       │   ├── ContainerDesktopApp.swift
+│       │   ├── WharfsideApp.swift
 │       │   ├── AppDelegate.swift
 │       │   └── SceneDelegate.swift
 │       ├── Views/
@@ -635,6 +647,11 @@ container-desktop/
 │       │   ├── MonitoringService.swift
 │       │   ├── PreferencesService.swift
 │       │   └── NotificationService.swift
+│       ├── AI/
+│       │   ├── AIAvailabilityService.swift
+│       │   ├── LogDiagnosisService.swift
+│       │   ├── GenerableModels.swift
+│       │   └── Palette/ (Tools, PendingActionQueue — Phase 3)
 │       ├── Models/
 │       │   ├── Container.swift
 │       │   ├── Image.swift
@@ -652,15 +669,19 @@ container-desktop/
 │           ├── Assets.xcassets
 │           └── Colors.xcassets
 ├── Tests/
-│   ├── ContainerDesktopTests/
+│   ├── WharfsideTests/
 │   │   ├── ViewModels/
 │   │   ├── Services/
 │   │   ├── Models/
 │   │   └── Mocks/
-│   └── ContainerDesktopUITests/
+│   └── WharfsideUITests/
 │       └── *.swift
+├── Packages/
+│   └── WharfsideAnalysis/        # pure-Swift log digestion + heuristics (no app deps)
 ├── Package.swift
 ├── SPECIFICATION.md
+├── PLAN.md
+├── AI_INTEGRATION.md
 ├── README.md
 ├── CONTRIBUTING.md
 └── LICENSE
@@ -677,16 +698,25 @@ import AppKit
 import UserNotifications
 ```
 
-**External Dependencies**:
+**System Frameworks (additional)**:
+```swift
+import FoundationModels   // on-device AI (macOS 26+)
+import Charts             // Swift Charts — built-in, no third-party charting needed
+import Observation        // @Observable state management
+```
+
+**External Dependencies** (keep this list ruthlessly short):
 ```swift
 // In Package.swift
-.package(url: "https://github.com/apple/container.git", from: "0.3.0"),
-.package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.3.0"),
+.package(url: "https://github.com/apple/container.git", from: "1.0.0"),   // ContainerAPIClient (XPC)
 .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
 
-// Optional for charting
-.package(url: "https://github.com/danielgindi/Charts.git", from: "5.0.0"),
+// Phase 2+ only:
+// .package(url: "https://github.com/migueldeicaza/SwiftTerm.git", ...)   // embedded terminal
+// Sparkle for auto-update (decision tracked in M1 issues)
 ```
+
+Note: swift-argument-parser is not needed (GUI app, not a CLI); charting uses Apple's built-in Swift Charts, not third-party libraries.
 
 ### 5.3 Data Models
 
@@ -797,22 +827,31 @@ class AppState: ObservableObject {
 
 ```swift
 @MainActor
-class ContainerListViewModel: ObservableObject {
-    @Published var containers: [Container] = []
-    @Published var isLoading: Bool = false
-    @Published var errorMessage: String?
-    @Published var searchText: String = ""
-    @Published var showRunningOnly: Bool = false
-    
-    private let service: ContainerService
-    private let timer: Timer?
-    
-    init(service: ContainerService) {
+@Observable
+final class ContainerListViewModel {
+    var containers: [Container] = []
+    var isLoading: Bool = false
+    var errorMessage: String?
+    var searchText: String = ""
+    var showRunningOnly: Bool = false
+
+    private let service: any ContainerServicing
+    private var pollTask: Task<Void, Never>?
+
+    init(service: any ContainerServicing) {
         self.service = service
-        self.timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
-            Task { await self?.refreshContainers() }
+    }
+
+    func startPolling() {
+        pollTask = Task {
+            while !Task.isCancelled {
+                await refreshContainers()
+                try? await Task.sleep(for: .seconds(2))
+            }
         }
     }
+
+    func stopPolling() { pollTask?.cancel() }
     
     func refreshContainers() async {
         isLoading = true
@@ -837,8 +876,20 @@ class ContainerListViewModel: ObservableObject {
 
 #### ContainerService
 
+All runtime access goes through a protocol so ViewModels are testable with mocks and
+the implementation can switch between XPC (`ContainerAPIClient`) and CLI fallback:
+
 ```swift
-actor ContainerService {
+protocol ContainerServicing: Sendable {
+    func listContainers() async throws -> [Container]
+    func startContainer(_ id: String) async throws
+    func stopContainer(_ id: String, timeout: TimeInterval) async throws
+    func getContainerStats(_ id: String) async throws -> ContainerStats
+    func deleteContainer(_ id: String, force: Bool) async throws
+    func execContainer(id: String, command: [String]) async throws -> String
+}
+
+actor ContainerService: ContainerServicing {
     private let apiClient: ContainerAPIClient
     
     func listContainers() async throws -> [Container] {
@@ -897,9 +948,8 @@ let stats = try await client.statistics(id: "container-id")
 
 ```swift
 // View initiating action
-@MainActor
-class ContainerListView: View {
-    @StateObject var viewModel: ContainerListViewModel
+struct ContainerListView: View {
+    @State var viewModel: ContainerListViewModel
     
     var body: some View {
         List(viewModel.filteredContainers) { container in
@@ -959,7 +1009,7 @@ class MonitoringViewModel: ObservableObject {
 **Custom Error Types**:
 
 ```swift
-enum ContainerDesktopError: LocalizedError {
+enum WharfsideError: LocalizedError {
     case serviceNotRunning
     case connectionFailed(String)
     case invalidOperation(String)
@@ -1000,7 +1050,7 @@ func withRetry<T>(maxAttempts: Int = 3, delay: TimeInterval = 1.0, operation: ()
         }
     }
     
-    throw lastError ?? ContainerDesktopError.apiError("Unknown error")
+    throw lastError ?? WharfsideError.apiError("Unknown error")
 }
 ```
 
@@ -1149,15 +1199,16 @@ class ContainerListViewModelTests: XCTestCase {
 
 **Services**:
 ```swift
-class ContainerServiceTests: XCTestCase {
-    func testStartContainerSuccess() async {
-        let mockClient = MockContainerAPIClient()
-        let service = ContainerService(apiClient: mockClient)
-        
-        XCTAssertNoThrow(try await service.startContainer("container-id"))
-        XCTAssertTrue(mockClient.startWasCalled)
-    }
+// Swift Testing (preferred on macOS 26 toolchain)
+@Test func startContainerSuccess() async throws {
+    let mockClient = MockContainerAPIClient()
+    let service = ContainerService(apiClient: mockClient)
+
+    try await service.startContainer("container-id")   // throws → test fails
+
+    #expect(mockClient.startWasCalled)
 }
+// Note: XCTAssertNoThrow does not support async closures — do not use it with async calls.
 ```
 
 ### 8.2 Integration Tests
@@ -1199,15 +1250,18 @@ class ContainerViewUITests: XCTestCase {
 
 ### 8.4 Mock Services
 
+Actors cannot be subclassed — mocks conform to the `ContainerServicing` protocol instead:
+
 ```swift
-class MockContainerService: ContainerService {
+final class MockContainerService: ContainerServicing, @unchecked Sendable {
     var containers: [Container] = []
-    var listWasCalled = false
-    
-    override func listContainers() async throws -> [Container] {
+    private(set) var listWasCalled = false
+
+    func listContainers() async throws -> [Container] {
         listWasCalled = true
         return containers
     }
+    // remaining protocol methods record calls / return fixtures
 }
 ```
 
@@ -1218,34 +1272,35 @@ class MockContainerService: ContainerService {
 ### 9.1 Build Configuration
 
 **Xcode Project Structure**:
-- **Minimum Deployment Target**: macOS 15
+- **Minimum Deployment Target**: macOS 26
 - **Build Configuration**: Debug / Release
 - **Code Signing**: Automatic (Apple Developer ID)
 
 **Release Build**:
 ```bash
-xcodebuild -scheme ContainerDesktop -configuration Release \
+xcodebuild -scheme Wharfside -configuration Release \
     -derivedDataPath build \
-    -archivePath build/ContainerDesktop.xcarchive archive
+    -archivePath build/Wharfside.xcarchive archive
 ```
 
 ### 9.2 Packaging
 
 **DMG Installer**:
 ```
-ContainerDesktop-1.0.0.dmg
-├── Container Desktop.app
+Wharfside-1.0.0.dmg
+├── Wharfside.app
 ├── Applications (symlink)
 └── README.txt
 ```
 
-**Notarization** (Gatekeeper):
+**Notarization** (Gatekeeper) — `altool` is discontinued; use `notarytool`:
 ```bash
-xcrun altool --notarize-app \
-    --file Container\ Desktop-1.0.0.dmg \
-    --primary-bundle-id com.example.container-desktop \
-    -u apple_id -p app_password
+xcrun notarytool submit Wharfside-1.0.0.dmg \
+    --keychain-profile "wharfside-notary" \
+    --wait
+xcrun stapler staple Wharfside-1.0.0.dmg
 ```
+(One-time setup: `xcrun notarytool store-credentials "wharfside-notary" --apple-id <id> --team-id <team> --password <app-specific-password>`.)
 
 ### 9.3 Auto-Update
 
@@ -1258,9 +1313,9 @@ xcrun altool --notarize-app \
 ### 9.4 Distribution Channels
 
 1. **GitHub Releases**: Direct download
-2. **Homebrew**: `brew install container-desktop`
+2. **Homebrew**: `brew install wharfside/wharfside/wharfside` (own tap first; main homebrew-cask once established)
 3. **Mac App Store**: (future consideration)
-4. **Website**: containerdesktop.dev
+4. **Website**: wharfside.app
 
 ---
 
@@ -1325,7 +1380,7 @@ xcrun altool --notarize-app \
 ```swift
 /// Refreshes the list of containers from the API.
 ///
-/// - Throws: `ContainerDesktopError` if the API call fails
+/// - Throws: `WharfsideError` if the API call fails
 /// - Note: This method is called automatically every 2 seconds
 func refreshContainers() async throws {
     // Implementation
@@ -1349,71 +1404,45 @@ func refreshContainers() async throws {
 
 ## 13. Timeline & Milestones
 
-### Phase 1: MVP (6-8 weeks)
+The authoritative plan lives in [PLAN.md](PLAN.md) (milestones M0–M3 with issue-level
+breakdown, mirrored as GitHub milestones/issues). Summary:
 
-**Week 1-2**: Project setup
-- Xcode project structure
-- Basic app shell (AppDelegate, SceneDelegate)
-- Navigation sidebar
+**M0 — Foundation (~2 weeks)**: Xcode scaffold, CI, XPC capability spike,
+`ContainerServicing` protocol with XPC + CLI implementations, `AIAvailabilityService`,
+app shell, landing page.
 
-**Week 3-4**: Core containers view
-- Container list with table
-- CRUD operations (create, delete, etc.)
-- Service layer integration
+**M1 — MVP 0.1 (~5–6 weeks)**: Containers, Images, Logs views done well; log digestion
+pipeline; `@Generable` crash diagnosis with streaming card; signing + notarization
+pipeline; Homebrew tap; public launch. *Hero feature: "Explain this crash."*
 
-**Week 5-6**: Other core views
-- Images view
-- Volumes view
-- Machines view (basic)
+**M2 — Depth 0.2 (~4–5 weeks)**: Volumes, Machines, Dashboard (Swift Charts), heuristic
+engine + AI advice tier, exec shell (SwiftTerm).
 
-**Week 7-8**: Polish and testing
-- Settings view
-- Error handling
-- Unit tests
-- Bug fixes
+**M3 — Command Palette 0.3 (~4–6 weeks)**: ⌘K natural-language palette with
+FoundationModels tool calling and confirmation queue; multi-container correlation;
+docs site.
 
-### Phase 2: Advanced Features (4-6 weeks)
-
-**Week 1-2**: Details panel & logs
-- Container details modal
-- Log viewer with real-time streaming
-- Terminal/exec integration
-
-**Week 3-4**: Monitoring & charts
-- Resource usage charts
-- Historical data collection
-- Analytics dashboard
-
-**Week 5-6**: Notifications & refinements
-- System notifications
-- Additional polish
-- Performance optimization
-
-### Phase 3: Release (2-3 weeks)
-
-- Integration testing
-- UAT with real devices
-- Code signing & notarization
-- DMG packaging
-- Release on GitHub
+Builds view and notifications from the original spec are deferred past 0.3 — scope
+control favors the AI differentiator over feature breadth.
 
 ---
 
 ## 14. Success Criteria
 
-### Phase 1 MVP
-- ✅ Core container operations functional
-- ✅ All 6 main views implemented
+### M1 (public 0.1)
+- ✅ Core container operations functional (Containers, Images, Logs)
+- ✅ Crash diagnosis produces a useful, typed result on fixture and real containers
+- ✅ Graceful degraded mode verified with Apple Intelligence disabled
+- ✅ Notarized artifact installable via Homebrew tap
 - ✅ <30 MB binary size
 - ✅ <100 MB memory usage
 - ✅ Launch time <1 second
 - ✅ 80% code test coverage
 
-### Phase 2
-- ✅ Advanced features working
-- ✅ Real-time monitoring functional
-- ✅ Notifications working
-- ✅ 90% test coverage
+### M2–M3
+- ✅ Monitoring, heuristics (labeled honestly), and AI advice tier working
+- ✅ Command palette: zero unconfirmed mutations in test harness
+- ✅ 80%+ coverage on WharfsideAnalysis package (the correctness core)
 
 ### Release Readiness
 - ✅ Code signed and notarized
@@ -1478,7 +1507,7 @@ Lists
 ## Appendix C: Release Notes Template
 
 ```
-# Container Desktop v1.0.0
+# Wharfside v1.0.0
 
 ## New Features
 - 🎉 Initial release
@@ -1498,13 +1527,12 @@ Lists
 - Large logs (>100k lines) may display slowly
 
 ## Upgrade Notes
-- Requires macOS 15+
-- Requires apple/container v0.3.0+
+- Requires macOS 26+ (Apple silicon)
+- Requires apple/container v1.0+
 ```
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: 2026-07-02  
-**Prepared by**: Copilot  
+**Document Version**: 1.1  
+**Last Updated**: 2026-07-04  
 **Status**: Ready for Development
