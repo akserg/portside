@@ -4,6 +4,8 @@ import SwiftUI
 
 struct MainView: View {
     @Environment(AppState.self) private var appState
+    @Environment(AIAvailabilityService.self) private var availability
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         @Bindable var appState = appState
@@ -20,10 +22,17 @@ struct MainView: View {
             }
         }
         .task {
+            availability.refresh()
             while !Task.isCancelled {
                 await appState.refreshServiceStatus()
+                if availability.sawModelDownloading && !availability.capability.isAIAvailable {
+                    availability.refresh()
+                }
                 try? await Task.sleep(for: .seconds(5))
             }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { availability.refresh() }
         }
     }
 
@@ -78,5 +87,7 @@ struct ServiceStatusIndicator: View {
 }
 
 #Preview {
-    MainView().environment(AppState(systemService: XPCSystemService()))
+    MainView()
+        .environment(AppState(systemService: XPCSystemService()))
+        .environment(AIAvailabilityService())
 }
