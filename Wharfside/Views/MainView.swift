@@ -45,10 +45,14 @@ struct MainView: View {
                 message: "System overview and resource charts arrive in 0.2."
             )
         case .containers:
+            #if DEBUG
+            DebugContainerList(service: appState.containerService)
+            #else
             PlaceholderView(
                 section: section,
                 message: "Container list is issue #8 — the first real view."
             )
+            #endif
         case .images:
             PlaceholderView(
                 section: section,
@@ -88,6 +92,9 @@ struct ServiceStatusIndicator: View {
 
 #Preview {
     MainView()
-        .environment(AppState(systemService: XPCSystemService()))
+        .environment(AppState(
+            systemService: XPCSystemService(),
+            containerService: XPCContainerService()
+        ))
         .environment(AIAvailabilityService())
 }

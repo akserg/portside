@@ -34,9 +34,14 @@ final class AppState {
     var isServiceRunning = false
 
     let systemService: any SystemServicing
+    let containerService: any ContainerServicing
 
-    init(systemService: any SystemServicing) {
+    init(
+        systemService: any SystemServicing,
+        containerService: any ContainerServicing
+    ) {
         self.systemService = systemService
+        self.containerService = containerService
     }
 
     func refreshServiceStatus() async {
