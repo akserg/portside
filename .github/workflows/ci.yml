@@ -1,0 +1,89 @@
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build & Test (macOS 26)
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.app
+
+      - name: Cache SPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+            ~/Library/Caches/org.swift.swiftpm
+          key: spm-${{ runner.os }}-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: spm-${{ runner.os }}-
+
+      - name: Build app (warnings are errors)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project Wharfside.xcodeproj \
+            -scheme Wharfside \
+            -destination 'platform=macOS,arch=arm64' \
+            SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions
+
+      - name: App unit tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project Wharfside.xcodeproj \
+            -scheme Wharfside \
+            -destination 'platform=macOS,arch=arm64' \
+            -skip-testing:WharfsideUITests \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions
+
+  analysis-package:
+    name: WharfsideAnalysis (swift test)
+    runs-on: macos-26
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.app
+
+      - name: Test analysis package
+        working-directory: Packages/WharfsideAnalysis
+        run: swift test -Xswiftc -warnings-as-errors
+
+      - name: Enforce layer purity (no UI/AI imports in analysis)
+        working-directory: Packages/WharfsideAnalysis
+        run: |
+          if grep -rnE '^\s*import (SwiftUI|FoundationModels|AppKit)' Sources/; then
+            echo "::error::WharfsideAnalysis must stay pure — no SwiftUI/FoundationModels/AppKit imports (AI_INTEGRATION.md §2)"
+            exit 1
+          fi
+
+  lint:
+    name: SwiftLint
+    runs-on: macos-26
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install and run SwiftLint
+        run: |
+          brew install swiftlint
+          swiftlint --strict --reporter github-actions-logging

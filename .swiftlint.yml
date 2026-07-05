@@ -1,0 +1,48 @@
+# .swiftlint.yml
+included:
+  - Wharfside
+  - WharfsideTests
+  - Packages/WharfsideAnalysis/Sources
+  - Packages/WharfsideAnalysis/Tests
+
+excluded:
+  - Spikes            # throwaway probe code, deliberately ugly
+  - site
+  - .build
+  - Wharfside.xcodeproj
+
+analyzer_rules:
+  - unused_import
+
+opt_in_rules:
+  - empty_count
+  - closure_spacing
+  - contains_over_first_not_nil
+  - redundant_nil_coalescing
+  - sorted_first_last
+
+line_length:
+  warning: 120
+  error: 160
+  ignores_comments: true
+  ignores_urls: true
+
+type_body_length:
+  warning: 300
+
+file_length:
+  warning: 500
+
+identifier_name:
+  min_length: 2      # allow `id`, `vm`
+  excluded: [i, x, y]
+
+# Custom rule enforcing an architecture decision at lint time:
+custom_rules:
+  no_raw_cli_paths:
+    name: "No hardcoded container CLI path outside CLIRunner"
+    regex: '\/usr\/local\/bin\/container'
+    match_kinds: [string]
+    excluded: ".*CLIRunner\\.swift"
+    message: "Shell out only through CLIRunner (spec §5.5)."
+    severity: error

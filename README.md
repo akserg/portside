@@ -1,5 +1,7 @@
 # Wharfside
 
+![CI](https://github.com/wharfside/wharfside/actions/workflows/ci.yml/badge.svg)
+
 **The AI-native container manager for macOS.**
 
 Wharfside is a native SwiftUI desktop app for managing containers built on Apple's
