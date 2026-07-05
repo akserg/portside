@@ -30,6 +30,21 @@ enum NavigationSection: String, CaseIterable, Identifiable, Hashable {
 final class AppState {
     var selectedSection: NavigationSection = .containers
 
-    /// Populated by SystemServicing.health() polling (M0.4/M0.5 wiring).
-    var isServiceRunning: Bool = false
+    /// Updated by `SystemServicing.health()` polling from `MainView`.
+    var isServiceRunning = false
+
+    let systemService: any SystemServicing
+
+    init(systemService: any SystemServicing) {
+        self.systemService = systemService
+    }
+
+    func refreshServiceStatus() async {
+        do {
+            _ = try await systemService.health()
+            isServiceRunning = true
+        } catch {
+            isServiceRunning = false
+        }
+    }
 }

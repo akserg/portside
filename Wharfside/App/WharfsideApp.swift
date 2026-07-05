@@ -4,7 +4,7 @@ import SwiftUI
 
 @main
 struct WharfsideApp: App {
-    @State private var appState = AppState()
+    @State private var appState = AppState(systemService: XPCSystemService())
 
     var body: some Scene {
         WindowGroup {

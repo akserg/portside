@@ -2,8 +2,7 @@
 
 build:
 	xcodebuild build -project Wharfside.xcodeproj -scheme Wharfside \
-	  -destination 'platform=macOS,arch=arm64' \
-	  SWIFT_TREAT_WARNINGS_AS_ERRORS=YES | xcbeautify
+	  -destination 'platform=macOS,arch=arm64' | xcbeautify
 
 test:
 	xcodebuild test -project Wharfside.xcodeproj -scheme Wharfside \

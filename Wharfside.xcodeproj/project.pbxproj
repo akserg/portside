@@ -6,6 +6,30 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin XCRemoteSwiftPackageReference section */
+		A1B2C3D02FF9040000D04AFD /* XCRemoteSwiftPackageReference "container" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/container.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A1B2C3D12FF9040000D04AFD /* ContainerAPIClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1B2C3D02FF9040000D04AFD /* XCRemoteSwiftPackageReference "container" */;
+			productName = ContainerAPIClient;
+		};
+		A1B2C3D22FF9040000D04AFD /* MachineAPIClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1B2C3D02FF9040000D04AFD /* XCRemoteSwiftPackageReference "container" */;
+			productName = MachineAPIClient;
+		};
+/* End XCSwiftPackageProductDependency section */
+
 /* Begin PBXContainerItemProxy section */
 		1613EAAB2FF9BEDF00D04AFD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -112,6 +136,8 @@
 			);
 			name = Wharfside;
 			packageProductDependencies = (
+				A1B2C3D12FF9040000D04AFD /* ContainerAPIClient */,
+				A1B2C3D22FF9040000D04AFD /* MachineAPIClient */,
 			);
 			productName = Wharfside;
 			productReference = 1613EA9D2FF9BEDE00D04AFD /* Wharfside.app */;
@@ -196,6 +222,9 @@
 			mainGroup = 1613EA942FF9BEDE00D04AFD;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
+			packageReferences = (
+				A1B2C3D02FF9040000D04AFD /* XCRemoteSwiftPackageReference "container" */,
+			);
 			productRefGroup = 1613EA9E2FF9BEDE00D04AFD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -416,6 +445,7 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -448,6 +478,7 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -468,6 +499,7 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wharfside.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Wharfside";
@@ -489,6 +521,7 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wharfside.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Wharfside";
@@ -508,6 +541,7 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = Wharfside;
@@ -527,6 +561,7 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = Wharfside;

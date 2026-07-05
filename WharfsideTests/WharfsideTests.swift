@@ -1,19 +1,14 @@
-//
-//  WharfsideTests.swift
-//  WharfsideTests
-//
-//  Created by Sergey Akopkokhyants on 05.07.2026.
-//
+// WharfsideTests/WharfsideTests.swift
 
 import Testing
 @testable import Wharfside
 
+@MainActor
 struct WharfsideTests {
-
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-        // Swift Testing Documentation
-        // https://developer.apple.com/documentation/testing
+    @Test func mockSystemServiceHealth() async throws {
+        let mock = MockSystemService()
+        let health = try await mock.health()
+        #expect(health.apiServerVersion == "1.0.0")
+        #expect(mock.healthCallCount == 1)
     }
-
 }

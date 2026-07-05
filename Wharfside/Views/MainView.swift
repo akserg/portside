@@ -19,6 +19,12 @@ struct MainView: View {
                 ServiceStatusIndicator(isRunning: appState.isServiceRunning)
             }
         }
+        .task {
+            while !Task.isCancelled {
+                await appState.refreshServiceStatus()
+                try? await Task.sleep(for: .seconds(5))
+            }
+        }
     }
 
     @ViewBuilder
@@ -53,7 +59,7 @@ struct MainView: View {
     }
 }
 
-/// Traffic-light dot for daemon health; wired to real polling in M0.5.
+/// Traffic-light dot for daemon health; wired to real polling in M0.4.
 struct ServiceStatusIndicator: View {
     let isRunning: Bool
 
@@ -72,5 +78,5 @@ struct ServiceStatusIndicator: View {
 }
 
 #Preview {
-    MainView().environment(AppState())
+    MainView().environment(AppState(systemService: XPCSystemService()))
 }

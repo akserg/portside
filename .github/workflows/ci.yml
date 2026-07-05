@@ -28,6 +28,9 @@ jobs:
           key: spm-${{ runner.os }}-${{ hashFiles('**/Package.resolved') }}
           restore-keys: spm-${{ runner.os }}-
 
+      # Warnings-as-errors is set on Wharfside/WharfsideTests targets in the
+      # Xcode project — do NOT pass SWIFT_TREAT_WARNINGS_AS_ERRORS here; the
+      # command-line form applies to SPM dependencies too and breaks the build.
       - name: Build app (warnings are errors)
         run: |
           set -o pipefail
@@ -35,7 +38,6 @@ jobs:
             -project Wharfside.xcodeproj \
             -scheme Wharfside \
             -destination 'platform=macOS,arch=arm64' \
-            SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
             CODE_SIGNING_ALLOWED=NO \
             | xcbeautify --renderer github-actions
 
