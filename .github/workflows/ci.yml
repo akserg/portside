@@ -19,9 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_26.app
-
       - name: Cache SPM dependencies
         uses: actions/cache@v4
         with:
@@ -60,9 +57,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_26.app
 
       - name: Test analysis package
         working-directory: Packages/WharfsideAnalysis
