@@ -12,8 +12,19 @@ enum RuntimeModelMapping {
             id: snapshot.id,
             image: snapshot.configuration.image.reference,
             status: runtimeStatus(snapshot.status),
-            startedAt: snapshot.startedDate
+            startedAt: snapshot.startedDate,
+            portSummary: portSummary(from: snapshot.configuration.publishedPorts)
         )
+    }
+
+    nonisolated static func portSummary(from ports: [PublishPort]) -> String {
+        guard !ports.isEmpty else { return "—" }
+        return ports.map { port in
+            if port.hostPort == port.containerPort {
+                return "\(port.hostPort)"
+            }
+            return "\(port.hostPort):\(port.containerPort)"
+        }.joined(separator: ", ")
     }
 
     nonisolated static func containerDetail(from snapshot: ContainerSnapshot) -> ContainerDetail {

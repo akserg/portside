@@ -20,6 +20,7 @@ struct MainView: View {
             ToolbarItem(placement: .status) {
                 ServiceStatusIndicator(isRunning: appState.isServiceRunning)
             }
+            .sharedBackgroundVisibility(.hidden)
         }
         .task {
             availability.refresh()
@@ -45,14 +46,7 @@ struct MainView: View {
                 message: "System overview and resource charts arrive in 0.2."
             )
         case .containers:
-            #if DEBUG
-            DebugContainerList(service: appState.containerService)
-            #else
-            PlaceholderView(
-                section: section,
-                message: "Container list is issue #8 — the first real view."
-            )
-            #endif
+            ContainersView(service: appState.containerService)
         case .images:
             PlaceholderView(
                 section: section,
@@ -77,13 +71,15 @@ struct ServiceStatusIndicator: View {
     let isRunning: Bool
 
     var body: some View {
-        Label(
-            isRunning ? "Service running" : "Service stopped",
-            systemImage: "circle.fill"
-        )
-        .labelStyle(.titleAndIcon)
-        .font(.caption)
-        .foregroundStyle(isRunning ? .green : .red)
+        HStack(spacing: 5) {
+            Circle()
+                .fill(isRunning ? Color.green : Color.red)
+                .frame(width: 6, height: 6)
+            Text(isRunning ? "Service running" : "Service stopped")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .accessibilityElement(children: .combine)
         .help(isRunning
               ? "container-apiserver is reachable"
               : "Start with: container system start")

@@ -14,7 +14,7 @@ actor XPCContainerService: ContainerServicing {
 
     func list() async throws -> [ContainerSummary] {
         try await connection.withContainerClient(retryOnInterrupt: true) { client in
-            let snapshots = try await client.list(filters: .all)
+            let snapshots = try await client.list(filters: .all.withoutMachines())
             return snapshots.map(RuntimeModelMapping.containerSummary(from:))
         }
     }
