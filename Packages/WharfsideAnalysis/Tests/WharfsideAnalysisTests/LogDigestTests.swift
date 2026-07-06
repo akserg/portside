@@ -36,3 +36,14 @@ import Testing
     #expect(LogLevel.from("FATAL") == .error)
     #expect(LogLevel.from("SEVERE") == .error)
 }
+
+@Test func parserRecognizesDateCommandOutput() {
+    let parser = LogParser()
+    let info = parser.parse(lines: ["Mon Jul 6 15:38:42 UTC 2026 INFO tick"]).first
+    #expect(info?.level == .info)
+    #expect(info?.message == "tick")
+
+    let error = parser.parse(lines: ["Mon Jul 6 15:38:42 UTC 2026 ERROR boom"]).first
+    #expect(error?.level == .error)
+    #expect(error?.message == "boom")
+}

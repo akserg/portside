@@ -44,7 +44,7 @@ container service, lists real containers in a debug view.
 | ~~1.1~~ | Containers view: list with status, search/filter, start/stop/delete with confirmation | Live refresh via polling first; optimize later |
 | ~~1.2~~ | Container detail: inspect data, ports, mounts, env | Read-only in 0.1 |
 | 1.3 | Images view: list, pull with progress, delete, registry login | |
-| 1.4 | Log viewer: streaming, follow-tail, level colorization, search | Virtualized list; must handle noisy containers |
+| ~~1.4~~ | Log viewer: streaming, follow-tail, level colorization, search | Virtualized list; must handle noisy containers |
 | ~~1.5~~ | Log digestion pipeline (Layer 1): level parsing, template clustering, digests | Pure Swift package `WharfsideAnalysis`; heavy unit tests, fixture logs |
 | 1.6 | `@Generable` diagnosis models + `LogDiagnosisService` | Per AI_INTEGRATION.md §4 |
 | 1.7 | Diagnosis UI: "Explain this crash" card with streaming render + confidence styling | prewarm() on detail-view open |

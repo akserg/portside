@@ -5,9 +5,11 @@ import SwiftUI
 
 struct ContainerDetailView: View {
     @State private var viewModel: ContainerDetailViewModel
+    private let service: any ContainerServicing
     let onBackToList: () -> Void
 
     init(containerID: String, service: any ContainerServicing, onBackToList: @escaping () -> Void) {
+        self.service = service
         _viewModel = State(
             initialValue: ContainerDetailViewModel(containerID: containerID, service: service)
         )
@@ -70,11 +72,7 @@ struct ContainerDetailView: View {
         VStack(alignment: .leading, spacing: 0) {
             Picker("Section", selection: $viewModel.selectedTab) {
                 ForEach(ContainerDetailTab.allCases) { tab in
-                    if tab == .logs {
-                        Text(tab.rawValue).tag(tab).disabled(true)
-                    } else {
-                        Text(tab.rawValue).tag(tab)
-                    }
+                    Text(tab.rawValue).tag(tab)
                 }
             }
             .pickerStyle(.segmented)
@@ -92,8 +90,12 @@ struct ContainerDetailView: View {
     @ViewBuilder
     private func tabContent(for detail: ContainerDetail, tab: ContainerDetailTab) -> some View {
         if tab == .logs {
-            logsPlaceholder
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            LogView(
+                containerID: detail.id,
+                service: service,
+                containerStatus: detail.status
+            )
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
@@ -130,14 +132,6 @@ struct ContainerDetailView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    private var logsPlaceholder: some View {
-        ContentUnavailableView {
-            Label("Logs", systemImage: "doc.text")
-        } description: {
-            Text("Log viewer arrives in issue #11.")
-        }
     }
 
     private func overviewSection(_ detail: ContainerDetail) -> some View {

@@ -56,6 +56,12 @@ final class MockContainerService: ContainerServicing, @unchecked Sendable {
     var listDelay: Duration?
     var getDelay: Duration?
 
+    var logStreamFactory: (@Sendable (String, LogSource?) -> AsyncThrowingStream<LogChunk, Error>)?
+
+    private(set) var logStreamCallCount = 0
+    private(set) var lastLogStreamID: String?
+    private(set) var lastLogStreamSource: LogSource?
+
     func list() async throws -> [ContainerSummary] {
         listCallCount += 1
         if let listDelay {
@@ -112,7 +118,13 @@ final class MockContainerService: ContainerServicing, @unchecked Sendable {
     }
 
     func logStream(id: String, source: LogSource?) -> AsyncThrowingStream<LogChunk, Error> {
-        AsyncThrowingStream { continuation in
+        logStreamCallCount += 1
+        lastLogStreamID = id
+        lastLogStreamSource = source
+        if let logStreamFactory {
+            return logStreamFactory(id, source)
+        }
+        return AsyncThrowingStream { continuation in
             continuation.yield(LogChunk(source: .stdio, data: Data("mock\n".utf8)))
             continuation.finish()
         }

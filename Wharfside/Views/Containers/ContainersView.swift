@@ -24,6 +24,8 @@ struct ContainersView: View {
         NavigationSplitView(columnVisibility: .constant(.doubleColumn)) {
             NavigationStack {
                 listColumn
+                    .searchable(text: $viewModel.searchText, prompt: "Search containers…")
+                    .focused($isSearchFocused)
             }
             .navigationSplitViewColumnWidth(ContainerListMetrics.columnWidth)
         } detail: {
@@ -33,8 +35,6 @@ struct ContainersView: View {
         .navigationSplitViewStyle(.balanced)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationTitle("Containers")
-        .searchable(text: $viewModel.searchText, prompt: "Search containers…")
-        .focused($isSearchFocused)
         .toolbar { toolbarContent }
         .safeAreaInset(edge: .top, spacing: 0) {
             if let message = viewModel.actions.actionBannerMessage {

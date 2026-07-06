@@ -9,7 +9,7 @@ enum ContainerDetailTab: String, CaseIterable, Identifiable, Sendable {
     case mounts = "Mounts"
     case environment = "Environment"
     case networks = "Networks"
-    case logs = "Logs (#11)"
+    case logs = "Logs"
 
     var id: String { rawValue }
 }

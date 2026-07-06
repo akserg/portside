@@ -7,8 +7,10 @@ struct LogParseContext {
   let leadingISOTimestamp: NSRegularExpression
   let bracketedTimestamp: NSRegularExpression
   let syslogTimestamp: NSRegularExpression
+  let dateCommandTimestamp: NSRegularExpression
   let bracketedLevel: NSRegularExpression
   let colonPrefixedLevel: NSRegularExpression
+  let spacedLevel: NSRegularExpression
   let postgresLevel: NSRegularExpression
   let jvmLevel: NSRegularExpression
   let exceptionLine: NSRegularExpression
@@ -31,9 +33,16 @@ struct LogParseContext {
     syslogTimestamp = Self.regex(
       #"^([A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})\s+"#
     )
+    dateCommandTimestamp = Self.regex(
+      #"^[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+"#
+    )
     bracketedLevel = Self.regex(#"^\[([A-Za-z]+)\]\s*:?\s*(.*)$"#)
     colonPrefixedLevel = Self.regex(
       #"^(ERROR|WARN(?:ING)?|INFO|DEBUG|TRACE|FATAL|PANIC|SEVERE)\s*:\s*(.*)$"#,
+      options: .caseInsensitive
+    )
+    spacedLevel = Self.regex(
+      #"^(ERROR|WARN(?:ING)?|INFO|DEBUG|TRACE|FATAL|PANIC|SEVERE)\s+(.*)$"#,
       options: .caseInsensitive
     )
     postgresLevel = Self.regex(

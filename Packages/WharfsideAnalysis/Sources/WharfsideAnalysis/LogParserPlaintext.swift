@@ -20,6 +20,12 @@ extension LogParser {
       remainder = rest
     }
 
+    if let (parsedDate, rest) = extractDateCommandTimestamp(from: remainder, context: context) {
+      timestamp = parsedDate
+      remainder = rest
+    }
+
+    remainder = peelTimezoneAndYearPrefix(from: remainder)
     remainder = remainder.trimmingCharacters(in: .whitespaces)
 
     if let (level, message) = extractBracketedLevel(from: remainder, context: context) {
@@ -27,6 +33,10 @@ extension LogParser {
     }
 
     if let (level, message) = extractColonPrefixedLevel(from: remainder, context: context) {
+      return LogEntry(timestamp: timestamp, level: level, message: message, raw: line)
+    }
+
+    if let (level, message) = extractSpacedLevel(from: remainder, context: context) {
       return LogEntry(timestamp: timestamp, level: level, message: message, raw: line)
     }
 
@@ -89,17 +99,60 @@ extension LogParser {
   func extractSyslogTimestamp(from line: String, context: LogParseContext) -> (Date, String)? {
     guard let match = regexMatch(context.syslogTimestamp, in: line, groupCount: 1) else { return nil }
     let timestampString = match[0]
+    guard let fullRange = Range(
+      context.syslogTimestamp.firstMatch(in: line, range: NSRange(line.startIndex..., in: line))!.range,
+      in: line
+    ) else { return nil }
+
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "en_US_POSIX")
     formatter.dateFormat = "MMM d HH:mm:ss"
     formatter.timeZone = TimeZone.current
     let year = Calendar.current.component(.year, from: Date())
-    guard let date = formatter.date(from: "\(timestampString) \(year)") else { return nil }
-    guard let fullRange = Range(
-      context.syslogTimestamp.firstMatch(in: line, range: NSRange(line.startIndex..., in: line))!.range,
-      in: line
-    ) else { return nil }
-    return (date, String(line[fullRange.upperBound...]))
+    let date = formatter.date(from: "\(timestampString) \(year)")
+
+    return (date ?? Date(timeIntervalSince1970: 0), String(line[fullRange.upperBound...]))
+  }
+
+  func extractDateCommandTimestamp(from line: String, context: LogParseContext) -> (Date, String)? {
+    guard let match = context.dateCommandTimestamp.firstMatch(
+      in: line,
+      range: NSRange(line.startIndex..., in: line)
+    ),
+      let range = Range(match.range, in: line) else { return nil }
+
+    let token = String(line[range])
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.dateFormat = "EEE MMM d HH:mm:ss"
+    formatter.timeZone = TimeZone(secondsFromGMT: 0)
+    let trimmed = token.trimmingCharacters(in: .whitespaces)
+    let date = formatter.date(from: trimmed)
+
+    return (date ?? Date(timeIntervalSince1970: 0), String(line[range.upperBound...]))
+  }
+
+  /// Strips `date`-command suffixes like `UTC 2026` between syslog timestamps and level tokens.
+  func peelTimezoneAndYearPrefix(from line: String) -> String {
+    var remainder = line
+    let patterns = [
+      #"^(?:UTC|GMT)\s+\d{4}\s+"#,
+      #"^(?:UTC|GMT)\s+"#,
+      #"^\d{4}\s+"#
+    ]
+    for pattern in patterns {
+      guard let regex = try? NSRegularExpression(pattern: pattern) else { continue }
+      guard let match = regex.firstMatch(in: remainder, range: NSRange(remainder.startIndex..., in: remainder)),
+            let range = Range(match.range, in: remainder) else { continue }
+      remainder = String(remainder[range.upperBound...])
+      break
+    }
+    return remainder
+  }
+
+  func extractSpacedLevel(from line: String, context: LogParseContext) -> (LogLevel, String)? {
+    guard let match = regexMatch(context.spacedLevel, in: line, groupCount: 2) else { return nil }
+    return (LogLevel.from(match[0]), match[1])
   }
 
   func extractBracketedLevel(from line: String, context: LogParseContext) -> (LogLevel, String)? {

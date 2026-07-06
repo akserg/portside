@@ -6,29 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin XCRemoteSwiftPackageReference section */
-		A1B2C3D02FF9040000D04AFD /* XCRemoteSwiftPackageReference "container" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/container.git";
-			requirement = {
-				kind = exactVersion;
-				version = 1.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		A1B2C3D12FF9040000D04AFD /* ContainerAPIClient */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A1B2C3D02FF9040000D04AFD /* XCRemoteSwiftPackageReference "container" */;
-			productName = ContainerAPIClient;
-		};
-		A1B2C3D22FF9040000D04AFD /* MachineAPIClient */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A1B2C3D02FF9040000D04AFD /* XCRemoteSwiftPackageReference "container" */;
-			productName = MachineAPIClient;
-		};
-/* End XCSwiftPackageProductDependency section */
+/* Begin PBXBuildFile section */
+		167298AF2FFBE82200F394C6 /* ContainerAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D12FF9040000D04AFD /* ContainerAPIClient */; };
+		167298B02FFBE82200F394C6 /* MachineAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D22FF9040000D04AFD /* MachineAPIClient */; };
+		B2C3D412FFBE82200F394C6 /* WharfsideAnalysis in Frameworks */ = {isa = PBXBuildFile; productRef = B2C3D422FF9040000D04AFD /* WharfsideAnalysis */; };
+/* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		1613EAAB2FF9BEDF00D04AFD /* PBXContainerItemProxy */ = {
@@ -76,6 +58,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				167298B02FFBE82200F394C6 /* MachineAPIClient in Frameworks */,
+				167298AF2FFBE82200F394C6 /* ContainerAPIClient in Frameworks */,
+				B2C3D412FFBE82200F394C6 /* WharfsideAnalysis in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,6 +123,7 @@
 			packageProductDependencies = (
 				A1B2C3D12FF9040000D04AFD /* ContainerAPIClient */,
 				A1B2C3D22FF9040000D04AFD /* MachineAPIClient */,
+				B2C3D422FF9040000D04AFD /* WharfsideAnalysis */,
 			);
 			productName = Wharfside;
 			productReference = 1613EA9D2FF9BEDE00D04AFD /* Wharfside.app */;
@@ -221,10 +207,11 @@
 			);
 			mainGroup = 1613EA942FF9BEDE00D04AFD;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			packageReferences = (
 				A1B2C3D02FF9040000D04AFD /* XCRemoteSwiftPackageReference "container" */,
+				B2C3D402FF9040000D04AFD /* XCLocalSwiftPackageReference "Packages/WharfsideAnalysis" */,
 			);
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 1613EA9E2FF9BEDE00D04AFD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -604,6 +591,42 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		B2C3D402FF9040000D04AFD /* XCLocalSwiftPackageReference "Packages/WharfsideAnalysis" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/WharfsideAnalysis;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A1B2C3D02FF9040000D04AFD /* XCRemoteSwiftPackageReference "container" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/container.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A1B2C3D12FF9040000D04AFD /* ContainerAPIClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1B2C3D02FF9040000D04AFD /* XCRemoteSwiftPackageReference "container" */;
+			productName = ContainerAPIClient;
+		};
+		A1B2C3D22FF9040000D04AFD /* MachineAPIClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1B2C3D02FF9040000D04AFD /* XCRemoteSwiftPackageReference "container" */;
+			productName = MachineAPIClient;
+		};
+		B2C3D422FF9040000D04AFD /* WharfsideAnalysis */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B2C3D402FF9040000D04AFD /* XCLocalSwiftPackageReference "Packages/WharfsideAnalysis" */;
+			productName = WharfsideAnalysis;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1613EA952FF9BEDE00D04AFD /* Project object */;
 }
