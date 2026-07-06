@@ -1,0 +1,3 @@
+time=2024-04-01T09:00:00Z level=info msg="service booting"
+time=2024-04-01T09:00:01Z level=error msg="connection refused to db:5432"
+time=2024-04-01T09:00:02Z level=info msg="retrying in 5s"

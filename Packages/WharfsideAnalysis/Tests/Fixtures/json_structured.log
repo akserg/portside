@@ -1,0 +1,4 @@
+{"timestamp":"2024-05-01T14:00:00.000Z","level":"info","msg":"Worker started","worker_id":"abc-123"}
+{"timestamp":"2024-05-01T14:00:01.000Z","level":"warn","msg":"Retry attempt 3 for job 98765"}
+{"timestamp":"2024-05-01T14:00:02.000Z","level":"error","msg":"Job failed: timeout after 30s"}
+{"ts":1714567203000,"severity":"info","message":"Shutting down gracefully"}

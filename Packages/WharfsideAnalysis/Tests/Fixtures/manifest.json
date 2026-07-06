@@ -1,0 +1,60 @@
+{
+  "fixtures": [
+    {
+      "file": "postgres_crash.log",
+      "description": "Postgres unclean shutdown",
+      "levelCounts": { "ERROR": 2, "INFO": 3 }
+    },
+    {
+      "file": "node_econnrefused.log",
+      "description": "Node ECONNREFUSED loop",
+      "levelCounts": { "ERROR": 5, "INFO": 1 },
+      "expectedPattern": { "templateContains": "ECONNREFUSED", "count": 5 }
+    },
+    {
+      "file": "jvm_stacktrace.log",
+      "description": "JVM exception with multi-line stack trace",
+      "levelCounts": { "ERROR": 1, "INFO": 1 }
+    },
+    {
+      "file": "json_structured.log",
+      "description": "JSON structured application logs",
+      "levelCounts": { "ERROR": 1, "WARN": 1, "INFO": 2 }
+    },
+    {
+      "file": "logfmt.log",
+      "description": "logfmt key=value logs",
+      "levelCounts": { "ERROR": 1, "INFO": 2 }
+    },
+    {
+      "file": "mixed_json_plaintext.log",
+      "description": "Mixed JSON app logs and plaintext boot noise",
+      "levelCounts": { "ERROR": 1, "INFO": 1, "UNKNOWN": 4 }
+    },
+    {
+      "file": "oom_kill.log",
+      "description": "Container OOM killed",
+      "levelCounts": { "ERROR": 2, "INFO": 2, "UNKNOWN": 2 }
+    },
+    {
+      "file": "silent_exit.log",
+      "description": "Clean exit with no errors",
+      "levelCounts": { "INFO": 3 }
+    },
+    {
+      "file": "empty.log",
+      "description": "Empty log file (blank line preserved)",
+      "levelCounts": { "UNKNOWN": 1 }
+    },
+    {
+      "file": "single_line.log",
+      "description": "Single info line",
+      "levelCounts": { "INFO": 1 }
+    },
+    {
+      "file": "no_timestamps.log",
+      "description": "Logs without parseable timestamps",
+      "levelCounts": { "ERROR": 1, "WARN": 1, "INFO": 1 }
+    }
+  ]
+}

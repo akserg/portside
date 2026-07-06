@@ -16,26 +16,26 @@ deliberately conservative; cut scope, not quality.
 
 ---
 
-## Milestone 0 — Foundation (~2 weeks)
+## Milestone 0 — Foundation (Done)
 
 *Everything needed before feature work can go fast.*
 
 | # | Issue | Notes |
 |---|-------|-------|
-| 0.1 | Xcode project scaffold: SwiftUI app, MVVM folders, Swift 6 strict concurrency | Bundle ID `app.wharfside.Wharfside`, min target macOS 26 |
-| 0.2 | CI: GitHub Actions build + unit tests on macOS 26 runner | Fail PRs on warnings; add SwiftLint/SwiftFormat |
-| 0.3 | Spike: connect to `container-apiserver` via ContainerAPIClient (XPC) | Validate list/inspect/start/stop; document what XPC does NOT expose |
-| 0.4 | `ContainerService` protocol + XPC implementation + CLI-fallback implementation | All runtime access behind one protocol; mockable for tests |
-| 0.5 | `AIAvailabilityService` with degraded-mode plumbing | Per AI_INTEGRATION.md §3; UI banner states for each unavailability reason |
-| 0.6 | App shell: sidebar navigation, empty states, settings window skeleton | No features, just structure |
-| 0.7 | Website: one-page landing on wharfside.app (Cloudflare Pages) + hello@ email check | "Coming soon" + GitHub link is enough |
+| ~~0.1~~ | Xcode project scaffold: SwiftUI app, MVVM folders, Swift 6 strict concurrency | Bundle ID `app.wharfside.Wharfside`, min target macOS 26 |
+| ~~0.2~~ | CI: GitHub Actions build + unit tests on macOS 26 runner | Fail PRs on warnings; add SwiftLint/SwiftFormat |
+| ~~0.3~~ | Spike: connect to `container-apiserver` via ContainerAPIClient (XPC) | Validate list/inspect/start/stop; document what XPC does NOT expose |
+| ~~0.4~~ | `ContainerService` protocol + XPC implementation + CLI-fallback implementation | All runtime access behind one protocol; mockable for tests |
+| ~~0.5~~ | `AIAvailabilityService` with degraded-mode plumbing | Per AI_INTEGRATION.md §3; UI banner states for each unavailability reason |
+| ~~0.6~~ | App shell: sidebar navigation, empty states, settings window skeleton | No features, just structure |
+| ~~0.7~~ | Website: one-page landing on wharfside.app (Cloudflare Pages) + hello@ email check | "Coming soon" + GitHub link is enough |
 
 **Exit criteria**: `main` builds green in CI; app launches, connects to a running
 container service, lists real containers in a debug view.
 
 ---
 
-## Milestone 1 — MVP: Containers, Images, Logs + Crash Diagnosis (~5–6 weeks)
+## Milestone 1 — MVP: Containers, Images, Logs + Crash Diagnosis (In Development)
 
 *The public 0.1. Three views done well, plus the hero AI feature.*
 
@@ -45,12 +45,12 @@ container service, lists real containers in a debug view.
 | 1.2 | Container detail: inspect data, ports, mounts, env | Read-only in 0.1 |
 | 1.3 | Images view: list, pull with progress, delete, registry login | |
 | 1.4 | Log viewer: streaming, follow-tail, level colorization, search | Virtualized list; must handle noisy containers |
-| 1.5 | Log digestion pipeline (Layer 1): level parsing, template clustering, digests | Pure Swift package `WharfsideAnalysis`; heavy unit tests, fixture logs |
+| ~~1.5~~ | Log digestion pipeline (Layer 1): level parsing, template clustering, digests | Pure Swift package `WharfsideAnalysis`; heavy unit tests, fixture logs |
 | 1.6 | `@Generable` diagnosis models + `LogDiagnosisService` | Per AI_INTEGRATION.md §4 |
 | 1.7 | Diagnosis UI: "Explain this crash" card with streaming render + confidence styling | prewarm() on detail-view open |
 | 1.8 | Prompt regression test suite (fixture digests → typed assertions) | Category ∈ expected set, non-empty actions |
 | 1.9 | Signing + notarization pipeline; Sparkle (or GitHub releases) auto-update decision | The polish gap competitors left open |
-| 1.10 | Homebrew tap `akserg/homebrew-wharfside` with cask | `brew install akserg/wharfside/wharfside` |
+| 1.10 | Homebrew tap `wharfside/homebrew-wharfside` with cask | `brew install wharfside/wharfside/wharfside` |
 | 1.11 | README badges/screenshots, demo GIF of crash diagnosis, CONTRIBUTING.md | Hero asset for launch |
 | 1.12 | 0.1.0 release + Show HN / r/macapps / Product Hunt post | Lead with the AI demo, cite on-device privacy |
 
@@ -60,7 +60,7 @@ clear explanation when it's not.
 
 ---
 
-## Milestone 2 — Depth: Volumes, Machines, Dashboard, Recommendations (~4–5 weeks)
+## Milestone 2 — Depth: Volumes, Machines, Dashboard, Recommendations 
 
 | # | Issue | Notes |
 |---|-------|-------|
@@ -75,7 +75,7 @@ clear explanation when it's not.
 
 ---
 
-## Milestone 3 — The Moat: ⌘K Command Palette (~4–6 weeks)
+## Milestone 3 — The Moat: ⌘K Command Palette 
 
 | # | Issue | Notes |
 |---|-------|-------|

@@ -1,0 +1,5 @@
+2024-08-01T10:00:00.000Z INFO: Processing batch of 1000 items
+2024-08-01T10:00:01.000Z INFO: Memory usage at 85%
+2024-08-01T10:00:02.000Z ERROR: java.lang.OutOfMemoryError: Java heap space
+2024-08-01T10:00:02.001Z ERROR: Killed process 42 (java) total-vm:4194304kB
+Killed

@@ -1,0 +1,7 @@
+2024-03-10T08:00:00.000Z INFO: Application started
+2024-03-10T08:00:01.000Z SEVERE: Uncaught exception in thread "main"
+java.lang.NullPointerException: Cannot invoke method on null object
+	at com.example.app.Service.process(Service.java:42)
+	at com.example.app.Main.run(Main.java:15)
+Caused by: java.lang.IllegalStateException: Database not initialized
+	at com.example.app.Database.connect(Database.java:88)

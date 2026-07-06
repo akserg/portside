@@ -1,0 +1,5 @@
+Booting container...
+{"level":"info","msg":"API listening on :8080","time":"2024-07-01T10:00:00Z"}
+kernel: [    0.000000] Linux version 6.1.0
+{"level":"error","msg":"health check failed: upstream timeout","time":"2024-07-01T10:00:05Z"}
+init: starting pid 1

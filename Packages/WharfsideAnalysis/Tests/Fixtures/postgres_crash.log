@@ -1,0 +1,5 @@
+2024-01-15T10:00:01.123Z LOG:  database system is ready to accept connections
+2024-01-15T10:00:05.456Z INFO:  checkpoint starting
+2024-01-15T10:00:10.789Z FATAL:  terminating connection due to administrator command
+2024-01-15T10:00:10.790Z LOG:  database system is shut down
+2024-01-15T10:00:10.791Z ERROR: could not write to file "pg_wal/000000010000000000000001": No space left on device
