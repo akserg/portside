@@ -46,7 +46,11 @@ struct PerformancePipelineTests {
         )
         let elapsed = start.duration(to: ContinuousClock.now)
 
-        // Debug builds are unoptimized; brief allows a generous margin off the 1s CI target.
-        #expect(elapsed < .seconds(3))
+        // Brief targets ~1s on CI (release); allow generous margin for runner variance.
+        #if DEBUG
+        #expect(elapsed < .seconds(6))
+        #else
+        #expect(elapsed < .seconds(2))
+        #endif
     }
 }
