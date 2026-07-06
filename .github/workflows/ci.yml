@@ -62,7 +62,7 @@ jobs:
 
       - name: Test analysis package
         working-directory: Packages/WharfsideAnalysis
-        run: swift test -Xswiftc -warnings-as-errors
+        run: swift test -c release -Xswiftc -warnings-as-errors
 
       - name: Enforce layer purity (no UI/AI imports in analysis)
         working-directory: Packages/WharfsideAnalysis
