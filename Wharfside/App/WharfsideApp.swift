@@ -6,7 +6,9 @@ import SwiftUI
 struct WharfsideApp: App {
     @State private var appState = AppState(
         systemService: XPCSystemService(),
-        containerService: XPCContainerService()
+        containerService: XPCContainerService(),
+        imageService: XPCImageService(),
+        registryService: CLIRegistryService()
     )
     @State private var aiAvailability = AIAvailabilityService()
 

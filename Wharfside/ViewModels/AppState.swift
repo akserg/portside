@@ -35,13 +35,19 @@ final class AppState {
 
     let systemService: any SystemServicing
     let containerService: any ContainerServicing
+    let imageService: any ImageServicing
+    let registryService: any RegistryServicing
 
     init(
         systemService: any SystemServicing,
-        containerService: any ContainerServicing
+        containerService: any ContainerServicing,
+        imageService: any ImageServicing,
+        registryService: any RegistryServicing
     ) {
         self.systemService = systemService
         self.containerService = containerService
+        self.imageService = imageService
+        self.registryService = registryService
     }
 
     func refreshServiceStatus() async {

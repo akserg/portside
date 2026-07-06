@@ -2,6 +2,7 @@
 
 import ContainerAPIClient
 import ContainerResource
+import ContainerizationOCI
 import Foundation
 import MachineAPIClient
 import SystemPackage
@@ -61,6 +62,16 @@ enum RuntimeModelMapping {
 
     nonisolated static func imageSummary(from image: ClientImage) -> ImageSummary {
         ImageSummary(reference: image.reference, digest: image.digest)
+    }
+
+    nonisolated static func imageSummary(from resource: ImageResource) -> ImageSummary {
+        let sizeBytes = resource.variants.map(\.size).max()
+        return ImageSummary(
+            reference: resource.displayReference,
+            digest: resource.configuration.descriptor.digest,
+            sizeBytes: sizeBytes,
+            createdAt: resource.creationDate
+        )
     }
 
     nonisolated static func machineSummary(from snapshot: MachineSnapshot) -> MachineSummary {

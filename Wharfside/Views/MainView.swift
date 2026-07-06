@@ -51,10 +51,11 @@ struct MainView: View {
             ContainersView(service: appState.containerService)
                 .id(NavigationSection.containers)
         case .images:
-            PlaceholderView(
-                section: section,
-                message: "Image management is issue #10."
+            ImagesView(
+                imageService: appState.imageService,
+                registryService: appState.registryService
             )
+            .id(NavigationSection.images)
         case .volumes:
             PlaceholderView(
                 section: section,
@@ -93,7 +94,9 @@ struct ServiceStatusIndicator: View {
     MainView()
         .environment(AppState(
             systemService: XPCSystemService(),
-            containerService: XPCContainerService()
+            containerService: XPCContainerService(),
+            imageService: XPCImageService(),
+            registryService: CLIRegistryService()
         ))
         .environment(AIAvailabilityService())
 }

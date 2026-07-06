@@ -1,6 +1,7 @@
 // Services/XPCImageService.swift
 
 import ContainerAPIClient
+import ContainerPersistence
 import Foundation
 import TerminalProgress
 
@@ -8,8 +9,22 @@ actor XPCImageService: ImageServicing {
     private let connection = RuntimeConnection()
 
     func list() async throws -> [ImageSummary] {
-        let images = try await ClientImage.list()
-        return images.map(RuntimeModelMapping.imageSummary(from:))
+        let systemConfig = try await ContainerCreateSupport.loadSystemConfig()
+        let images = try await ClientImage.list().filter { image in
+            !Utility.isInfraImage(
+                name: image.reference,
+                builderImage: systemConfig.build.image,
+                initImage: systemConfig.vminit.image
+            )
+        }
+
+        var summaries: [ImageSummary] = []
+        summaries.reserveCapacity(images.count)
+        for image in images {
+            let resource = try await image.toImageResource(containerSystemConfig: systemConfig)
+            summaries.append(RuntimeModelMapping.imageSummary(from: resource))
+        }
+        return summaries
     }
 
     func pull(
