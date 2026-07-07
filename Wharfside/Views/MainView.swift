@@ -48,8 +48,11 @@ struct MainView: View {
                 message: "System overview and resource charts arrive in 0.2."
             )
         case .containers:
-            ContainersView(service: appState.containerService)
-                .id(NavigationSection.containers)
+            ContainersView(
+                service: appState.containerService,
+                lifecycleObserver: appState.lifecycleObserver
+            )
+            .id(NavigationSection.containers)
         case .images:
             ImagesView(
                 imageService: appState.imageService,

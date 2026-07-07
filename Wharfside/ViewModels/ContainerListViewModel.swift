@@ -25,11 +25,17 @@ final class ContainerListViewModel {
     let actions: ContainerActionCoordinator
 
     private let service: any ContainerServicing
+    private let lifecycleObserver: ContainerLifecycleObserver?
     private let pollInterval: Duration
     private var pollTask: Task<Void, Never>?
 
-    init(service: any ContainerServicing, pollInterval: Duration = .seconds(2)) {
+    init(
+        service: any ContainerServicing,
+        lifecycleObserver: ContainerLifecycleObserver? = nil,
+        pollInterval: Duration = .seconds(2)
+    ) {
         self.service = service
+        self.lifecycleObserver = lifecycleObserver
         self.pollInterval = pollInterval
         self.actions = ContainerActionCoordinator(service: service)
         self.actions.statusProvider = { [weak self] id in
@@ -67,6 +73,9 @@ final class ContainerListViewModel {
     func refresh() async {
         do {
             let fetched = try await service.list()
+            if let lifecycleObserver {
+                await lifecycleObserver.record(containers: fetched)
+            }
             containers = Self.sorted(fetched)
             listError = nil
             isInitialLoading = false

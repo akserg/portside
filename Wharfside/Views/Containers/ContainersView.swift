@@ -8,14 +8,17 @@ private enum ContainerListMetrics {
 }
 
 struct ContainersView: View {
+    @Environment(AppState.self) private var appState
     @State private var viewModel: ContainerListViewModel
     @FocusState private var isSearchFocused: Bool
 
     private let service: any ContainerServicing
 
-    init(service: any ContainerServicing) {
+    init(service: any ContainerServicing, lifecycleObserver: ContainerLifecycleObserver) {
         self.service = service
-        _viewModel = State(initialValue: ContainerListViewModel(service: service))
+        _viewModel = State(
+            initialValue: ContainerListViewModel(service: service, lifecycleObserver: lifecycleObserver)
+        )
     }
 
     var body: some View {
@@ -275,7 +278,7 @@ private struct ContainerRowView: View {
 }
 
 #Preview {
-    ContainersView(service: MockContainerService())
+    ContainersView(service: MockContainerService(), lifecycleObserver: ContainerLifecycleObserver())
         .frame(width: 900, height: 500)
 }
 
