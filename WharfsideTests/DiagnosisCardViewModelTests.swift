@@ -167,8 +167,7 @@ struct DiagnosisCardViewModelTests {
         viewModel.updateContainer(stoppedContainer(id: "app"))
 
         viewModel.explain()
-        try await Task.sleep(for: .milliseconds(50))
-        #expect(viewModel.phase == .idle)
+        #expect(await TestPolling.waitUntil { viewModel.phase == .idle })
     }
 
     // MARK: - Helpers
