@@ -37,6 +37,8 @@ final class AppState {
     let containerService: any ContainerServicing
     let imageService: any ImageServicing
     let registryService: any RegistryServicing
+    /// App-derived restart counts from container list polling (issue 1.6).
+    let lifecycleObserver = ContainerLifecycleObserver()
 
     init(
         systemService: any SystemServicing,

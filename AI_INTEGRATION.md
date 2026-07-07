@@ -117,13 +117,14 @@ The flagship feature. One click on a stopped/crashing container produces a diagn
 struct LogDigest {
     let containerName: String
     let image: String
-    let exitCode: Int32?
+    let exitCode: Int32?                 // omitted from prompt when nil (runtime 1.0 often unknown)
     let windowDescription: String        // "last 5 minutes before exit"
     let counts: [String: Int]            // ["ERROR": 47, "WARN": 12, "INFO": 310]
     let topPatterns: [LogPattern]        // clustered repeated messages
-    let firstError: String?              // first ERROR line in window (often the root cause)
+    let firstError: String?              // first ERROR line in window
+    let lastError: String?               // final ERROR line before exit
     let lastLines: [String]              // final ~10 lines before exit
-    let restartCount: Int
+    let restartCount: Int                // app-derived via ContainerLifecycleObserver
 }
 
 struct LogPattern {
@@ -139,6 +140,11 @@ plain text), message clustering by normalized template (digits/UUIDs/IPs replace
 placeholders), counts per severity. Every piece is unit-tested with fixture logs.
 The rendered digest is capped at ~1,500 tokens; if a container is extremely noisy we keep
 only the top patterns and the last lines — never truncate blindly mid-line.
+
+`exitCode` is included in the prompt only when the runtime reports it; apple/container
+1.0 snapshots often leave it unknown — never fabricate a placeholder. `restartCount`
+is derived app-side by `ContainerLifecycleObserver` from list-poll status transitions
+(running→stopped→running); best-effort and resets on app launch.
 
 ### 4.2 Layer 2 — guided generation
 
