@@ -82,11 +82,11 @@ final class LogDiagnosisService {
     static let diagnosisTimeout: Duration = .seconds(30)
 
     private let availability: any AvailabilityProviding
-    private let lifecycleObserver: ContainerLifecycleObserver
-    private let sessionFactory: any DiagnosisSessioning
-    private let digestBuilder: LogDigestBuilder
-    private let promptRenderer: PromptRenderer
-    private var validator = DiagnosisValidator()
+    let lifecycleObserver: ContainerLifecycleObserver
+    let sessionFactory: any DiagnosisSessioning
+    let digestBuilder: LogDigestBuilder
+    let promptRenderer: PromptRenderer
+    var validator = DiagnosisValidator()
 
     init(
         availability: any AvailabilityProviding,
@@ -170,156 +170,48 @@ final class LogDiagnosisService {
         }
     }
 
-    // MARK: - Validation pipeline
-
-    private struct DiagnosisContext {
-        let digest: LogDigest
-        let renderedDigest: String
-        let basePrompt: String
+    /// Streams unvalidated partials, then yields a validated (or degraded) final result.
+    func streamingDiagnose(
+        container: ContainerDetail,
+        entries: [LogEntry],
+        generationSettings: DiagnosisGenerationSettings = .diagnosisDefault
+    ) -> AsyncThrowingStream<DiagnosisStreamEvent, Error> {
+        AsyncThrowingStream { continuation in
+            let task = Task { @MainActor in
+                do {
+                    try self.ensureAvailable()
+                    let context = await self.buildContext(container: container, entries: entries)
+                    let result = try await self.withDiagnosisTimeout {
+                        try await self.runStreamingValidatedDiagnosis(
+                            context: context,
+                            generationSettings: generationSettings,
+                            onPartial: { partial in
+                                continuation.yield(.partial(partial))
+                            }
+                        )
+                    }
+                    continuation.yield(.finalized(result))
+                    continuation.finish()
+                } catch let error as DiagnosisError {
+                    continuation.finish(throwing: error)
+                } catch is CancellationError {
+                    continuation.finish(throwing: DiagnosisError.cancelled)
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { @Sendable _ in
+                task.cancel()
+            }
+        }
     }
 
-    private func runValidatedDiagnosis(
-        context: DiagnosisContext,
-        generationSettings: DiagnosisGenerationSettings
-    ) async throws -> DiagnosisResult {
-        var retryCount = 0
-        var allViolations: [DiagnosisViolation] = []
-
-        let first = try await generateDiagnosis(
-            prompt: context.basePrompt,
-            generationSettings: generationSettings
-        )
-        if let result = processDiagnosis(
-            first,
-            context: context,
-            retryCount: &retryCount,
-            allViolations: &allViolations
-        ) {
-            return result
-        }
-
-        let corrections = validator.correctionLines(for: allViolations, digest: context.digest)
-        let retryPrompt = context.basePrompt + "\n\nCORRECTION: " + corrections.joined(separator: " ")
-        retryCount = 1
-
-        let second = try await generateDiagnosis(
-            prompt: retryPrompt,
-            generationSettings: generationSettings
-        )
-        if let result = processDiagnosis(
-            second,
-            context: context,
-            retryCount: &retryCount,
-            allViolations: &allViolations
-        ) {
-            return result
-        }
-
-        var degraded = validator.degrade(
-            diagnosis: second,
-            digest: context.digest,
-            violations: allViolations
-        )
-        _ = validator.repairVocabulary(&degraded)
-
-        return DiagnosisResult(
-            diagnosis: degraded,
-            wasDegraded: true,
-            telemetry: DiagnosisTelemetry(
-                violations: allViolations,
-                retryCount: retryCount,
-                wasDegraded: true
-            )
-        )
-    }
-
-    private func processDiagnosis(
-        _ raw: ContainerDiagnosis,
-        context: DiagnosisContext,
-        retryCount: inout Int,
-        allViolations: inout [DiagnosisViolation]
-    ) -> DiagnosisResult? {
-        var diagnosis = raw
-        _ = validator.repairVocabulary(&diagnosis)
-
-        let violations = validator.validate(
-            diagnosis,
-            against: context.digest,
-            renderedDigest: context.renderedDigest
-        )
-        let retryable = violations.filter {
-            if case .wrongCLIVocabulary = $0 { return false }
-            return true
-        }
-
-        allViolations = violations
-
-        guard retryable.isEmpty else { return nil }
-
-        return DiagnosisResult(
-            diagnosis: diagnosis,
-            wasDegraded: false,
-            telemetry: DiagnosisTelemetry(
-                violations: violations,
-                retryCount: retryCount,
-                wasDegraded: false
-            )
-        )
-    }
-
-    private func generateDiagnosis(
-        prompt: String,
-        generationSettings: DiagnosisGenerationSettings
-    ) async throws -> ContainerDiagnosis {
-        var latest: ContainerDiagnosis.PartiallyGenerated?
-        let stream = sessionFactory.stream(
-            instructions: Self.instructions,
-            prompt: prompt,
-            options: generationSettings
-        )
-        for try await partial in stream {
-            try Task.checkCancellation()
-            latest = partial
-        }
-        guard let latest else { throw DiagnosisError.incompleteResponse }
-        return try ContainerDiagnosis(partial: latest)
-    }
-
-    private func ensureAvailable() throws {
+    func ensureAvailable() throws {
         switch availability.currentCapability() {
         case .full:
             return
         case .heuristicsOnly(let reason):
             throw DiagnosisError.aiUnavailable(reason: reason)
-        }
-    }
-
-    private func buildContext(container: ContainerDetail, entries: [LogEntry]) async -> DiagnosisContext {
-        let restartCount = await lifecycleObserver.restartCount(for: container.id)
-        let context = ContainerContext(
-            containerName: container.id,
-            image: container.image,
-            exitCode: container.exitCode,
-            restartCount: restartCount
-        )
-        let window = digestWindow(for: container)
-        let digest = digestBuilder.build(entries: entries, context: context, window: window)
-        let rendered = promptRenderer.render(digest)
-        return DiagnosisContext(
-            digest: digest,
-            renderedDigest: rendered,
-            basePrompt: rendered
-        )
-    }
-
-    private func digestWindow(for container: ContainerDetail) -> DigestWindow {
-        switch container.status {
-        case .stopped:
-            DigestWindow(description: "logs before container exit")
-        case .running, .stopping:
-            DigestWindow(description: "recent logs")
-        case .unknown:
-            DigestWindow(description: "available logs")
         }
     }
 }

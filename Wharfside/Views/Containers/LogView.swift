@@ -7,12 +7,12 @@ import WharfsideAnalysis
 struct LogView: View {
     let containerStatus: ContainerRuntimeStatus
 
-    @State private var viewModel: LogViewModel
+    @Bindable var viewModel: LogViewModel
     @FocusState private var isSearchFocused: Bool
 
-    init(containerID: String, service: any ContainerServicing, containerStatus: ContainerRuntimeStatus) {
+    init(viewModel: LogViewModel, containerStatus: ContainerRuntimeStatus) {
+        self.viewModel = viewModel
         self.containerStatus = containerStatus
-        _viewModel = State(initialValue: LogViewModel(containerID: containerID, service: service))
     }
 
     var body: some View {
@@ -213,7 +213,10 @@ private struct LogStoppedCapRow: View {
 }
 
 #Preview {
-    LogView(containerID: "hello", service: PreviewLogService(), containerStatus: .running)
+    LogView(
+        viewModel: LogViewModel(containerID: "hello", service: PreviewLogService()),
+        containerStatus: .running
+    )
         .frame(width: 700, height: 400)
 }
 

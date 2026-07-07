@@ -123,3 +123,9 @@ final class AIAvailabilityService {
         }
     }
 }
+
+extension AIAvailabilityService: AvailabilityProviding {
+    func currentCapability() -> AICapability {
+        capability
+    }
+}
