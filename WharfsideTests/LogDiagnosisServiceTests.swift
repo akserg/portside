@@ -13,6 +13,7 @@ final class StubDiagnosisSession: DiagnosisSessioning, @unchecked Sendable {
   enum Mode: Sendable {
     case hang
     case emit(ContainerDiagnosis)
+    case emitSequence([ContainerDiagnosis])
     case delayedEmit(ContainerDiagnosis, delay: Duration)
   }
 
@@ -20,9 +21,12 @@ final class StubDiagnosisSession: DiagnosisSessioning, @unchecked Sendable {
   private let lock = NSLock()
   private var _prewarmCallCount = 0
   private var _streamCallCount = 0
+  private var _sequenceIndex = 0
+  private var _lastOptions: DiagnosisGenerationSettings?
 
   var prewarmCallCount: Int { lock.withLock { _prewarmCallCount } }
   var streamCallCount: Int { lock.withLock { _streamCallCount } }
+  var lastOptions: DiagnosisGenerationSettings? { lock.withLock { _lastOptions } }
 
   init(mode: Mode) {
     self.mode = mode
@@ -34,24 +38,61 @@ final class StubDiagnosisSession: DiagnosisSessioning, @unchecked Sendable {
 
   func stream(
     instructions: String,
-    prompt: String
+    prompt: String,
+    options: DiagnosisGenerationSettings
   ) -> AsyncThrowingStream<ContainerDiagnosis.PartiallyGenerated, Error> {
-    lock.withLock { _streamCallCount += 1 }
-    let mode = mode
-    return AsyncThrowingStream { continuation in
+    lock.withLock {
+      _streamCallCount += 1
+      _lastOptions = options
+    }
+    let diagnosis: ContainerDiagnosis
+    switch mode {
+    case .hang:
+      return hangStream()
+    case .emit(let value):
+      diagnosis = value
+    case .emitSequence(let values):
+      diagnosis = lock.withLock {
+        let index = min(_sequenceIndex, values.count - 1)
+        _sequenceIndex += 1
+        return values[index]
+      }
+    case .delayedEmit(let value, let delay):
+      return delayedStream(value, delay: delay)
+    }
+    return emitStream(diagnosis)
+  }
+
+  private func emitStream(
+    _ diagnosis: ContainerDiagnosis
+  ) -> AsyncThrowingStream<ContainerDiagnosis.PartiallyGenerated, Error> {
+    AsyncThrowingStream { continuation in
+      continuation.yield(diagnosis.asPartial)
+      continuation.finish()
+    }
+  }
+
+  private func hangStream() -> AsyncThrowingStream<ContainerDiagnosis.PartiallyGenerated, Error> {
+    AsyncThrowingStream { continuation in
       let task = Task {
-        switch mode {
-        case .hang:
-          try? await Task.sleep(for: .seconds(120))
-          continuation.finish()
-        case .emit(let diagnosis):
-          continuation.yield(diagnosis.asPartial)
-          continuation.finish()
-        case .delayedEmit(let diagnosis, let delay):
-          try await Task.sleep(for: delay)
-          continuation.yield(diagnosis.asPartial)
-          continuation.finish()
-        }
+        try? await Task.sleep(for: .seconds(120))
+        continuation.finish()
+      }
+      continuation.onTermination = { @Sendable _ in
+        task.cancel()
+      }
+    }
+  }
+
+  private func delayedStream(
+    _ diagnosis: ContainerDiagnosis,
+    delay: Duration
+  ) -> AsyncThrowingStream<ContainerDiagnosis.PartiallyGenerated, Error> {
+    AsyncThrowingStream { continuation in
+      let task = Task {
+        try await Task.sleep(for: delay)
+        continuation.yield(diagnosis.asPartial)
+        continuation.finish()
       }
       continuation.onTermination = { @Sendable _ in
         task.cancel()
@@ -190,7 +231,9 @@ private func sampleDetail(
       container: sampleDetail(),
       entries: sampleEntries()
     )
-    #expect(result == expected)
+    #expect(result.diagnosis == expected)
+    #expect(!result.wasDegraded)
+    #expect(result.telemetry.retryCount == 0)
   }
 
   @Test func prewarmSucceedsWhenAvailable() async throws {
@@ -249,15 +292,114 @@ private func sampleDetail(
     let prompt = try #require(capturing.lastPrompt)
     #expect(prompt.contains("RESTARTS: 1"))
   }
+
+  @Test func diagnoseRetriesOnceWhenValidatorFails() async throws {
+    let violating = ContainerDiagnosis(
+      summary: "Unknown failure.",
+      category: .unknown,
+      suggestedActions: ["Inspect logs"],
+      confidence: .low
+    )
+    let fixed = ContainerDiagnosis(
+      summary: "Connection refused to database.",
+      category: .dependencyUnreachable,
+      suggestedActions: ["Check database host"],
+      confidence: .high
+    )
+    let session = StubDiagnosisSession(mode: .emitSequence([violating, fixed]))
+    let service = LogDiagnosisService(
+      availability: StubProvider(sequence: [.full]),
+      lifecycleObserver: ContainerLifecycleObserver(),
+      sessionFactory: session
+    )
+
+    let result = try await service.diagnose(
+      container: sampleDetail(),
+      entries: sampleEntries()
+    )
+
+    #expect(session.streamCallCount == 2)
+    #expect(result.diagnosis == fixed)
+    #expect(result.telemetry.retryCount == 1)
+    #expect(!result.wasDegraded)
+  }
+
+  @Test func diagnoseDegradesWhenRetryStillViolates() async throws {
+    let violating = ContainerDiagnosis(
+      summary: "Unknown failure.",
+      category: .unknown,
+      suggestedActions: ["Inspect logs"],
+      confidence: .high
+    )
+    let session = StubDiagnosisSession(mode: .emitSequence([violating, violating]))
+    let service = LogDiagnosisService(
+      availability: StubProvider(sequence: [.full]),
+      lifecycleObserver: ContainerLifecycleObserver(),
+      sessionFactory: session
+    )
+
+    let result = try await service.diagnose(
+      container: sampleDetail(),
+      entries: sampleEntries()
+    )
+
+    #expect(session.streamCallCount == 2)
+    #expect(result.wasDegraded)
+    #expect(result.diagnosis.confidence == .low)
+    #expect(result.diagnosis.category == .dependencyUnreachable)
+    #expect(result.telemetry.retryCount == 1)
+  }
+
+  @Test func diagnoseRepairsDockerVocabularyWithoutRetry() async throws {
+    let withDocker = ContainerDiagnosis(
+      summary: "Database connection refused.",
+      category: .dependencyUnreachable,
+      suggestedActions: ["Run docker logs api", "Check host"],
+      confidence: .high
+    )
+    let session = StubDiagnosisSession(mode: .emit(withDocker))
+    let service = LogDiagnosisService(
+      availability: StubProvider(sequence: [.full]),
+      lifecycleObserver: ContainerLifecycleObserver(),
+      sessionFactory: session
+    )
+
+    let result = try await service.diagnose(
+      container: sampleDetail(),
+      entries: sampleEntries()
+    )
+
+    #expect(session.streamCallCount == 1)
+    #expect(result.diagnosis.suggestedActions.first?.contains("container logs") == true)
+    #expect(!result.wasDegraded)
+  }
+
+  @Test func diagnosePassesGenerationSettingsToSession() async throws {
+    let session = StubDiagnosisSession(mode: .emit(sampleDiagnosis))
+    let settings = DiagnosisGenerationSettings(temperature: 0.15)
+    let service = LogDiagnosisService(
+      availability: StubProvider(sequence: [.full]),
+      lifecycleObserver: ContainerLifecycleObserver(),
+      sessionFactory: session
+    )
+
+    _ = try await service.diagnose(
+      container: sampleDetail(),
+      entries: sampleEntries(),
+      generationSettings: settings
+    )
+
+    #expect(session.lastOptions == settings)
+  }
 }
 
 // MARK: - Helpers
 
 private let sampleDiagnosis = ContainerDiagnosis(
-  summary: "Test diagnosis.",
-  category: .unknown,
+  summary: "Connection refused.",
+  category: .dependencyUnreachable,
   suggestedActions: ["Inspect logs"],
-  confidence: .low
+  confidence: .high
 )
 
 private func sampleEntries() -> [LogEntry] {
@@ -283,12 +425,14 @@ final class CapturingDiagnosisSession: DiagnosisSessioning, @unchecked Sendable 
 
   func stream(
     instructions: String,
-    prompt: String
+    prompt: String,
+    options: DiagnosisGenerationSettings
   ) -> AsyncThrowingStream<ContainerDiagnosis.PartiallyGenerated, Error> {
     lock.withLock { _lastPrompt = prompt }
     return StubDiagnosisSession(mode: .emit(sampleDiagnosis)).stream(
       instructions: instructions,
-      prompt: prompt
+      prompt: prompt,
+      options: options
     )
   }
 }

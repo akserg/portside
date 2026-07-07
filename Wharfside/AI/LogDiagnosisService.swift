@@ -86,6 +86,7 @@ final class LogDiagnosisService {
     private let sessionFactory: any DiagnosisSessioning
     private let digestBuilder: LogDigestBuilder
     private let promptRenderer: PromptRenderer
+    private var validator = DiagnosisValidator()
 
     init(
         availability: any AvailabilityProviding,
@@ -108,16 +109,18 @@ final class LogDiagnosisService {
 
     func streamDiagnosis(
         container: ContainerDetail,
-        entries: [LogEntry]
+        entries: [LogEntry],
+        generationSettings: DiagnosisGenerationSettings = .diagnosisDefault
     ) -> AsyncThrowingStream<ContainerDiagnosis.PartiallyGenerated, Error> {
         AsyncThrowingStream { continuation in
             let task = Task { @MainActor in
                 do {
                     try self.ensureAvailable()
-                    let prompt = await self.buildPrompt(container: container, entries: entries)
+                    let context = await self.buildContext(container: container, entries: entries)
                     let stream = self.sessionFactory.stream(
                         instructions: Self.instructions,
-                        prompt: prompt
+                        prompt: context.basePrompt,
+                        options: generationSettings
                     )
                     for try await partial in stream {
                         try Task.checkCancellation()
@@ -140,18 +143,18 @@ final class LogDiagnosisService {
 
     func diagnose(
         container: ContainerDetail,
-        entries: [LogEntry]
-    ) async throws -> ContainerDiagnosis {
+        entries: [LogEntry],
+        generationSettings: DiagnosisGenerationSettings = .diagnosisDefault
+    ) async throws -> DiagnosisResult {
         try ensureAvailable()
 
-        return try await withThrowingTaskGroup(of: ContainerDiagnosis.self) { group in
+        return try await withThrowingTaskGroup(of: DiagnosisResult.self) { group in
             group.addTask { @MainActor in
-                var latest: ContainerDiagnosis.PartiallyGenerated?
-                for try await partial in self.streamDiagnosis(container: container, entries: entries) {
-                    latest = partial
-                }
-                guard let latest else { throw DiagnosisError.incompleteResponse }
-                return try ContainerDiagnosis(partial: latest)
+                let context = await self.buildContext(container: container, entries: entries)
+                return try await self.runValidatedDiagnosis(
+                    context: context,
+                    generationSettings: generationSettings
+                )
             }
 
             group.addTask {
@@ -167,6 +170,121 @@ final class LogDiagnosisService {
         }
     }
 
+    // MARK: - Validation pipeline
+
+    private struct DiagnosisContext {
+        let digest: LogDigest
+        let renderedDigest: String
+        let basePrompt: String
+    }
+
+    private func runValidatedDiagnosis(
+        context: DiagnosisContext,
+        generationSettings: DiagnosisGenerationSettings
+    ) async throws -> DiagnosisResult {
+        var retryCount = 0
+        var allViolations: [DiagnosisViolation] = []
+
+        let first = try await generateDiagnosis(
+            prompt: context.basePrompt,
+            generationSettings: generationSettings
+        )
+        if let result = processDiagnosis(
+            first,
+            context: context,
+            retryCount: &retryCount,
+            allViolations: &allViolations
+        ) {
+            return result
+        }
+
+        let corrections = validator.correctionLines(for: allViolations, digest: context.digest)
+        let retryPrompt = context.basePrompt + "\n\nCORRECTION: " + corrections.joined(separator: " ")
+        retryCount = 1
+
+        let second = try await generateDiagnosis(
+            prompt: retryPrompt,
+            generationSettings: generationSettings
+        )
+        if let result = processDiagnosis(
+            second,
+            context: context,
+            retryCount: &retryCount,
+            allViolations: &allViolations
+        ) {
+            return result
+        }
+
+        var degraded = validator.degrade(
+            diagnosis: second,
+            digest: context.digest,
+            violations: allViolations
+        )
+        _ = validator.repairVocabulary(&degraded)
+
+        return DiagnosisResult(
+            diagnosis: degraded,
+            wasDegraded: true,
+            telemetry: DiagnosisTelemetry(
+                violations: allViolations,
+                retryCount: retryCount,
+                wasDegraded: true
+            )
+        )
+    }
+
+    private func processDiagnosis(
+        _ raw: ContainerDiagnosis,
+        context: DiagnosisContext,
+        retryCount: inout Int,
+        allViolations: inout [DiagnosisViolation]
+    ) -> DiagnosisResult? {
+        var diagnosis = raw
+        _ = validator.repairVocabulary(&diagnosis)
+
+        let violations = validator.validate(
+            diagnosis,
+            against: context.digest,
+            renderedDigest: context.renderedDigest
+        )
+        let retryable = violations.filter {
+            if case .wrongCLIVocabulary = $0 { return false }
+            return true
+        }
+
+        allViolations = violations
+
+        guard retryable.isEmpty else { return nil }
+
+        return DiagnosisResult(
+            diagnosis: diagnosis,
+            wasDegraded: false,
+            telemetry: DiagnosisTelemetry(
+                violations: violations,
+                retryCount: retryCount,
+                wasDegraded: false
+            )
+        )
+    }
+
+    private func generateDiagnosis(
+        prompt: String,
+        generationSettings: DiagnosisGenerationSettings
+    ) async throws -> ContainerDiagnosis {
+        var latest: ContainerDiagnosis.PartiallyGenerated?
+        let stream = sessionFactory.stream(
+            instructions: Self.instructions,
+            prompt: prompt,
+            options: generationSettings
+        )
+        for try await partial in stream {
+            try Task.checkCancellation()
+            latest = partial
+        }
+        guard let latest else { throw DiagnosisError.incompleteResponse }
+        return try ContainerDiagnosis(partial: latest)
+    }
+
     private func ensureAvailable() throws {
         switch availability.currentCapability() {
         case .full:
@@ -176,7 +294,7 @@ final class LogDiagnosisService {
         }
     }
 
-    private func buildPrompt(container: ContainerDetail, entries: [LogEntry]) async -> String {
+    private func buildContext(container: ContainerDetail, entries: [LogEntry]) async -> DiagnosisContext {
         let restartCount = await lifecycleObserver.restartCount(for: container.id)
         let context = ContainerContext(
             containerName: container.id,
@@ -186,7 +304,12 @@ final class LogDiagnosisService {
         )
         let window = digestWindow(for: container)
         let digest = digestBuilder.build(entries: entries, context: context, window: window)
-        return promptRenderer.render(digest)
+        let rendered = promptRenderer.render(digest)
+        return DiagnosisContext(
+            digest: digest,
+            renderedDigest: rendered,
+            basePrompt: rendered
+        )
     }
 
     private func digestWindow(for container: ContainerDetail) -> DigestWindow {

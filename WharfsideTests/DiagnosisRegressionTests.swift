@@ -44,10 +44,11 @@ struct DiagnosisRegressionTests {
   var runOutputs: [String] = []
 
     for run in 1...Self.runsPerFixture {
-      let diagnosis = try await service.diagnose(
+      let result = try await service.diagnose(
         container: fixture.container,
         entries: fixture.entries
       )
+      let diagnosis = result.diagnosis
       let rendered = fixture.renderedDigest
       let log = """
         === \(fixture.name) run \(run)/\(Self.runsPerFixture) ===
@@ -59,6 +60,9 @@ struct DiagnosisRegressionTests {
         category: \(diagnosis.category)
         confidence: \(diagnosis.confidence)
         actions: \(diagnosis.suggestedActions.joined(separator: " | "))
+        degraded: \(result.wasDegraded)
+        TELEMETRY: violations=\(result.telemetry.violationCount) \
+        retries=\(result.telemetry.retryCount) degraded=\(result.telemetry.wasDegraded)
         """
       runOutputs.append(log)
 

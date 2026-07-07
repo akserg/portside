@@ -8,7 +8,8 @@ protocol DiagnosisSessioning: Sendable {
     func prewarm(instructions: String) async throws
     func stream(
         instructions: String,
-        prompt: String
+        prompt: String,
+        options: DiagnosisGenerationSettings
     ) -> AsyncThrowingStream<ContainerDiagnosis.PartiallyGenerated, Error>
 }
 
@@ -20,13 +21,19 @@ struct FoundationModelsDiagnosisSession: DiagnosisSessioning {
 
     func stream(
         instructions: String,
-        prompt: String
+        prompt: String,
+        options: DiagnosisGenerationSettings
     ) -> AsyncThrowingStream<ContainerDiagnosis.PartiallyGenerated, Error> {
         let session = LanguageModelSession(instructions: instructions)
+        let generationOptions = options.generationOptions()
         return AsyncThrowingStream { continuation in
             let task = Task {
                 do {
-                    let stream = session.streamResponse(to: prompt, generating: ContainerDiagnosis.self)
+                    let stream = session.streamResponse(
+                        to: prompt,
+                        generating: ContainerDiagnosis.self,
+                        options: generationOptions
+                    )
                     for try await snapshot in stream {
                         try Task.checkCancellation()
                         continuation.yield(snapshot.content)
