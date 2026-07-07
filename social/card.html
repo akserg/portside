@@ -94,25 +94,25 @@
       <text x="446" y="123" fill="#8CA0AE" text-anchor="end">redis:7</text>
 
       <circle cx="28" cy="150" r="5" fill="#E5484D" filter="url(#glow)"/>
-      <text x="46" y="155" fill="#D8E1E8">postgres</text>
-      <text x="446" y="155" fill="#E5657A" text-anchor="end">exit 1 · ×3</text>
+      <text x="46" y="155" fill="#D8E1E8">crashy</text>
+      <text x="446" y="155" fill="#8CA0AE" text-anchor="end">alpine:latest</text>
     </g>
 
     <!-- diagnosis panel -->
     <rect x="18" y="180" width="440" height="142" rx="10" fill="#12202a" stroke="#22333F"/>
     <text x="36" y="210" font-family="Helvetica, Arial, sans-serif" font-size="15"
           font-weight="700" fill="#EEF3F7">
-      <tspan fill="#E8B44A">✦ </tspan>Why did postgres crash?
+      <tspan fill="#E8B44A">✦ </tspan>Why did crashy crash?
     </text>
     <text x="322" y="210" font-family="Helvetica, Arial, sans-serif" font-size="11"
           fill="#8CA0AE">on-device</text>
 
     <text font-family="Helvetica, Arial, sans-serif" font-size="13.5" fill="#B7C5D0">
       <tspan x="36" y="240" font-weight="700" fill="#EEF3F7">Disk full.</tspan>
-      <tspan> No space left on device while</tspan>
-      <tspan x="36" y="262">writing pg_wal — the admin shutdown was a</tspan>
-      <tspan x="36" y="284">symptom, not the cause. Free space on the</tspan>
-      <tspan x="36" y="306">data volume, then restart the container.</tspan>
+      <tspan> The container crashed due to</tspan>
+      <tspan x="36" y="262">insufficient disk space — No space left on</tspan>
+      <tspan x="36" y="284">device. Free up space on the host or adjust</tspan>
+      <tspan x="36" y="306">volume mounts, then restart the container.</tspan>
     </text>
   </g>
 </svg>
