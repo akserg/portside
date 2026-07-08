@@ -162,13 +162,39 @@ jobs:
           APP="build/Build/Products/Release/Wharfside.app"
           echo "$NOTARY_KEY_P8" > AuthKey.p8
           ditto -c -k --keepParent "$APP" Wharfside.zip
+
+          set +e
           xcrun notarytool submit Wharfside.zip \
             --key AuthKey.p8 \
             --key-id "$NOTARY_KEY_ID" \
             --issuer "$NOTARY_ISSUER_ID" \
-            --wait
+            --wait \
+            --output-format json | tee notarize-result.json
+          NOTARY_EXIT=$?
+          set -e
+
+          SUBMISSION_ID=$(plutil -extract id raw notarize-result.json 2>/dev/null || true)
+          STATUS=$(plutil -extract status raw notarize-result.json 2>/dev/null || true)
+
+          if [ -n "$SUBMISSION_ID" ] && [ "$STATUS" != "Accepted" ]; then
+            echo "::group::Notarization log ($SUBMISSION_ID, status: $STATUS)"
+            xcrun notarytool log "$SUBMISSION_ID" \
+              --key AuthKey.p8 \
+              --key-id "$NOTARY_KEY_ID" \
+              --issuer "$NOTARY_ISSUER_ID"
+            echo "::endgroup::"
+          fi
+
+          rm -f AuthKey.p8
+
+          if [ "$NOTARY_EXIT" -ne 0 ] || [ "$STATUS" != "Accepted" ]; then
+            echo "::error::Notarization did not succeed (status: $STATUS)"
+            rm -f Wharfside.zip
+            exit 1
+          fi
+
           xcrun stapler staple "$APP"
-          rm -f AuthKey.p8 Wharfside.zip
+          rm -f Wharfside.zip
 
       - name: Package DMG
         run: |
