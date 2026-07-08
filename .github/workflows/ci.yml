@@ -202,12 +202,15 @@ jobs:
 
       - name: Package DMG
         run: |
+          # The .app (not the DMG) was submitted to notarization and already has
+          # its ticket stapled in the previous step. The DMG itself was never
+          # submitted, so `stapler staple` on it fails with "Record not found" —
+          # Gatekeeper reads the ticket from the stapled .app inside instead.
           APP="build/Build/Products/Release/Wharfside.app"
           mkdir -p dist
           hdiutil create -volname Wharfside \
             -srcfolder "$APP" \
             -ov -format UDZO dist/Wharfside.dmg
-          xcrun stapler staple dist/Wharfside.dmg
           spctl -a -vv --type install dist/Wharfside.dmg
 
       - name: Upload release asset
