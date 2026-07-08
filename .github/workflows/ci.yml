@@ -91,6 +91,10 @@ jobs:
     timeout-minutes: 30
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [build-and-test, analysis-package, lint]
+    # softprops/action-gh-release needs contents:write to create the GitHub
+    # release; the default GITHUB_TOKEN is read-only unless granted here.
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
