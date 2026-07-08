@@ -210,6 +210,11 @@ extension LogDiagnosisService {
             latest = partial
             onPartial(partial)
         }
+        // AsyncThrowingStream.next() resolves to nil (not a thrown error) when the
+        // consuming task is cancelled, so a cancellation can look identical to a
+        // stream that simply produced nothing. Check explicitly to avoid
+        // mislabeling cancellation as .incompleteResponse.
+        try Task.checkCancellation()
         guard let latest else { throw DiagnosisError.incompleteResponse }
         return try ContainerDiagnosis(partial: latest)
     }
