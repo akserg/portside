@@ -4,6 +4,7 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
 
 concurrency:
@@ -83,3 +84,98 @@ jobs:
         run: |
           brew install swiftlint
           swiftlint --strict --reporter github-actions-logging
+
+  release:
+    name: Sign, Notarize & Package
+    runs-on: macos-26
+    timeout-minutes: 30
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build-and-test, analysis-package, lint]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache SPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+            ~/Library/Caches/org.swift.swiftpm
+          key: spm-${{ runner.os }}-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: spm-${{ runner.os }}-
+
+      - name: Import Developer ID certificate
+        env:
+          P12_BASE64: ${{ secrets.DEVELOPER_ID_P12 }}
+          P12_PASSWORD: ${{ secrets.DEVELOPER_ID_P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          set -e
+          KEYCHAIN=build.keychain
+          echo "$P12_BASE64" | base64 --decode > cert.p12
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security default-keychain -s "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -t 3600 -u "$KEYCHAIN"
+          security import cert.p12 -k "$KEYCHAIN" -P "$P12_PASSWORD" \
+            -T /usr/bin/codesign -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple: \
+            -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          rm -f cert.p12
+          security find-identity -v -p codesigning "$KEYCHAIN"
+
+      - name: Build (Developer ID signed, hardened runtime)
+        env:
+          TEAM_ID: ${{ secrets.TEAM_ID }}
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project Wharfside.xcodeproj \
+            -scheme Wharfside \
+            -configuration Release \
+            -destination 'platform=macOS,arch=arm64' \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="Developer ID Application" \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            OTHER_CODE_SIGN_FLAGS="--timestamp --options=runtime" \
+            | xcbeautify --renderer github-actions
+
+      - name: Verify code signature
+        run: |
+          APP="build/Build/Products/Release/Wharfside.app"
+          codesign -dv --verbose=2 "$APP"
+          codesign --verify --deep --strict "$APP"
+
+      - name: Notarize
+        env:
+          NOTARY_KEY_P8: ${{ secrets.NOTARY_KEY_P8 }}
+          NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
+          NOTARY_ISSUER_ID: ${{ secrets.NOTARY_ISSUER_ID }}
+        run: |
+          set -e
+          APP="build/Build/Products/Release/Wharfside.app"
+          echo "$NOTARY_KEY_P8" > AuthKey.p8
+          ditto -c -k --keepParent "$APP" Wharfside.zip
+          xcrun notarytool submit Wharfside.zip \
+            --key AuthKey.p8 \
+            --key-id "$NOTARY_KEY_ID" \
+            --issuer "$NOTARY_ISSUER_ID" \
+            --wait
+          xcrun stapler staple "$APP"
+          rm -f AuthKey.p8 Wharfside.zip
+
+      - name: Package DMG
+        run: |
+          APP="build/Build/Products/Release/Wharfside.app"
+          mkdir -p dist
+          hdiutil create -volname Wharfside \
+            -srcfolder "$APP" \
+            -ov -format UDZO dist/Wharfside.dmg
+          xcrun stapler staple dist/Wharfside.dmg
+          spctl -a -vv --type install dist/Wharfside.dmg
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/Wharfside.dmg
+          generate_release_notes: true

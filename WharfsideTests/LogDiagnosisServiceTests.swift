@@ -207,10 +207,24 @@ private func sampleDetail(
     let task = Task {
       try await service.diagnose(container: sampleDetail(), entries: sampleEntries())
     }
+    // Give the task a chance to enter `diagnose` before cancellation.
+    try? await Task.sleep(for: .milliseconds(10))
     task.cancel()
 
-    await #expect(throws: DiagnosisError.self) {
+    do {
       _ = try await task.value
+      Issue.record("Expected cancellation")
+    } catch let error as DiagnosisError {
+      if case .cancelled = error {
+        #expect(Bool(true))
+      } else {
+        Issue.record("Wrong DiagnosisError case: \(error)")
+      }
+    } catch is CancellationError {
+      // If cancellation lands before our service maps the error, this is still valid.
+      #expect(Bool(true))
+    } catch {
+      Issue.record("Unexpected error: \(error)")
     }
   }
 
