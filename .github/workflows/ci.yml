@@ -206,12 +206,16 @@ jobs:
           # its ticket stapled in the previous step. The DMG itself was never
           # submitted, so `stapler staple` on it fails with "Record not found" —
           # Gatekeeper reads the ticket from the stapled .app inside instead.
+          # --type install is for installer packages (.pkg) and always rejects a
+          # DMG with "no usable signature" since the disk image itself carries no
+          # such signature. Assess the stapled .app directly (default type: execute)
+          # instead — that's the actual Gatekeeper check that matters to users.
           APP="build/Build/Products/Release/Wharfside.app"
           mkdir -p dist
           hdiutil create -volname Wharfside \
             -srcfolder "$APP" \
             -ov -format UDZO dist/Wharfside.dmg
-          spctl -a -vv --type install dist/Wharfside.dmg
+          spctl -a -vv "$APP"
 
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
