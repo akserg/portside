@@ -177,8 +177,9 @@ jobs:
             --key-id "$NOTARY_KEY_ID" \
             --issuer "$NOTARY_ISSUER_ID" \
             --wait \
-            --output-format json | tee notarize-result.json
+            --output-format json > notarize-result.json
           NOTARY_EXIT=$?
+          cat notarize-result.json
           set -e
 
           SUBMISSION_ID=$(plutil -extract id raw notarize-result.json 2>/dev/null || true)
@@ -206,6 +207,7 @@ jobs:
 
       - name: Package DMG
         run: |
+          set -e
           # The .app (not the DMG) was submitted to notarization and already has
           # its ticket stapled in the previous step. The DMG itself was never
           # submitted, so `stapler staple` on it fails with "Record not found" —
@@ -220,9 +222,12 @@ jobs:
             -srcfolder "$APP" \
             -ov -format UDZO dist/Wharfside.dmg
           spctl -a -vv "$APP"
+          shasum -a 256 dist/Wharfside.dmg | tee dist/Wharfside.dmg.sha256
 
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/Wharfside.dmg
+          files: |
+            dist/Wharfside.dmg
+            dist/Wharfside.dmg.sha256
           generate_release_notes: true
