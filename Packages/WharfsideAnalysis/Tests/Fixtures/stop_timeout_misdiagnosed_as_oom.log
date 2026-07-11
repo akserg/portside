@@ -1,0 +1,1484 @@
+[    0.068616] random: crng init done
+[    0.069590] brd: module loaded
+[    0.070062] loop: module loaded
+[    0.070184] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.070320] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.070546] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.070680] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.070883] tun: Universal TUN/TAP device driver, 1.6
+[    0.071339] VFIO - User Level meta-driver version: 0.3
+[    0.071449] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.071487] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T09:12:45 UTC (1783329165)
+[    0.071786] xt_time: kernel timezone is -0000
+[    0.071819] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.071862] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.071930] IPVS: ipvs loaded.
+[    0.071960] IPVS: [rr] scheduler registered.
+[    0.071993] IPVS: [wrr] scheduler registered.
+[    0.072025] IPVS: [lc] scheduler registered.
+[    0.072066] IPVS: [wlc] scheduler registered.
+[    0.072096] IPVS: [fo] scheduler registered.
+[    0.072135] IPVS: [ovf] scheduler registered.
+[    0.072169] IPVS: [lblc] scheduler registered.
+[    0.072198] IPVS: [lblcr] scheduler registered.
+[    0.072232] IPVS: [dh] scheduler registered.
+[    0.072262] IPVS: [sh] scheduler registered.
+[    0.072296] IPVS: [sed] scheduler registered.
+[    0.072325] IPVS: [nq] scheduler registered.
+[    0.072355] IPVS: [sip] pe registered.
+[    0.072410] Initializing XFRM netlink socket
+[    0.072452] NET: Registered PF_INET6 protocol family
+[    0.072679] Segment Routing with IPv6
+[    0.072712] In-situ OAM (IOAM) with IPv6
+[    0.072749] NET: Registered PF_PACKET protocol family
+[    0.072787] Bridge firewalling registered
+[    0.072813] 9pnet: Installing 9P2000 support
+[    0.072888] NET: Registered PF_VSOCK protocol family
+[    0.073659] registered taskstats version 1
+[    0.074479] Demotion targets for Node 0: null
+[    0.074889] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.075624] clk: Disabling unused clocks
+[    0.075662] check access for rdinit=/init failed: -2, ignoring
+[    0.076325] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.076392] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.076629] devtmpfs: mounted
+[    0.076716] Freeing unused kernel memory: 1920K
+[    0.076983] Run /sbin/vminitd as init process
+2026-07-06T09:12:45.524Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T09:12:45.525Z info vminitd: mounting /run
+2026-07-06T09:12:45.525Z info vminitd: mounting /sys
+2026-07-06T09:12:45.525Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T09:12:45.552Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T09:12:45.552Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T09:12:45.553Z info vminitd: serving vminitd API
+2026-07-06T09:12:45.553Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T09:12:45.554Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.207890] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T09:12:45.734Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T09:12:45.734Z info vminitd: id: hello starting I/O
+2026-07-06T09:12:45.735Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T09:12:45.735Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T09:12:45.735Z info vminitd: created vmexec init process
+2026-07-06T09:12:45.735Z info vminitd: id: hello starting managed process
+2026-07-06T09:12:45.741Z warning vminitd: current_bytes: 83730432, high_events_total: 1, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T09:12:45.757Z warning vminitd: current_bytes: 83587072, high_events_total: 51, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T09:12:45.789Z info vminitd: id: hello, pid: 110 got back pid data
+2026-07-06T09:12:45.789Z info vminitd: id: hello, pid: 110 sending pid acknowledgement
+2026-07-06T09:12:45.793Z info vminitd: id: hello, pid: 110 started managed process
+2026-07-06T09:14:59.341Z info vminitd: id: hello sending signal 15 to process 110
+2026-07-06T09:15:09.690Z info vminitd: id: hello sending signal 9 to process 110
+2026-07-06T09:15:09.696Z info vminitd: id: hello, status: 137 managed process exit
+2026-07-06T09:15:09.696Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T09:15:09.697Z info vminitd: id: hello closing relay for StandardIO stderr
+[  144.126643] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T09:15:09.729Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.081367] random: crng init done
+[    0.083277] brd: module loaded
+[    0.083803] loop: module loaded
+[    0.083919] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.084066] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.084320] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.084488] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.084654] tun: Universal TUN/TAP device driver, 1.6
+[    0.085147] VFIO - User Level meta-driver version: 0.3
+[    0.085268] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.085302] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T10:39:02 UTC (1783334342)
+[    0.085571] xt_time: kernel timezone is -0000
+[    0.085609] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.085640] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.085700] IPVS: ipvs loaded.
+[    0.085729] IPVS: [rr] scheduler registered.
+[    0.085761] IPVS: [wrr] scheduler registered.
+[    0.085791] IPVS: [lc] scheduler registered.
+[    0.085827] IPVS: [wlc] scheduler registered.
+[    0.085854] IPVS: [fo] scheduler registered.
+[    0.085887] IPVS: [ovf] scheduler registered.
+[    0.085922] IPVS: [lblc] scheduler registered.
+[    0.085956] IPVS: [lblcr] scheduler registered.
+[    0.085991] IPVS: [dh] scheduler registered.
+[    0.086028] IPVS: [sh] scheduler registered.
+[    0.086065] IPVS: [sed] scheduler registered.
+[    0.086098] IPVS: [nq] scheduler registered.
+[    0.086132] IPVS: [sip] pe registered.
+[    0.086188] Initializing XFRM netlink socket
+[    0.086220] NET: Registered PF_INET6 protocol family
+[    0.086463] Segment Routing with IPv6
+[    0.086494] In-situ OAM (IOAM) with IPv6
+[    0.086540] NET: Registered PF_PACKET protocol family
+[    0.086678] Bridge firewalling registered
+[    0.086724] 9pnet: Installing 9P2000 support
+[    0.086795] NET: Registered PF_VSOCK protocol family
+[    0.087608] registered taskstats version 1
+[    0.088501] Demotion targets for Node 0: null
+[    0.089012] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.089823] clk: Disabling unused clocks
+[    0.089924] check access for rdinit=/init failed: -2, ignoring
+[    0.090535] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.090598] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.090828] devtmpfs: mounted
+[    0.090940] Freeing unused kernel memory: 1920K
+[    0.091029] Run /sbin/vminitd as init process
+2026-07-06T10:39:02.522Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T10:39:02.522Z info vminitd: mounting /run
+2026-07-06T10:39:02.522Z info vminitd: mounting /sys
+2026-07-06T10:39:02.522Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T10:39:02.542Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T10:39:02.543Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T10:39:02.544Z info vminitd: serving vminitd API
+2026-07-06T10:39:02.544Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T10:39:02.545Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.177145] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T10:39:02.696Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T10:39:02.697Z info vminitd: id: hello starting I/O
+2026-07-06T10:39:02.697Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T10:39:02.697Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T10:39:02.697Z info vminitd: created vmexec init process
+2026-07-06T10:39:02.697Z info vminitd: id: hello starting managed process
+2026-07-06T10:39:02.702Z warning vminitd: current_bytes: 83841024, high_events_total: 7, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:39:02.715Z warning vminitd: current_bytes: 84008960, high_events_total: 47, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:39:02.730Z warning vminitd: current_bytes: 83820544, high_events_total: 52, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:39:02.739Z info vminitd: id: hello, pid: 109 got back pid data
+2026-07-06T10:39:02.739Z info vminitd: id: hello, pid: 109 sending pid acknowledgement
+2026-07-06T10:39:02.743Z info vminitd: id: hello, pid: 109 started managed process
+2026-07-06T10:39:02.746Z warning vminitd: current_bytes: 82640896, high_events_total: 54, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:49:02.647Z info vminitd: id: hello, status: 0 managed process exit
+2026-07-06T10:49:02.649Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T10:49:02.649Z info vminitd: id: hello closing relay for StandardIO stderr
+[  600.367070] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T10:49:02.686Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.080884] random: crng init done
+[    0.082667] brd: module loaded
+[    0.083216] loop: module loaded
+[    0.083332] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.083486] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.083771] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.083931] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.084151] tun: Universal TUN/TAP device driver, 1.6
+[    0.084634] VFIO - User Level meta-driver version: 0.3
+[    0.084742] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.084787] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T10:52:53 UTC (1783335173)
+[    0.085117] xt_time: kernel timezone is -0000
+[    0.085156] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.085197] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.085277] IPVS: ipvs loaded.
+[    0.085304] IPVS: [rr] scheduler registered.
+[    0.085335] IPVS: [wrr] scheduler registered.
+[    0.085377] IPVS: [lc] scheduler registered.
+[    0.085405] IPVS: [wlc] scheduler registered.
+[    0.085432] IPVS: [fo] scheduler registered.
+[    0.085446] IPVS: [ovf] scheduler registered.
+[    0.085471] IPVS: [lblc] scheduler registered.
+[    0.085484] IPVS: [lblcr] scheduler registered.
+[    0.085508] IPVS: [dh] scheduler registered.
+[    0.085530] IPVS: [sh] scheduler registered.
+[    0.085554] IPVS: [sed] scheduler registered.
+[    0.085573] IPVS: [nq] scheduler registered.
+[    0.085586] IPVS: [sip] pe registered.
+[    0.085639] Initializing XFRM netlink socket
+[    0.085678] NET: Registered PF_INET6 protocol family
+[    0.085948] Segment Routing with IPv6
+[    0.085980] In-situ OAM (IOAM) with IPv6
+[    0.086020] NET: Registered PF_PACKET protocol family
+[    0.086056] Bridge firewalling registered
+[    0.086089] 9pnet: Installing 9P2000 support
+[    0.086143] NET: Registered PF_VSOCK protocol family
+[    0.086988] registered taskstats version 1
+[    0.087890] Demotion targets for Node 0: null
+[    0.088365] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.089250] clk: Disabling unused clocks
+[    0.089290] check access for rdinit=/init failed: -2, ignoring
+[    0.089932] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.089997] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.090252] devtmpfs: mounted
+[    0.090339] Freeing unused kernel memory: 1920K
+[    0.090418] Run /sbin/vminitd as init process
+2026-07-06T10:52:53.520Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T10:52:53.521Z info vminitd: mounting /run
+2026-07-06T10:52:53.521Z info vminitd: mounting /sys
+2026-07-06T10:52:53.521Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T10:52:53.534Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T10:52:53.535Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T10:52:53.536Z info vminitd: serving vminitd API
+2026-07-06T10:52:53.536Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T10:52:53.537Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.228309] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T10:52:53.741Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T10:52:53.741Z info vminitd: id: hello starting I/O
+2026-07-06T10:52:53.741Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T10:52:53.741Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T10:52:53.741Z info vminitd: created vmexec init process
+2026-07-06T10:52:53.741Z info vminitd: id: hello starting managed process
+2026-07-06T10:52:53.746Z warning vminitd: current_bytes: 84004864, high_events_total: 1, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:52:53.759Z warning vminitd: current_bytes: 83746816, high_events_total: 52, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:52:53.771Z info vminitd: id: hello, pid: 111 got back pid data
+2026-07-06T10:52:53.771Z info vminitd: id: hello, pid: 111 sending pid acknowledgement
+2026-07-06T10:52:53.774Z info vminitd: id: hello, pid: 111 started managed process
+2026-07-06T10:52:53.774Z warning vminitd: current_bytes: 82366464, high_events_total: 54, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:54:03.229Z info vminitd: id: hello sending signal 15 to process 111
+2026-07-06T10:54:13.795Z info vminitd: id: hello sending signal 9 to process 111
+2026-07-06T10:54:13.797Z info vminitd: id: hello, status: 137 managed process exit
+2026-07-06T10:54:13.797Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T10:54:13.797Z info vminitd: id: hello closing relay for StandardIO stderr
+[   80.801968] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T10:54:13.820Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.068741] random: crng init done
+[    0.069641] brd: module loaded
+[    0.070133] loop: module loaded
+[    0.070230] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.070373] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.070599] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.070749] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.070946] tun: Universal TUN/TAP device driver, 1.6
+[    0.071394] VFIO - User Level meta-driver version: 0.3
+[    0.071511] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.071553] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T10:54:49 UTC (1783335289)
+[    0.071826] xt_time: kernel timezone is -0000
+[    0.071869] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.071907] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.071972] IPVS: ipvs loaded.
+[    0.071997] IPVS: [rr] scheduler registered.
+[    0.072028] IPVS: [wrr] scheduler registered.
+[    0.072062] IPVS: [lc] scheduler registered.
+[    0.072093] IPVS: [wlc] scheduler registered.
+[    0.072133] IPVS: [fo] scheduler registered.
+[    0.072170] IPVS: [ovf] scheduler registered.
+[    0.072199] IPVS: [lblc] scheduler registered.
+[    0.072230] IPVS: [lblcr] scheduler registered.
+[    0.072261] IPVS: [dh] scheduler registered.
+[    0.072292] IPVS: [sh] scheduler registered.
+[    0.072323] IPVS: [sed] scheduler registered.
+[    0.072353] IPVS: [nq] scheduler registered.
+[    0.072384] IPVS: [sip] pe registered.
+[    0.072444] Initializing XFRM netlink socket
+[    0.072478] NET: Registered PF_INET6 protocol family
+[    0.072707] Segment Routing with IPv6
+[    0.072736] In-situ OAM (IOAM) with IPv6
+[    0.072778] NET: Registered PF_PACKET protocol family
+[    0.072816] Bridge firewalling registered
+[    0.072845] 9pnet: Installing 9P2000 support
+[    0.072908] NET: Registered PF_VSOCK protocol family
+[    0.073669] registered taskstats version 1
+[    0.074508] Demotion targets for Node 0: null
+[    0.074959] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.075754] clk: Disabling unused clocks
+[    0.075796] check access for rdinit=/init failed: -2, ignoring
+[    0.076141] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.076204] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.076269] devtmpfs: mounted
+[    0.076355] Freeing unused kernel memory: 1920K
+[    0.076424] Run /sbin/vminitd as init process
+2026-07-06T10:54:49.516Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T10:54:49.516Z info vminitd: mounting /run
+2026-07-06T10:54:49.516Z info vminitd: mounting /sys
+2026-07-06T10:54:49.516Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T10:54:49.532Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T10:54:49.532Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T10:54:49.533Z info vminitd: serving vminitd API
+2026-07-06T10:54:49.533Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T10:54:49.534Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.133042] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T10:54:49.598Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T10:54:49.598Z info vminitd: id: hello starting I/O
+2026-07-06T10:54:49.599Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T10:54:49.599Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T10:54:49.599Z info vminitd: created vmexec init process
+2026-07-06T10:54:49.599Z info vminitd: id: hello starting managed process
+2026-07-06T10:54:49.603Z warning vminitd: current_bytes: 83857408, high_events_total: 7, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:54:49.616Z warning vminitd: current_bytes: 83726336, high_events_total: 51, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:54:49.627Z info vminitd: id: hello, pid: 110 got back pid data
+2026-07-06T10:54:49.627Z info vminitd: id: hello, pid: 110 sending pid acknowledgement
+2026-07-06T10:54:49.630Z info vminitd: id: hello, pid: 110 started managed process
+2026-07-06T10:54:49.631Z warning vminitd: current_bytes: 82718720, high_events_total: 52, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:55:00.341Z info vminitd: id: hello sending signal 15 to process 110
+2026-07-06T10:55:10.563Z info vminitd: id: hello sending signal 9 to process 110
+2026-07-06T10:55:10.564Z info vminitd: id: hello, status: 137 managed process exit
+2026-07-06T10:55:10.564Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T10:55:10.564Z info vminitd: id: hello closing relay for StandardIO stderr
+[   21.145329] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T10:55:10.581Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.077399] random: crng init done
+[    0.079246] brd: module loaded
+[    0.079807] loop: module loaded
+[    0.079917] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.080049] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.080325] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.080492] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.080694] tun: Universal TUN/TAP device driver, 1.6
+[    0.081202] VFIO - User Level meta-driver version: 0.3
+[    0.081336] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.081376] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T11:11:56 UTC (1783336316)
+[    0.081660] xt_time: kernel timezone is -0000
+[    0.081698] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.081741] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.081807] IPVS: ipvs loaded.
+[    0.081833] IPVS: [rr] scheduler registered.
+[    0.081866] IPVS: [wrr] scheduler registered.
+[    0.081897] IPVS: [lc] scheduler registered.
+[    0.081925] IPVS: [wlc] scheduler registered.
+[    0.081957] IPVS: [fo] scheduler registered.
+[    0.081986] IPVS: [ovf] scheduler registered.
+[    0.082016] IPVS: [lblc] scheduler registered.
+[    0.082044] IPVS: [lblcr] scheduler registered.
+[    0.082072] IPVS: [dh] scheduler registered.
+[    0.082106] IPVS: [sh] scheduler registered.
+[    0.082139] IPVS: [sed] scheduler registered.
+[    0.082179] IPVS: [nq] scheduler registered.
+[    0.082210] IPVS: [sip] pe registered.
+[    0.082266] Initializing XFRM netlink socket
+[    0.082305] NET: Registered PF_INET6 protocol family
+[    0.082537] Segment Routing with IPv6
+[    0.082573] In-situ OAM (IOAM) with IPv6
+[    0.082613] NET: Registered PF_PACKET protocol family
+[    0.082649] Bridge firewalling registered
+[    0.082678] 9pnet: Installing 9P2000 support
+[    0.082737] NET: Registered PF_VSOCK protocol family
+[    0.083554] registered taskstats version 1
+[    0.084439] Demotion targets for Node 0: null
+[    0.084932] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.085746] clk: Disabling unused clocks
+[    0.085800] check access for rdinit=/init failed: -2, ignoring
+[    0.086150] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.086208] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.086285] devtmpfs: mounted
+[    0.086379] Freeing unused kernel memory: 1920K
+[    0.086471] Run /sbin/vminitd as init process
+2026-07-06T11:11:56.516Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T11:11:56.517Z info vminitd: mounting /run
+2026-07-06T11:11:56.517Z info vminitd: mounting /sys
+2026-07-06T11:11:56.517Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T11:11:56.546Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T11:11:56.548Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T11:11:56.548Z info vminitd: serving vminitd API
+2026-07-06T11:11:56.548Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T11:11:56.550Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.166199] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T11:11:56.621Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T11:11:56.621Z info vminitd: id: hello starting I/O
+2026-07-06T11:11:56.621Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T11:11:56.621Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T11:11:56.621Z info vminitd: created vmexec init process
+2026-07-06T11:11:56.622Z info vminitd: id: hello starting managed process
+2026-07-06T11:11:56.626Z warning vminitd: current_bytes: 83992576, high_events_total: 1, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:11:56.638Z warning vminitd: current_bytes: 83300352, high_events_total: 53, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:11:56.659Z info vminitd: id: hello, pid: 110 got back pid data
+2026-07-06T11:11:56.659Z info vminitd: id: hello, pid: 110 sending pid acknowledgement
+2026-07-06T11:11:56.661Z info vminitd: id: hello, pid: 110 started managed process
+2026-07-06T11:16:40.575Z info vminitd: id: hello sending signal 15 to process 110
+2026-07-06T11:16:50.958Z info vminitd: id: hello sending signal 9 to process 110
+2026-07-06T11:16:50.961Z info vminitd: id: hello, status: 137 managed process exit
+2026-07-06T11:16:50.961Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T11:16:50.962Z info vminitd: id: hello closing relay for StandardIO stderr
+[  294.101827] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T11:16:50.988Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.068819] random: crng init done
+[    0.069678] brd: module loaded
+[    0.070166] loop: module loaded
+[    0.070278] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.070427] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.070639] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.070786] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.071005] tun: Universal TUN/TAP device driver, 1.6
+[    0.071495] VFIO - User Level meta-driver version: 0.3
+[    0.071611] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.071645] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T11:16:59 UTC (1783336619)
+[    0.071916] xt_time: kernel timezone is -0000
+[    0.071958] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.072002] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.072057] IPVS: ipvs loaded.
+[    0.072084] IPVS: [rr] scheduler registered.
+[    0.072115] IPVS: [wrr] scheduler registered.
+[    0.072147] IPVS: [lc] scheduler registered.
+[    0.072178] IPVS: [wlc] scheduler registered.
+[    0.072214] IPVS: [fo] scheduler registered.
+[    0.072245] IPVS: [ovf] scheduler registered.
+[    0.072275] IPVS: [lblc] scheduler registered.
+[    0.072303] IPVS: [lblcr] scheduler registered.
+[    0.072331] IPVS: [dh] scheduler registered.
+[    0.072358] IPVS: [sh] scheduler registered.
+[    0.072392] IPVS: [sed] scheduler registered.
+[    0.072422] IPVS: [nq] scheduler registered.
+[    0.072452] IPVS: [sip] pe registered.
+[    0.072511] Initializing XFRM netlink socket
+[    0.072544] NET: Registered PF_INET6 protocol family
+[    0.072773] Segment Routing with IPv6
+[    0.072810] In-situ OAM (IOAM) with IPv6
+[    0.072851] NET: Registered PF_PACKET protocol family
+[    0.072890] Bridge firewalling registered
+[    0.072923] 9pnet: Installing 9P2000 support
+[    0.072990] NET: Registered PF_VSOCK protocol family
+[    0.073785] registered taskstats version 1
+[    0.074669] Demotion targets for Node 0: null
+[    0.075151] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.075911] clk: Disabling unused clocks
+[    0.075950] check access for rdinit=/init failed: -2, ignoring
+[    0.076293] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.076360] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.076442] devtmpfs: mounted
+[    0.076526] Freeing unused kernel memory: 1920K
+[    0.076599] Run /sbin/vminitd as init process
+2026-07-06T11:16:59.516Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T11:16:59.516Z info vminitd: mounting /run
+2026-07-06T11:16:59.516Z info vminitd: mounting /sys
+2026-07-06T11:16:59.516Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T11:16:59.532Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T11:16:59.532Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T11:16:59.534Z info vminitd: serving vminitd API
+2026-07-06T11:16:59.534Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T11:16:59.535Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.158610] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T11:16:59.618Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T11:16:59.618Z info vminitd: id: hello starting I/O
+2026-07-06T11:16:59.618Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T11:16:59.618Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T11:16:59.618Z info vminitd: created vmexec init process
+2026-07-06T11:16:59.619Z info vminitd: id: hello starting managed process
+2026-07-06T11:16:59.623Z warning vminitd: current_bytes: 83849216, high_events_total: 7, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:16:59.636Z warning vminitd: current_bytes: 83566592, high_events_total: 51, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:16:59.657Z info vminitd: id: hello, pid: 109 got back pid data
+2026-07-06T11:16:59.657Z info vminitd: id: hello, pid: 109 sending pid acknowledgement
+2026-07-06T11:16:59.657Z warning vminitd: current_bytes: 83693568, high_events_total: 52, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:16:59.660Z info vminitd: id: hello, pid: 109 started managed process
+2026-07-06T11:26:59.933Z info vminitd: id: hello, status: 0 managed process exit
+2026-07-06T11:26:59.936Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T11:26:59.936Z info vminitd: id: hello closing relay for StandardIO stderr
+[  600.260480] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T11:26:59.962Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.076942] random: crng init done
+[    0.077783] brd: module loaded
+[    0.078250] loop: module loaded
+[    0.078352] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.078492] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.078732] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.078872] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.079035] tun: Universal TUN/TAP device driver, 1.6
+[    0.079504] VFIO - User Level meta-driver version: 0.3
+[    0.079623] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.079662] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T11:42:32 UTC (1783338152)
+[    0.079926] xt_time: kernel timezone is -0000
+[    0.079962] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.080005] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.080082] IPVS: ipvs loaded.
+[    0.080103] IPVS: [rr] scheduler registered.
+[    0.080128] IPVS: [wrr] scheduler registered.
+[    0.080156] IPVS: [lc] scheduler registered.
+[    0.080176] IPVS: [wlc] scheduler registered.
+[    0.080201] IPVS: [fo] scheduler registered.
+[    0.080226] IPVS: [ovf] scheduler registered.
+[    0.080251] IPVS: [lblc] scheduler registered.
+[    0.080276] IPVS: [lblcr] scheduler registered.
+[    0.080300] IPVS: [dh] scheduler registered.
+[    0.080328] IPVS: [sh] scheduler registered.
+[    0.080353] IPVS: [sed] scheduler registered.
+[    0.080380] IPVS: [nq] scheduler registered.
+[    0.080405] IPVS: [sip] pe registered.
+[    0.080454] Initializing XFRM netlink socket
+[    0.080485] NET: Registered PF_INET6 protocol family
+[    0.080671] Segment Routing with IPv6
+[    0.080707] In-situ OAM (IOAM) with IPv6
+[    0.080742] NET: Registered PF_PACKET protocol family
+[    0.080775] Bridge firewalling registered
+[    0.080800] 9pnet: Installing 9P2000 support
+[    0.080852] NET: Registered PF_VSOCK protocol family
+[    0.081536] registered taskstats version 1
+[    0.082303] Demotion targets for Node 0: null
+[    0.082751] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.083793] clk: Disabling unused clocks
+[    0.083843] check access for rdinit=/init failed: -2, ignoring
+[    0.084161] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.084228] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.084304] devtmpfs: mounted
+[    0.084390] Freeing unused kernel memory: 1920K
+[    0.084467] Run /sbin/vminitd as init process
+2026-07-06T11:42:32.517Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T11:42:32.518Z info vminitd: mounting /run
+2026-07-06T11:42:32.518Z info vminitd: mounting /sys
+2026-07-06T11:42:32.518Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T11:42:32.532Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T11:42:32.533Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T11:42:32.534Z info vminitd: serving vminitd API
+2026-07-06T11:42:32.534Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T11:42:32.535Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.186458] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T11:42:32.634Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T11:42:32.634Z info vminitd: id: hello starting I/O
+2026-07-06T11:42:32.634Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T11:42:32.634Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T11:42:32.634Z info vminitd: created vmexec init process
+2026-07-06T11:42:32.635Z info vminitd: id: hello starting managed process
+2026-07-06T11:42:32.638Z warning vminitd: current_bytes: 84217856, high_events_total: 1, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:42:32.656Z warning vminitd: current_bytes: 83722240, high_events_total: 51, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:42:32.663Z info vminitd: id: hello, pid: 109 got back pid data
+2026-07-06T11:42:32.663Z info vminitd: id: hello, pid: 109 sending pid acknowledgement
+2026-07-06T11:42:32.666Z info vminitd: id: hello, pid: 109 started managed process
+2026-07-06T11:42:32.667Z warning vminitd: current_bytes: 82796544, high_events_total: 52, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:52:32.383Z info vminitd: id: hello, status: 0 managed process exit
+2026-07-06T11:52:32.384Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T11:52:32.384Z info vminitd: id: hello closing relay for StandardIO stderr
+[  600.272956] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T11:52:32.415Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.072735] random: crng init done
+[    0.074448] brd: module loaded
+[    0.074997] loop: module loaded
+[    0.075107] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.075255] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.075502] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.075645] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.075795] tun: Universal TUN/TAP device driver, 1.6
+[    0.076282] VFIO - User Level meta-driver version: 0.3
+[    0.076474] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.076514] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T12:50:53 UTC (1783342253)
+[    0.076767] xt_time: kernel timezone is -0000
+[    0.076810] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.076844] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.076916] IPVS: ipvs loaded.
+[    0.076945] IPVS: [rr] scheduler registered.
+[    0.076978] IPVS: [wrr] scheduler registered.
+[    0.077011] IPVS: [lc] scheduler registered.
+[    0.077044] IPVS: [wlc] scheduler registered.
+[    0.077076] IPVS: [fo] scheduler registered.
+[    0.077108] IPVS: [ovf] scheduler registered.
+[    0.077140] IPVS: [lblc] scheduler registered.
+[    0.077173] IPVS: [lblcr] scheduler registered.
+[    0.077204] IPVS: [dh] scheduler registered.
+[    0.077236] IPVS: [sh] scheduler registered.
+[    0.077272] IPVS: [sed] scheduler registered.
+[    0.077303] IPVS: [nq] scheduler registered.
+[    0.077336] IPVS: [sip] pe registered.
+[    0.077393] Initializing XFRM netlink socket
+[    0.077430] NET: Registered PF_INET6 protocol family
+[    0.077660] Segment Routing with IPv6
+[    0.077704] In-situ OAM (IOAM) with IPv6
+[    0.077752] NET: Registered PF_PACKET protocol family
+[    0.077791] Bridge firewalling registered
+[    0.077821] 9pnet: Installing 9P2000 support
+[    0.077888] NET: Registered PF_VSOCK protocol family
+[    0.078792] registered taskstats version 1
+[    0.079718] Demotion targets for Node 0: null
+[    0.080187] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.080992] clk: Disabling unused clocks
+[    0.081044] check access for rdinit=/init failed: -2, ignoring
+[    0.081639] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.081698] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.081905] devtmpfs: mounted
+[    0.082008] Freeing unused kernel memory: 1920K
+[    0.082081] Run /sbin/vminitd as init process
+2026-07-06T12:50:53.524Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T12:50:53.524Z info vminitd: mounting /run
+2026-07-06T12:50:53.525Z info vminitd: mounting /sys
+2026-07-06T12:50:53.525Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T12:50:53.539Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T12:50:53.539Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T12:50:53.540Z info vminitd: serving vminitd API
+2026-07-06T12:50:53.540Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T12:50:53.541Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.196532] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T12:50:53.733Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T12:50:53.733Z info vminitd: id: hello starting I/O
+2026-07-06T12:50:53.733Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T12:50:53.734Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T12:50:53.734Z info vminitd: created vmexec init process
+2026-07-06T12:50:53.734Z info vminitd: id: hello starting managed process
+2026-07-06T12:50:53.740Z warning vminitd: current_bytes: 83906560, high_events_total: 2, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T12:50:53.755Z warning vminitd: current_bytes: 84148224, high_events_total: 48, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T12:50:53.775Z warning vminitd: current_bytes: 83304448, high_events_total: 53, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T12:50:53.784Z info vminitd: id: hello, pid: 111 got back pid data
+2026-07-06T12:50:53.784Z info vminitd: id: hello, pid: 111 sending pid acknowledgement
+2026-07-06T12:50:53.788Z info vminitd: id: hello, pid: 111 started managed process
+2026-07-06T12:50:53.790Z warning vminitd: current_bytes: 82739200, high_events_total: 54, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T13:00:54.275Z info vminitd: id: hello, status: 0 managed process exit
+2026-07-06T13:00:54.277Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T13:00:54.277Z info vminitd: id: hello closing relay for StandardIO stderr
+[  600.397936] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T13:00:54.313Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.081727] random: crng init done
+[    0.083594] brd: module loaded
+[    0.084178] loop: module loaded
+[    0.084281] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.084457] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.084778] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.084942] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.085132] tun: Universal TUN/TAP device driver, 1.6
+[    0.085648] VFIO - User Level meta-driver version: 0.3
+[    0.085756] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.085796] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T13:33:46 UTC (1783344826)
+[    0.086103] xt_time: kernel timezone is -0000
+[    0.086143] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.086193] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.086259] IPVS: ipvs loaded.
+[    0.086285] IPVS: [rr] scheduler registered.
+[    0.086318] IPVS: [wrr] scheduler registered.
+[    0.086346] IPVS: [lc] scheduler registered.
+[    0.086375] IPVS: [wlc] scheduler registered.
+[    0.086403] IPVS: [fo] scheduler registered.
+[    0.086430] IPVS: [ovf] scheduler registered.
+[    0.086459] IPVS: [lblc] scheduler registered.
+[    0.086482] IPVS: [lblcr] scheduler registered.
+[    0.086508] IPVS: [dh] scheduler registered.
+[    0.086522] IPVS: [sh] scheduler registered.
+[    0.086549] IPVS: [sed] scheduler registered.
+[    0.086563] IPVS: [nq] scheduler registered.
+[    0.086590] IPVS: [sip] pe registered.
+[    0.086630] Initializing XFRM netlink socket
+[    0.086661] NET: Registered PF_INET6 protocol family
+[    0.086882] Segment Routing with IPv6
+[    0.086913] In-situ OAM (IOAM) with IPv6
+[    0.086949] NET: Registered PF_PACKET protocol family
+[    0.086982] Bridge firewalling registered
+[    0.087006] 9pnet: Installing 9P2000 support
+[    0.087081] NET: Registered PF_VSOCK protocol family
+[    0.087868] registered taskstats version 1
+[    0.088764] Demotion targets for Node 0: null
+[    0.089247] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.090120] clk: Disabling unused clocks
+[    0.090186] check access for rdinit=/init failed: -2, ignoring
+[    0.090798] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.090850] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.091062] devtmpfs: mounted
+[    0.091156] Freeing unused kernel memory: 1920K
+[    0.091398] Run /sbin/vminitd as init process
+2026-07-06T13:33:46.525Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T13:33:46.526Z info vminitd: mounting /run
+2026-07-06T13:33:46.526Z info vminitd: mounting /sys
+2026-07-06T13:33:46.526Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T13:33:46.550Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T13:33:46.552Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T13:33:46.552Z info vminitd: serving vminitd API
+2026-07-06T13:33:46.552Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T13:33:46.554Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.172455] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T13:33:46.693Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T13:33:46.693Z info vminitd: id: hello starting I/O
+2026-07-06T13:33:46.693Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T13:33:46.693Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T13:33:46.693Z info vminitd: created vmexec init process
+2026-07-06T13:33:46.694Z info vminitd: id: hello starting managed process
+2026-07-06T13:33:46.700Z warning vminitd: current_bytes: 83697664, high_events_total: 1, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T13:33:46.715Z warning vminitd: current_bytes: 83415040, high_events_total: 50, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T13:33:46.734Z warning vminitd: current_bytes: 83591168, high_events_total: 54, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T13:33:46.739Z info vminitd: id: hello, pid: 110 got back pid data
+2026-07-06T13:33:46.739Z info vminitd: id: hello, pid: 110 sending pid acknowledgement
+2026-07-06T13:33:46.742Z info vminitd: id: hello, pid: 110 started managed process
+2026-07-06T13:33:46.751Z warning vminitd: current_bytes: 82714624, high_events_total: 55, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T13:43:47.173Z info vminitd: id: hello, status: 0 managed process exit
+2026-07-06T13:43:47.176Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T13:43:47.176Z info vminitd: id: hello closing relay for StandardIO stderr
+[  600.361856] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T13:43:47.210Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.073368] random: crng init done
+[    0.074911] brd: module loaded
+[    0.075540] loop: module loaded
+[    0.075668] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.075812] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.076068] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.076207] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.076398] tun: Universal TUN/TAP device driver, 1.6
+[    0.076915] VFIO - User Level meta-driver version: 0.3
+[    0.077028] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.077066] rtc-pl031 20050000.pl031: setting system clock to 2026-07-09T05:54:30 UTC (1783576470)
+[    0.077345] xt_time: kernel timezone is -0000
+[    0.077388] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.077430] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.077493] IPVS: ipvs loaded.
+[    0.077522] IPVS: [rr] scheduler registered.
+[    0.077571] IPVS: [wrr] scheduler registered.
+[    0.077602] IPVS: [lc] scheduler registered.
+[    0.077634] IPVS: [wlc] scheduler registered.
+[    0.077664] IPVS: [fo] scheduler registered.
+[    0.077702] IPVS: [ovf] scheduler registered.
+[    0.077730] IPVS: [lblc] scheduler registered.
+[    0.077891] IPVS: [lblcr] scheduler registered.
+[    0.077919] IPVS: [dh] scheduler registered.
+[    0.077944] IPVS: [sh] scheduler registered.
+[    0.077971] IPVS: [sed] scheduler registered.
+[    0.077997] IPVS: [nq] scheduler registered.
+[    0.078021] IPVS: [sip] pe registered.
+[    0.078078] Initializing XFRM netlink socket
+[    0.078130] NET: Registered PF_INET6 protocol family
+[    0.078392] Segment Routing with IPv6
+[    0.078425] In-situ OAM (IOAM) with IPv6
+[    0.078482] NET: Registered PF_PACKET protocol family
+[    0.078524] Bridge firewalling registered
+[    0.078549] 9pnet: Installing 9P2000 support
+[    0.078657] NET: Registered PF_VSOCK protocol family
+[    0.079493] registered taskstats version 1
+[    0.080373] Demotion targets for Node 0: null
+[    0.080784] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.081488] clk: Disabling unused clocks
+[    0.081551] check access for rdinit=/init failed: -2, ignoring
+[    0.082016] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.082056] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.082232] devtmpfs: mounted
+[    0.082321] Freeing unused kernel memory: 1920K
+[    0.082567] Run /sbin/vminitd as init process
+2026-07-09T05:54:30.527Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-09T05:54:30.527Z info vminitd: mounting /run
+2026-07-09T05:54:30.527Z info vminitd: mounting /sys
+2026-07-09T05:54:30.527Z info vminitd: mounting /sys/fs/cgroup
+2026-07-09T05:54:30.547Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-09T05:54:30.547Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-09T05:54:30.548Z info vminitd: serving vminitd API
+2026-07-09T05:54:30.548Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-09T05:54:30.550Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.187800] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-09T05:54:30.721Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-09T05:54:30.722Z info vminitd: id: hello starting I/O
+2026-07-09T05:54:30.722Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-09T05:54:30.722Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-09T05:54:30.722Z info vminitd: created vmexec init process
+2026-07-09T05:54:30.722Z info vminitd: id: hello starting managed process
+2026-07-09T05:54:30.730Z warning vminitd: current_bytes: 83562496, high_events_total: 7, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-09T05:54:30.745Z warning vminitd: current_bytes: 84119552, high_events_total: 43, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-09T05:54:30.759Z warning vminitd: current_bytes: 83841024, high_events_total: 53, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-09T05:54:30.772Z info vminitd: id: hello, pid: 109 got back pid data
+2026-07-09T05:54:30.772Z info vminitd: id: hello, pid: 109 sending pid acknowledgement
+2026-07-09T05:54:30.774Z warning vminitd: current_bytes: 83759104, high_events_total: 55, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-09T05:54:30.776Z info vminitd: id: hello, pid: 109 started managed process
+2026-07-09T05:54:47.329Z info vminitd: id: hello sending signal 15 to process 109
+2026-07-09T05:54:57.792Z info vminitd: id: hello sending signal 9 to process 109
+2026-07-09T05:54:57.794Z info vminitd: id: hello, status: 137 managed process exit
+2026-07-09T05:54:57.794Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-09T05:54:57.794Z info vminitd: id: hello closing relay for StandardIO stderr
+[   27.388960] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-09T05:54:57.822Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.068616] random: crng init done
+[    0.069590] brd: module loaded
+[    0.070062] loop: module loaded
+[    0.070184] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.070320] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.070546] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.070680] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.070883] tun: Universal TUN/TAP device driver, 1.6
+[    0.071339] VFIO - User Level meta-driver version: 0.3
+[    0.071449] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.071487] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T09:12:45 UTC (1783329165)
+[    0.071786] xt_time: kernel timezone is -0000
+[    0.071819] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.071862] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.071930] IPVS: ipvs loaded.
+[    0.071960] IPVS: [rr] scheduler registered.
+[    0.071993] IPVS: [wrr] scheduler registered.
+[    0.072025] IPVS: [lc] scheduler registered.
+[    0.072066] IPVS: [wlc] scheduler registered.
+[    0.072096] IPVS: [fo] scheduler registered.
+[    0.072135] IPVS: [ovf] scheduler registered.
+[    0.072169] IPVS: [lblc] scheduler registered.
+[    0.072198] IPVS: [lblcr] scheduler registered.
+[    0.072232] IPVS: [dh] scheduler registered.
+[    0.072262] IPVS: [sh] scheduler registered.
+[    0.072296] IPVS: [sed] scheduler registered.
+[    0.072325] IPVS: [nq] scheduler registered.
+[    0.072355] IPVS: [sip] pe registered.
+[    0.072410] Initializing XFRM netlink socket
+[    0.072452] NET: Registered PF_INET6 protocol family
+[    0.072679] Segment Routing with IPv6
+[    0.072712] In-situ OAM (IOAM) with IPv6
+[    0.072749] NET: Registered PF_PACKET protocol family
+[    0.072787] Bridge firewalling registered
+[    0.072813] 9pnet: Installing 9P2000 support
+[    0.072888] NET: Registered PF_VSOCK protocol family
+[    0.073659] registered taskstats version 1
+[    0.074479] Demotion targets for Node 0: null
+[    0.074889] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.075624] clk: Disabling unused clocks
+[    0.075662] check access for rdinit=/init failed: -2, ignoring
+[    0.076325] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.076392] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.076629] devtmpfs: mounted
+[    0.076716] Freeing unused kernel memory: 1920K
+[    0.076983] Run /sbin/vminitd as init process
+2026-07-06T09:12:45.524Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T09:12:45.525Z info vminitd: mounting /run
+2026-07-06T09:12:45.525Z info vminitd: mounting /sys
+2026-07-06T09:12:45.525Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T09:12:45.552Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T09:12:45.552Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T09:12:45.553Z info vminitd: serving vminitd API
+2026-07-06T09:12:45.553Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T09:12:45.554Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.207890] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T09:12:45.734Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T09:12:45.734Z info vminitd: id: hello starting I/O
+2026-07-06T09:12:45.735Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T09:12:45.735Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T09:12:45.735Z info vminitd: created vmexec init process
+2026-07-06T09:12:45.735Z info vminitd: id: hello starting managed process
+2026-07-06T09:12:45.741Z warning vminitd: current_bytes: 83730432, high_events_total: 1, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T09:12:45.757Z warning vminitd: current_bytes: 83587072, high_events_total: 51, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T09:12:45.789Z info vminitd: id: hello, pid: 110 got back pid data
+2026-07-06T09:12:45.789Z info vminitd: id: hello, pid: 110 sending pid acknowledgement
+2026-07-06T09:12:45.793Z info vminitd: id: hello, pid: 110 started managed process
+2026-07-06T09:14:59.341Z info vminitd: id: hello sending signal 15 to process 110
+2026-07-06T09:15:09.690Z info vminitd: id: hello sending signal 9 to process 110
+2026-07-06T09:15:09.696Z info vminitd: id: hello, status: 137 managed process exit
+2026-07-06T09:15:09.696Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T09:15:09.697Z info vminitd: id: hello closing relay for StandardIO stderr
+[  144.126643] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T09:15:09.729Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.081367] random: crng init done
+[    0.083277] brd: module loaded
+[    0.083803] loop: module loaded
+[    0.083919] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.084066] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.084320] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.084488] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.084654] tun: Universal TUN/TAP device driver, 1.6
+[    0.085147] VFIO - User Level meta-driver version: 0.3
+[    0.085268] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.085302] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T10:39:02 UTC (1783334342)
+[    0.085571] xt_time: kernel timezone is -0000
+[    0.085609] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.085640] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.085700] IPVS: ipvs loaded.
+[    0.085729] IPVS: [rr] scheduler registered.
+[    0.085761] IPVS: [wrr] scheduler registered.
+[    0.085791] IPVS: [lc] scheduler registered.
+[    0.085827] IPVS: [wlc] scheduler registered.
+[    0.085854] IPVS: [fo] scheduler registered.
+[    0.085887] IPVS: [ovf] scheduler registered.
+[    0.085922] IPVS: [lblc] scheduler registered.
+[    0.085956] IPVS: [lblcr] scheduler registered.
+[    0.085991] IPVS: [dh] scheduler registered.
+[    0.086028] IPVS: [sh] scheduler registered.
+[    0.086065] IPVS: [sed] scheduler registered.
+[    0.086098] IPVS: [nq] scheduler registered.
+[    0.086132] IPVS: [sip] pe registered.
+[    0.086188] Initializing XFRM netlink socket
+[    0.086220] NET: Registered PF_INET6 protocol family
+[    0.086463] Segment Routing with IPv6
+[    0.086494] In-situ OAM (IOAM) with IPv6
+[    0.086540] NET: Registered PF_PACKET protocol family
+[    0.086678] Bridge firewalling registered
+[    0.086724] 9pnet: Installing 9P2000 support
+[    0.086795] NET: Registered PF_VSOCK protocol family
+[    0.087608] registered taskstats version 1
+[    0.088501] Demotion targets for Node 0: null
+[    0.089012] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.089823] clk: Disabling unused clocks
+[    0.089924] check access for rdinit=/init failed: -2, ignoring
+[    0.090535] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.090598] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.090828] devtmpfs: mounted
+[    0.090940] Freeing unused kernel memory: 1920K
+[    0.091029] Run /sbin/vminitd as init process
+2026-07-06T10:39:02.522Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T10:39:02.522Z info vminitd: mounting /run
+2026-07-06T10:39:02.522Z info vminitd: mounting /sys
+2026-07-06T10:39:02.522Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T10:39:02.542Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T10:39:02.543Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T10:39:02.544Z info vminitd: serving vminitd API
+2026-07-06T10:39:02.544Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T10:39:02.545Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.177145] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T10:39:02.696Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T10:39:02.697Z info vminitd: id: hello starting I/O
+2026-07-06T10:39:02.697Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T10:39:02.697Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T10:39:02.697Z info vminitd: created vmexec init process
+2026-07-06T10:39:02.697Z info vminitd: id: hello starting managed process
+2026-07-06T10:39:02.702Z warning vminitd: current_bytes: 83841024, high_events_total: 7, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:39:02.715Z warning vminitd: current_bytes: 84008960, high_events_total: 47, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:39:02.730Z warning vminitd: current_bytes: 83820544, high_events_total: 52, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:39:02.739Z info vminitd: id: hello, pid: 109 got back pid data
+2026-07-06T10:39:02.739Z info vminitd: id: hello, pid: 109 sending pid acknowledgement
+2026-07-06T10:39:02.743Z info vminitd: id: hello, pid: 109 started managed process
+2026-07-06T10:39:02.746Z warning vminitd: current_bytes: 82640896, high_events_total: 54, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:49:02.647Z info vminitd: id: hello, status: 0 managed process exit
+2026-07-06T10:49:02.649Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T10:49:02.649Z info vminitd: id: hello closing relay for StandardIO stderr
+[  600.367070] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T10:49:02.686Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.080884] random: crng init done
+[    0.082667] brd: module loaded
+[    0.083216] loop: module loaded
+[    0.083332] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.083486] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.083771] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.083931] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.084151] tun: Universal TUN/TAP device driver, 1.6
+[    0.084634] VFIO - User Level meta-driver version: 0.3
+[    0.084742] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.084787] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T10:52:53 UTC (1783335173)
+[    0.085117] xt_time: kernel timezone is -0000
+[    0.085156] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.085197] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.085277] IPVS: ipvs loaded.
+[    0.085304] IPVS: [rr] scheduler registered.
+[    0.085335] IPVS: [wrr] scheduler registered.
+[    0.085377] IPVS: [lc] scheduler registered.
+[    0.085405] IPVS: [wlc] scheduler registered.
+[    0.085432] IPVS: [fo] scheduler registered.
+[    0.085446] IPVS: [ovf] scheduler registered.
+[    0.085471] IPVS: [lblc] scheduler registered.
+[    0.085484] IPVS: [lblcr] scheduler registered.
+[    0.085508] IPVS: [dh] scheduler registered.
+[    0.085530] IPVS: [sh] scheduler registered.
+[    0.085554] IPVS: [sed] scheduler registered.
+[    0.085573] IPVS: [nq] scheduler registered.
+[    0.085586] IPVS: [sip] pe registered.
+[    0.085639] Initializing XFRM netlink socket
+[    0.085678] NET: Registered PF_INET6 protocol family
+[    0.085948] Segment Routing with IPv6
+[    0.085980] In-situ OAM (IOAM) with IPv6
+[    0.086020] NET: Registered PF_PACKET protocol family
+[    0.086056] Bridge firewalling registered
+[    0.086089] 9pnet: Installing 9P2000 support
+[    0.086143] NET: Registered PF_VSOCK protocol family
+[    0.086988] registered taskstats version 1
+[    0.087890] Demotion targets for Node 0: null
+[    0.088365] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.089250] clk: Disabling unused clocks
+[    0.089290] check access for rdinit=/init failed: -2, ignoring
+[    0.089932] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.089997] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.090252] devtmpfs: mounted
+[    0.090339] Freeing unused kernel memory: 1920K
+[    0.090418] Run /sbin/vminitd as init process
+2026-07-06T10:52:53.520Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T10:52:53.521Z info vminitd: mounting /run
+2026-07-06T10:52:53.521Z info vminitd: mounting /sys
+2026-07-06T10:52:53.521Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T10:52:53.534Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T10:52:53.535Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T10:52:53.536Z info vminitd: serving vminitd API
+2026-07-06T10:52:53.536Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T10:52:53.537Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.228309] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T10:52:53.741Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T10:52:53.741Z info vminitd: id: hello starting I/O
+2026-07-06T10:52:53.741Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T10:52:53.741Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T10:52:53.741Z info vminitd: created vmexec init process
+2026-07-06T10:52:53.741Z info vminitd: id: hello starting managed process
+2026-07-06T10:52:53.746Z warning vminitd: current_bytes: 84004864, high_events_total: 1, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:52:53.759Z warning vminitd: current_bytes: 83746816, high_events_total: 52, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:52:53.771Z info vminitd: id: hello, pid: 111 got back pid data
+2026-07-06T10:52:53.771Z info vminitd: id: hello, pid: 111 sending pid acknowledgement
+2026-07-06T10:52:53.774Z info vminitd: id: hello, pid: 111 started managed process
+2026-07-06T10:52:53.774Z warning vminitd: current_bytes: 82366464, high_events_total: 54, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:54:03.229Z info vminitd: id: hello sending signal 15 to process 111
+2026-07-06T10:54:13.795Z info vminitd: id: hello sending signal 9 to process 111
+2026-07-06T10:54:13.797Z info vminitd: id: hello, status: 137 managed process exit
+2026-07-06T10:54:13.797Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T10:54:13.797Z info vminitd: id: hello closing relay for StandardIO stderr
+[   80.801968] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T10:54:13.820Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.068741] random: crng init done
+[    0.069641] brd: module loaded
+[    0.070133] loop: module loaded
+[    0.070230] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.070373] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.070599] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.070749] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.070946] tun: Universal TUN/TAP device driver, 1.6
+[    0.071394] VFIO - User Level meta-driver version: 0.3
+[    0.071511] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.071553] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T10:54:49 UTC (1783335289)
+[    0.071826] xt_time: kernel timezone is -0000
+[    0.071869] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.071907] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.071972] IPVS: ipvs loaded.
+[    0.071997] IPVS: [rr] scheduler registered.
+[    0.072028] IPVS: [wrr] scheduler registered.
+[    0.072062] IPVS: [lc] scheduler registered.
+[    0.072093] IPVS: [wlc] scheduler registered.
+[    0.072133] IPVS: [fo] scheduler registered.
+[    0.072170] IPVS: [ovf] scheduler registered.
+[    0.072199] IPVS: [lblc] scheduler registered.
+[    0.072230] IPVS: [lblcr] scheduler registered.
+[    0.072261] IPVS: [dh] scheduler registered.
+[    0.072292] IPVS: [sh] scheduler registered.
+[    0.072323] IPVS: [sed] scheduler registered.
+[    0.072353] IPVS: [nq] scheduler registered.
+[    0.072384] IPVS: [sip] pe registered.
+[    0.072444] Initializing XFRM netlink socket
+[    0.072478] NET: Registered PF_INET6 protocol family
+[    0.072707] Segment Routing with IPv6
+[    0.072736] In-situ OAM (IOAM) with IPv6
+[    0.072778] NET: Registered PF_PACKET protocol family
+[    0.072816] Bridge firewalling registered
+[    0.072845] 9pnet: Installing 9P2000 support
+[    0.072908] NET: Registered PF_VSOCK protocol family
+[    0.073669] registered taskstats version 1
+[    0.074508] Demotion targets for Node 0: null
+[    0.074959] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.075754] clk: Disabling unused clocks
+[    0.075796] check access for rdinit=/init failed: -2, ignoring
+[    0.076141] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.076204] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.076269] devtmpfs: mounted
+[    0.076355] Freeing unused kernel memory: 1920K
+[    0.076424] Run /sbin/vminitd as init process
+2026-07-06T10:54:49.516Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T10:54:49.516Z info vminitd: mounting /run
+2026-07-06T10:54:49.516Z info vminitd: mounting /sys
+2026-07-06T10:54:49.516Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T10:54:49.532Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T10:54:49.532Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T10:54:49.533Z info vminitd: serving vminitd API
+2026-07-06T10:54:49.533Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T10:54:49.534Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.133042] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T10:54:49.598Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T10:54:49.598Z info vminitd: id: hello starting I/O
+2026-07-06T10:54:49.599Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T10:54:49.599Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T10:54:49.599Z info vminitd: created vmexec init process
+2026-07-06T10:54:49.599Z info vminitd: id: hello starting managed process
+2026-07-06T10:54:49.603Z warning vminitd: current_bytes: 83857408, high_events_total: 7, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:54:49.616Z warning vminitd: current_bytes: 83726336, high_events_total: 51, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:54:49.627Z info vminitd: id: hello, pid: 110 got back pid data
+2026-07-06T10:54:49.627Z info vminitd: id: hello, pid: 110 sending pid acknowledgement
+2026-07-06T10:54:49.630Z info vminitd: id: hello, pid: 110 started managed process
+2026-07-06T10:54:49.631Z warning vminitd: current_bytes: 82718720, high_events_total: 52, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T10:55:00.341Z info vminitd: id: hello sending signal 15 to process 110
+2026-07-06T10:55:10.563Z info vminitd: id: hello sending signal 9 to process 110
+2026-07-06T10:55:10.564Z info vminitd: id: hello, status: 137 managed process exit
+2026-07-06T10:55:10.564Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T10:55:10.564Z info vminitd: id: hello closing relay for StandardIO stderr
+[   21.145329] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T10:55:10.581Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.077399] random: crng init done
+[    0.079246] brd: module loaded
+[    0.079807] loop: module loaded
+[    0.079917] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.080049] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.080325] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.080492] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.080694] tun: Universal TUN/TAP device driver, 1.6
+[    0.081202] VFIO - User Level meta-driver version: 0.3
+[    0.081336] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.081376] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T11:11:56 UTC (1783336316)
+[    0.081660] xt_time: kernel timezone is -0000
+[    0.081698] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.081741] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.081807] IPVS: ipvs loaded.
+[    0.081833] IPVS: [rr] scheduler registered.
+[    0.081866] IPVS: [wrr] scheduler registered.
+[    0.081897] IPVS: [lc] scheduler registered.
+[    0.081925] IPVS: [wlc] scheduler registered.
+[    0.081957] IPVS: [fo] scheduler registered.
+[    0.081986] IPVS: [ovf] scheduler registered.
+[    0.082016] IPVS: [lblc] scheduler registered.
+[    0.082044] IPVS: [lblcr] scheduler registered.
+[    0.082072] IPVS: [dh] scheduler registered.
+[    0.082106] IPVS: [sh] scheduler registered.
+[    0.082139] IPVS: [sed] scheduler registered.
+[    0.082179] IPVS: [nq] scheduler registered.
+[    0.082210] IPVS: [sip] pe registered.
+[    0.082266] Initializing XFRM netlink socket
+[    0.082305] NET: Registered PF_INET6 protocol family
+[    0.082537] Segment Routing with IPv6
+[    0.082573] In-situ OAM (IOAM) with IPv6
+[    0.082613] NET: Registered PF_PACKET protocol family
+[    0.082649] Bridge firewalling registered
+[    0.082678] 9pnet: Installing 9P2000 support
+[    0.082737] NET: Registered PF_VSOCK protocol family
+[    0.083554] registered taskstats version 1
+[    0.084439] Demotion targets for Node 0: null
+[    0.084932] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.085746] clk: Disabling unused clocks
+[    0.085800] check access for rdinit=/init failed: -2, ignoring
+[    0.086150] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.086208] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.086285] devtmpfs: mounted
+[    0.086379] Freeing unused kernel memory: 1920K
+[    0.086471] Run /sbin/vminitd as init process
+2026-07-06T11:11:56.516Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T11:11:56.517Z info vminitd: mounting /run
+2026-07-06T11:11:56.517Z info vminitd: mounting /sys
+2026-07-06T11:11:56.517Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T11:11:56.546Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T11:11:56.548Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T11:11:56.548Z info vminitd: serving vminitd API
+2026-07-06T11:11:56.548Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T11:11:56.550Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.166199] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T11:11:56.621Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T11:11:56.621Z info vminitd: id: hello starting I/O
+2026-07-06T11:11:56.621Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T11:11:56.621Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T11:11:56.621Z info vminitd: created vmexec init process
+2026-07-06T11:11:56.622Z info vminitd: id: hello starting managed process
+2026-07-06T11:11:56.626Z warning vminitd: current_bytes: 83992576, high_events_total: 1, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:11:56.638Z warning vminitd: current_bytes: 83300352, high_events_total: 53, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:11:56.659Z info vminitd: id: hello, pid: 110 got back pid data
+2026-07-06T11:11:56.659Z info vminitd: id: hello, pid: 110 sending pid acknowledgement
+2026-07-06T11:11:56.661Z info vminitd: id: hello, pid: 110 started managed process
+2026-07-06T11:16:40.575Z info vminitd: id: hello sending signal 15 to process 110
+2026-07-06T11:16:50.958Z info vminitd: id: hello sending signal 9 to process 110
+2026-07-06T11:16:50.961Z info vminitd: id: hello, status: 137 managed process exit
+2026-07-06T11:16:50.961Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T11:16:50.962Z info vminitd: id: hello closing relay for StandardIO stderr
+[  294.101827] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T11:16:50.988Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.068819] random: crng init done
+[    0.069678] brd: module loaded
+[    0.070166] loop: module loaded
+[    0.070278] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.070427] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.070639] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.070786] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.071005] tun: Universal TUN/TAP device driver, 1.6
+[    0.071495] VFIO - User Level meta-driver version: 0.3
+[    0.071611] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.071645] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T11:16:59 UTC (1783336619)
+[    0.071916] xt_time: kernel timezone is -0000
+[    0.071958] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.072002] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.072057] IPVS: ipvs loaded.
+[    0.072084] IPVS: [rr] scheduler registered.
+[    0.072115] IPVS: [wrr] scheduler registered.
+[    0.072147] IPVS: [lc] scheduler registered.
+[    0.072178] IPVS: [wlc] scheduler registered.
+[    0.072214] IPVS: [fo] scheduler registered.
+[    0.072245] IPVS: [ovf] scheduler registered.
+[    0.072275] IPVS: [lblc] scheduler registered.
+[    0.072303] IPVS: [lblcr] scheduler registered.
+[    0.072331] IPVS: [dh] scheduler registered.
+[    0.072358] IPVS: [sh] scheduler registered.
+[    0.072392] IPVS: [sed] scheduler registered.
+[    0.072422] IPVS: [nq] scheduler registered.
+[    0.072452] IPVS: [sip] pe registered.
+[    0.072511] Initializing XFRM netlink socket
+[    0.072544] NET: Registered PF_INET6 protocol family
+[    0.072773] Segment Routing with IPv6
+[    0.072810] In-situ OAM (IOAM) with IPv6
+[    0.072851] NET: Registered PF_PACKET protocol family
+[    0.072890] Bridge firewalling registered
+[    0.072923] 9pnet: Installing 9P2000 support
+[    0.072990] NET: Registered PF_VSOCK protocol family
+[    0.073785] registered taskstats version 1
+[    0.074669] Demotion targets for Node 0: null
+[    0.075151] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.075911] clk: Disabling unused clocks
+[    0.075950] check access for rdinit=/init failed: -2, ignoring
+[    0.076293] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.076360] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.076442] devtmpfs: mounted
+[    0.076526] Freeing unused kernel memory: 1920K
+[    0.076599] Run /sbin/vminitd as init process
+2026-07-06T11:16:59.516Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T11:16:59.516Z info vminitd: mounting /run
+2026-07-06T11:16:59.516Z info vminitd: mounting /sys
+2026-07-06T11:16:59.516Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T11:16:59.532Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T11:16:59.532Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T11:16:59.534Z info vminitd: serving vminitd API
+2026-07-06T11:16:59.534Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T11:16:59.535Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.158610] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T11:16:59.618Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T11:16:59.618Z info vminitd: id: hello starting I/O
+2026-07-06T11:16:59.618Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T11:16:59.618Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T11:16:59.618Z info vminitd: created vmexec init process
+2026-07-06T11:16:59.619Z info vminitd: id: hello starting managed process
+2026-07-06T11:16:59.623Z warning vminitd: current_bytes: 83849216, high_events_total: 7, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:16:59.636Z warning vminitd: current_bytes: 83566592, high_events_total: 51, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:16:59.657Z info vminitd: id: hello, pid: 109 got back pid data
+2026-07-06T11:16:59.657Z info vminitd: id: hello, pid: 109 sending pid acknowledgement
+2026-07-06T11:16:59.657Z warning vminitd: current_bytes: 83693568, high_events_total: 52, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:16:59.660Z info vminitd: id: hello, pid: 109 started managed process
+2026-07-06T11:26:59.933Z info vminitd: id: hello, status: 0 managed process exit
+2026-07-06T11:26:59.936Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T11:26:59.936Z info vminitd: id: hello closing relay for StandardIO stderr
+[  600.260480] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T11:26:59.962Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.076942] random: crng init done
+[    0.077783] brd: module loaded
+[    0.078250] loop: module loaded
+[    0.078352] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.078492] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.078732] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.078872] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.079035] tun: Universal TUN/TAP device driver, 1.6
+[    0.079504] VFIO - User Level meta-driver version: 0.3
+[    0.079623] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.079662] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T11:42:32 UTC (1783338152)
+[    0.079926] xt_time: kernel timezone is -0000
+[    0.079962] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.080005] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.080082] IPVS: ipvs loaded.
+[    0.080103] IPVS: [rr] scheduler registered.
+[    0.080128] IPVS: [wrr] scheduler registered.
+[    0.080156] IPVS: [lc] scheduler registered.
+[    0.080176] IPVS: [wlc] scheduler registered.
+[    0.080201] IPVS: [fo] scheduler registered.
+[    0.080226] IPVS: [ovf] scheduler registered.
+[    0.080251] IPVS: [lblc] scheduler registered.
+[    0.080276] IPVS: [lblcr] scheduler registered.
+[    0.080300] IPVS: [dh] scheduler registered.
+[    0.080328] IPVS: [sh] scheduler registered.
+[    0.080353] IPVS: [sed] scheduler registered.
+[    0.080380] IPVS: [nq] scheduler registered.
+[    0.080405] IPVS: [sip] pe registered.
+[    0.080454] Initializing XFRM netlink socket
+[    0.080485] NET: Registered PF_INET6 protocol family
+[    0.080671] Segment Routing with IPv6
+[    0.080707] In-situ OAM (IOAM) with IPv6
+[    0.080742] NET: Registered PF_PACKET protocol family
+[    0.080775] Bridge firewalling registered
+[    0.080800] 9pnet: Installing 9P2000 support
+[    0.080852] NET: Registered PF_VSOCK protocol family
+[    0.081536] registered taskstats version 1
+[    0.082303] Demotion targets for Node 0: null
+[    0.082751] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.083793] clk: Disabling unused clocks
+[    0.083843] check access for rdinit=/init failed: -2, ignoring
+[    0.084161] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.084228] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.084304] devtmpfs: mounted
+[    0.084390] Freeing unused kernel memory: 1920K
+[    0.084467] Run /sbin/vminitd as init process
+2026-07-06T11:42:32.517Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T11:42:32.518Z info vminitd: mounting /run
+2026-07-06T11:42:32.518Z info vminitd: mounting /sys
+2026-07-06T11:42:32.518Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T11:42:32.532Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T11:42:32.533Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T11:42:32.534Z info vminitd: serving vminitd API
+2026-07-06T11:42:32.534Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T11:42:32.535Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.186458] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T11:42:32.634Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T11:42:32.634Z info vminitd: id: hello starting I/O
+2026-07-06T11:42:32.634Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T11:42:32.634Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T11:42:32.634Z info vminitd: created vmexec init process
+2026-07-06T11:42:32.635Z info vminitd: id: hello starting managed process
+2026-07-06T11:42:32.638Z warning vminitd: current_bytes: 84217856, high_events_total: 1, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:42:32.656Z warning vminitd: current_bytes: 83722240, high_events_total: 51, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:42:32.663Z info vminitd: id: hello, pid: 109 got back pid data
+2026-07-06T11:42:32.663Z info vminitd: id: hello, pid: 109 sending pid acknowledgement
+2026-07-06T11:42:32.666Z info vminitd: id: hello, pid: 109 started managed process
+2026-07-06T11:42:32.667Z warning vminitd: current_bytes: 82796544, high_events_total: 52, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T11:52:32.383Z info vminitd: id: hello, status: 0 managed process exit
+2026-07-06T11:52:32.384Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T11:52:32.384Z info vminitd: id: hello closing relay for StandardIO stderr
+[  600.272956] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T11:52:32.415Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.072735] random: crng init done
+[    0.074448] brd: module loaded
+[    0.074997] loop: module loaded
+[    0.075107] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.075255] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.075502] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.075645] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.075795] tun: Universal TUN/TAP device driver, 1.6
+[    0.076282] VFIO - User Level meta-driver version: 0.3
+[    0.076474] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.076514] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T12:50:53 UTC (1783342253)
+[    0.076767] xt_time: kernel timezone is -0000
+[    0.076810] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.076844] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.076916] IPVS: ipvs loaded.
+[    0.076945] IPVS: [rr] scheduler registered.
+[    0.076978] IPVS: [wrr] scheduler registered.
+[    0.077011] IPVS: [lc] scheduler registered.
+[    0.077044] IPVS: [wlc] scheduler registered.
+[    0.077076] IPVS: [fo] scheduler registered.
+[    0.077108] IPVS: [ovf] scheduler registered.
+[    0.077140] IPVS: [lblc] scheduler registered.
+[    0.077173] IPVS: [lblcr] scheduler registered.
+[    0.077204] IPVS: [dh] scheduler registered.
+[    0.077236] IPVS: [sh] scheduler registered.
+[    0.077272] IPVS: [sed] scheduler registered.
+[    0.077303] IPVS: [nq] scheduler registered.
+[    0.077336] IPVS: [sip] pe registered.
+[    0.077393] Initializing XFRM netlink socket
+[    0.077430] NET: Registered PF_INET6 protocol family
+[    0.077660] Segment Routing with IPv6
+[    0.077704] In-situ OAM (IOAM) with IPv6
+[    0.077752] NET: Registered PF_PACKET protocol family
+[    0.077791] Bridge firewalling registered
+[    0.077821] 9pnet: Installing 9P2000 support
+[    0.077888] NET: Registered PF_VSOCK protocol family
+[    0.078792] registered taskstats version 1
+[    0.079718] Demotion targets for Node 0: null
+[    0.080187] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.080992] clk: Disabling unused clocks
+[    0.081044] check access for rdinit=/init failed: -2, ignoring
+[    0.081639] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.081698] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.081905] devtmpfs: mounted
+[    0.082008] Freeing unused kernel memory: 1920K
+[    0.082081] Run /sbin/vminitd as init process
+2026-07-06T12:50:53.524Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T12:50:53.524Z info vminitd: mounting /run
+2026-07-06T12:50:53.525Z info vminitd: mounting /sys
+2026-07-06T12:50:53.525Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T12:50:53.539Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T12:50:53.539Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T12:50:53.540Z info vminitd: serving vminitd API
+2026-07-06T12:50:53.540Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T12:50:53.541Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.196532] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T12:50:53.733Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T12:50:53.733Z info vminitd: id: hello starting I/O
+2026-07-06T12:50:53.733Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T12:50:53.734Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T12:50:53.734Z info vminitd: created vmexec init process
+2026-07-06T12:50:53.734Z info vminitd: id: hello starting managed process
+2026-07-06T12:50:53.740Z warning vminitd: current_bytes: 83906560, high_events_total: 2, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T12:50:53.755Z warning vminitd: current_bytes: 84148224, high_events_total: 48, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T12:50:53.775Z warning vminitd: current_bytes: 83304448, high_events_total: 53, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T12:50:53.784Z info vminitd: id: hello, pid: 111 got back pid data
+2026-07-06T12:50:53.784Z info vminitd: id: hello, pid: 111 sending pid acknowledgement
+2026-07-06T12:50:53.788Z info vminitd: id: hello, pid: 111 started managed process
+2026-07-06T12:50:53.790Z warning vminitd: current_bytes: 82739200, high_events_total: 54, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T13:00:54.275Z info vminitd: id: hello, status: 0 managed process exit
+2026-07-06T13:00:54.277Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T13:00:54.277Z info vminitd: id: hello closing relay for StandardIO stderr
+[  600.397936] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T13:00:54.313Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.081727] random: crng init done
+[    0.083594] brd: module loaded
+[    0.084178] loop: module loaded
+[    0.084281] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.084457] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.084778] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.084942] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.085132] tun: Universal TUN/TAP device driver, 1.6
+[    0.085648] VFIO - User Level meta-driver version: 0.3
+[    0.085756] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.085796] rtc-pl031 20050000.pl031: setting system clock to 2026-07-06T13:33:46 UTC (1783344826)
+[    0.086103] xt_time: kernel timezone is -0000
+[    0.086143] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.086193] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.086259] IPVS: ipvs loaded.
+[    0.086285] IPVS: [rr] scheduler registered.
+[    0.086318] IPVS: [wrr] scheduler registered.
+[    0.086346] IPVS: [lc] scheduler registered.
+[    0.086375] IPVS: [wlc] scheduler registered.
+[    0.086403] IPVS: [fo] scheduler registered.
+[    0.086430] IPVS: [ovf] scheduler registered.
+[    0.086459] IPVS: [lblc] scheduler registered.
+[    0.086482] IPVS: [lblcr] scheduler registered.
+[    0.086508] IPVS: [dh] scheduler registered.
+[    0.086522] IPVS: [sh] scheduler registered.
+[    0.086549] IPVS: [sed] scheduler registered.
+[    0.086563] IPVS: [nq] scheduler registered.
+[    0.086590] IPVS: [sip] pe registered.
+[    0.086630] Initializing XFRM netlink socket
+[    0.086661] NET: Registered PF_INET6 protocol family
+[    0.086882] Segment Routing with IPv6
+[    0.086913] In-situ OAM (IOAM) with IPv6
+[    0.086949] NET: Registered PF_PACKET protocol family
+[    0.086982] Bridge firewalling registered
+[    0.087006] 9pnet: Installing 9P2000 support
+[    0.087081] NET: Registered PF_VSOCK protocol family
+[    0.087868] registered taskstats version 1
+[    0.088764] Demotion targets for Node 0: null
+[    0.089247] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.090120] clk: Disabling unused clocks
+[    0.090186] check access for rdinit=/init failed: -2, ignoring
+[    0.090798] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.090850] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.091062] devtmpfs: mounted
+[    0.091156] Freeing unused kernel memory: 1920K
+[    0.091398] Run /sbin/vminitd as init process
+2026-07-06T13:33:46.525Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-06T13:33:46.526Z info vminitd: mounting /run
+2026-07-06T13:33:46.526Z info vminitd: mounting /sys
+2026-07-06T13:33:46.526Z info vminitd: mounting /sys/fs/cgroup
+2026-07-06T13:33:46.550Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-06T13:33:46.552Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-06T13:33:46.552Z info vminitd: serving vminitd API
+2026-07-06T13:33:46.552Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-06T13:33:46.554Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.172455] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-06T13:33:46.693Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-06T13:33:46.693Z info vminitd: id: hello starting I/O
+2026-07-06T13:33:46.693Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-06T13:33:46.693Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-06T13:33:46.693Z info vminitd: created vmexec init process
+2026-07-06T13:33:46.694Z info vminitd: id: hello starting managed process
+2026-07-06T13:33:46.700Z warning vminitd: current_bytes: 83697664, high_events_total: 1, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T13:33:46.715Z warning vminitd: current_bytes: 83415040, high_events_total: 50, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T13:33:46.734Z warning vminitd: current_bytes: 83591168, high_events_total: 54, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T13:33:46.739Z info vminitd: id: hello, pid: 110 got back pid data
+2026-07-06T13:33:46.739Z info vminitd: id: hello, pid: 110 sending pid acknowledgement
+2026-07-06T13:33:46.742Z info vminitd: id: hello, pid: 110 started managed process
+2026-07-06T13:33:46.751Z warning vminitd: current_bytes: 82714624, high_events_total: 55, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-06T13:43:47.173Z info vminitd: id: hello, status: 0 managed process exit
+2026-07-06T13:43:47.176Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-06T13:43:47.176Z info vminitd: id: hello closing relay for StandardIO stderr
+[  600.361856] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-06T13:43:47.210Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
+[    0.073368] random: crng init done
+[    0.074911] brd: module loaded
+[    0.075540] loop: module loaded
+[    0.075668] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.075812] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.076068] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.076207] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.076398] tun: Universal TUN/TAP device driver, 1.6
+[    0.076915] VFIO - User Level meta-driver version: 0.3
+[    0.077028] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.077066] rtc-pl031 20050000.pl031: setting system clock to 2026-07-09T05:54:30 UTC (1783576470)
+[    0.077345] xt_time: kernel timezone is -0000
+[    0.077388] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.077430] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.077493] IPVS: ipvs loaded.
+[    0.077522] IPVS: [rr] scheduler registered.
+[    0.077571] IPVS: [wrr] scheduler registered.
+[    0.077602] IPVS: [lc] scheduler registered.
+[    0.077634] IPVS: [wlc] scheduler registered.
+[    0.077664] IPVS: [fo] scheduler registered.
+[    0.077702] IPVS: [ovf] scheduler registered.
+[    0.077730] IPVS: [lblc] scheduler registered.
+[    0.077891] IPVS: [lblcr] scheduler registered.
+[    0.077919] IPVS: [dh] scheduler registered.
+[    0.077944] IPVS: [sh] scheduler registered.
+[    0.077971] IPVS: [sed] scheduler registered.
+[    0.077997] IPVS: [nq] scheduler registered.
+[    0.078021] IPVS: [sip] pe registered.
+[    0.078078] Initializing XFRM netlink socket
+[    0.078130] NET: Registered PF_INET6 protocol family
+[    0.078392] Segment Routing with IPv6
+[    0.078425] In-situ OAM (IOAM) with IPv6
+[    0.078482] NET: Registered PF_PACKET protocol family
+[    0.078524] Bridge firewalling registered
+[    0.078549] 9pnet: Installing 9P2000 support
+[    0.078657] NET: Registered PF_VSOCK protocol family
+[    0.079493] registered taskstats version 1
+[    0.080373] Demotion targets for Node 0: null
+[    0.080784] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.081488] clk: Disabling unused clocks
+[    0.081551] check access for rdinit=/init failed: -2, ignoring
+[    0.082016] EXT4-fs (vda): mounted filesystem 2e8b969e-0aa8-4446-9b53-b8805dfa2ab9 ro without journal. Quota mode: disabled.
+[    0.082056] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.082232] devtmpfs: mounted
+[    0.082321] Freeing unused kernel memory: 1920K
+[    0.082567] Run /sbin/vminitd as init process
+2026-07-09T05:54:30.527Z info vminitd: built: 2026-06-01T21:32:43Z, commit: a2a1add6c7e1a1665e5397edc49d925c49090b3a, tag: 0.33.3 vminitd booting
+2026-07-09T05:54:30.527Z info vminitd: mounting /run
+2026-07-09T05:54:30.527Z info vminitd: mounting /sys
+2026-07-09T05:54:30.527Z info vminitd: mounting /sys/fs/cgroup
+2026-07-09T05:54:30.547Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-09T05:54:30.547Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-09T05:54:30.548Z info vminitd: serving vminitd API
+2026-07-09T05:54:30.548Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-09T05:54:30.550Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.187800] EXT4-fs (vdb): mounted filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f r/w without journal. Quota mode: disabled.
+2026-07-09T05:54:30.721Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello creating cgroup manager
+2026-07-09T05:54:30.722Z info vminitd: id: hello starting I/O
+2026-07-09T05:54:30.722Z info vminitd: id: hello setting up relay for StandardIO stdout
+2026-07-09T05:54:30.722Z info vminitd: id: hello setting up relay for StandardIO stderr
+2026-07-09T05:54:30.722Z info vminitd: created vmexec init process
+2026-07-09T05:54:30.722Z info vminitd: id: hello starting managed process
+2026-07-09T05:54:30.730Z warning vminitd: current_bytes: 83562496, high_events_total: 7, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-09T05:54:30.745Z warning vminitd: current_bytes: 84119552, high_events_total: 43, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-09T05:54:30.759Z warning vminitd: current_bytes: 83841024, high_events_total: 53, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-09T05:54:30.772Z info vminitd: id: hello, pid: 109 got back pid data
+2026-07-09T05:54:30.772Z info vminitd: id: hello, pid: 109 sending pid acknowledgement
+2026-07-09T05:54:30.774Z warning vminitd: current_bytes: 83759104, high_events_total: 55, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-09T05:54:30.776Z info vminitd: id: hello, pid: 109 started managed process
+2026-07-09T05:54:47.329Z info vminitd: id: hello sending signal 15 to process 109
+2026-07-09T05:54:57.792Z info vminitd: id: hello sending signal 9 to process 109
+2026-07-09T05:54:57.794Z info vminitd: id: hello, status: 137 managed process exit
+2026-07-09T05:54:57.794Z info vminitd: id: hello closing relay for StandardIO stdout
+2026-07-09T05:54:57.794Z info vminitd: id: hello closing relay for StandardIO stderr
+[   27.388960] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.
+2026-07-09T05:54:57.822Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/hello deleting cgroup manager
