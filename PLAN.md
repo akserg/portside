@@ -49,8 +49,8 @@ container service, lists real containers in a debug view.
 | ~~1.6~~ | `@Generable` diagnosis models + `LogDiagnosisService` | Per AI_INTEGRATION.md §4 |
 | ~~1.7~~ | Diagnosis UI: "Explain this crash" card with streaming render + confidence styling | prewarm() on detail-view open |
 | ~~1.8~~ | Prompt regression test suite (fixture digests → typed assertions) | Category ∈ expected set, non-empty actions |
-| 1.9 | Signing + notarization pipeline; Sparkle (or GitHub releases) auto-update decision | The polish gap competitors left open |
-| 1.10 | Homebrew tap `wharfside/homebrew-wharfside` with cask | `brew install wharfside/wharfside/wharfside` |
+| ~~1.9~~ | Signing + notarization pipeline; Sparkle (or GitHub releases) auto-update decision | The polish gap competitors left open |
+| ~~1.10~~ | Homebrew tap `wharfside/homebrew-wharfside` with cask | `brew install wharfside/wharfside/wharfside` |
 | 1.11 | README badges/screenshots, demo GIF of crash diagnosis, CONTRIBUTING.md | Hero asset for launch |
 | 1.12 | 0.1.0 release + Show HN / r/macapps / Product Hunt post | Lead with the AI demo, cite on-device privacy |
 
