@@ -1,0 +1,56 @@
+name: Bug report
+description: Something in Wharfside isn't working as expected.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: input
+    id: macos-version
+    attributes:
+      label: macOS version
+      placeholder: "e.g. macOS 26.1"
+    validations:
+      required: true
+  - type: input
+    id: wharfside-version
+    attributes:
+      label: Wharfside version
+      placeholder: "e.g. 0.1.2 — see Wharfside ▸ About Wharfside"
+    validations:
+      required: true
+  - type: input
+    id: runtime-version
+    attributes:
+      label: "`container --version`"
+      placeholder: "e.g. 1.0.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: apple-intelligence
+    attributes:
+      label: Apple Intelligence enabled?
+      options:
+        - "Yes"
+        - "No"
+        - "Not sure / not applicable"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: What did you do, in order?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: false
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include the app's error text if there was one.
+    validations:
+      required: true

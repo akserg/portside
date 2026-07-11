@@ -1,0 +1,65 @@
+name: Wrong diagnosis
+description: The AI diagnosis card said something incorrect or unhelpful about a crashed container.
+title: "[Diagnosis] "
+labels: ["diagnosis-quality"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks — every report here becomes a candidate regression fixture, which is how
+        Wharfside's diagnosis quality actually improves over time.
+
+        **Before you paste anything below**: the diagnosis report contains a log digest,
+        and log fragments can contain secrets (connection strings, tokens in error text).
+        Review the pasted report and redact anything sensitive before submitting.
+  - type: input
+    id: macos-version
+    attributes:
+      label: macOS version
+      placeholder: "e.g. macOS 26.1"
+    validations:
+      required: true
+  - type: input
+    id: wharfside-version
+    attributes:
+      label: Wharfside version
+      placeholder: "e.g. 0.1.2 — see Wharfside ▸ About Wharfside"
+    validations:
+      required: true
+  - type: input
+    id: runtime-version
+    attributes:
+      label: "`container --version`"
+      placeholder: "e.g. 1.0.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: apple-intelligence
+    attributes:
+      label: Apple Intelligence enabled?
+      options:
+        - "Yes"
+        - "No"
+        - "Not sure"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect the diagnosis to be?
+      description: >
+        The actual root cause if you know it, or what's obviously wrong with the
+        summary, category, or suggested actions Wharfside gave.
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Diagnosis report
+      description: >
+        On the diagnosis card, click "Copy report" (or use its right-click menu), then
+        paste the result here. Review it first — the digest may contain log fragments
+        with secrets; redact anything sensitive before submitting.
+      render: markdown
+    validations:
+      required: true

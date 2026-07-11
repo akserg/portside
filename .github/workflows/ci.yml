@@ -85,6 +85,14 @@ jobs:
           brew install swiftlint
           swiftlint --strict --reporter github-actions-logging
 
+      - name: Validate issue template YAML
+        run: |
+          for f in .github/ISSUE_TEMPLATE/*.yml; do
+            ruby -ryaml -e "YAML.load_file('$f')" \
+              && echo "OK: $f" \
+              || { echo "::error file=$f::invalid YAML"; exit 1; }
+          done
+
   release:
     name: Sign, Notarize & Package
     runs-on: macos-26

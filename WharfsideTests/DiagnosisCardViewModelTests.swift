@@ -145,6 +145,56 @@ struct DiagnosisCardViewModelTests {
         })
     }
 
+    @Test func copyReportReachableInResultStateAndFiresConfirmation() async throws {
+        let viewModel = makeViewModel()
+        viewModel.updateContainer(stoppedContainer(id: "app"))
+
+        viewModel.explain()
+        #expect(await TestPolling.waitUntil {
+            if case .result = viewModel.phase { return true }
+            return false
+        })
+
+        let report = viewModel.reportText()
+        #expect(report != nil)
+        #expect(report?.contains("## Wharfside diagnosis report") == true)
+        #expect(report?.contains(cardSampleDiagnosis.summary) == true)
+
+        #expect(viewModel.copyReportBannerMessage == nil)
+        viewModel.presentCopyConfirmation()
+        #expect(viewModel.copyReportBannerMessage == "Report copied — review log excerpts before sharing")
+    }
+
+    @Test func copyReportReachableInDegradedState() async throws {
+        let violating = ContainerDiagnosis(
+            summary: "Unknown failure.",
+            category: .unknown,
+            suggestedActions: ["Inspect logs"],
+            confidence: .high
+        )
+        let session = StubDiagnosisSession(mode: .emitSequence([violating, violating]))
+        let viewModel = makeViewModel(session: session)
+        viewModel.logEntriesProvider = { cardSampleEntries() }
+        viewModel.updateContainer(stoppedContainer(id: "db"))
+
+        viewModel.explain()
+        #expect(await TestPolling.waitUntil {
+            if case .result = viewModel.phase { return true }
+            return false
+        })
+
+        let report = viewModel.reportText()
+        #expect(report != nil)
+        #expect(report?.contains("Degraded: true") == true)
+    }
+
+    @Test func reportTextIsNilOutsideResultState() {
+        let viewModel = makeViewModel()
+        viewModel.updateContainer(stoppedContainer(id: "app"))
+
+        #expect(viewModel.reportText() == nil)
+    }
+
     @Test func usesBufferedEntriesBeforeColdFetch() async throws {
         let session = CapturingDiagnosisSession()
         let viewModel = makeViewModel(session: session)

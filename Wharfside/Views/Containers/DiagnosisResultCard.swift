@@ -1,5 +1,6 @@
 // Views/Containers/DiagnosisResultCard.swift
 // Issue 1.7 — typed diagnosis result rendering for DiagnosisCard.
+// Issue 1.11 — "Copy report" affordance, available in every result state (degraded included).
 
 import SwiftUI
 
@@ -10,6 +11,7 @@ struct DiagnosisResultCard: View {
     let showsRegenerate: Bool
     let isRunning: Bool
     let onRegenerate: () -> Void
+    let onCopyReport: () -> Void
 
     var body: some View {
         let diagnosis = result.diagnosis
@@ -71,6 +73,11 @@ struct DiagnosisResultCard: View {
 
                 Spacer(minLength: 0)
 
+                Button("Copy report", systemImage: "doc.on.doc", action: onCopyReport)
+                    .buttonStyle(.borderless)
+                    .font(.caption)
+                    .help("Copy a reproduction bundle (digest, diagnosis, versions) to paste into a bug report")
+
                 if showsRegenerate {
                     Button("Regenerate", systemImage: "arrow.clockwise", action: onRegenerate)
                         .buttonStyle(.borderless)
@@ -85,6 +92,9 @@ struct DiagnosisResultCard: View {
             diagnosisCardBackground(for: diagnosis.confidence, wasDegraded: result.wasDegraded),
             in: RoundedRectangle(cornerRadius: 10)
         )
+        .contextMenu {
+            Button("Copy report", systemImage: "doc.on.doc", action: onCopyReport)
+        }
     }
 
     private func summaryColor(presentation: DiagnosisPresentation) -> Color {

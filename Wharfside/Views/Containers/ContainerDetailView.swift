@@ -17,6 +17,7 @@ struct ContainerDetailView: View {
         service: any ContainerServicing,
         lifecycleObserver: ContainerLifecycleObserver,
         availability: any AvailabilityProviding,
+        reportEnvironmentProvider: @escaping () -> DiagnosisReportEnvironment = { .current(runtimeVersion: nil) },
         onBackToList: @escaping () -> Void
     ) {
         self.service = service
@@ -34,7 +35,8 @@ struct ContainerDetailView: View {
                     lifecycleObserver: lifecycleObserver
                 ),
                 containerService: service,
-                logEntriesProvider: { [] }
+                logEntriesProvider: { [] },
+                reportEnvironmentProvider: reportEnvironmentProvider
             )
         )
     }
@@ -59,6 +61,8 @@ struct ContainerDetailView: View {
         .toolbar { toolbarContent(for: viewModel.detail) }
         .safeAreaInset(edge: .top, spacing: 0) {
             if let message = viewModel.actions.actionBannerMessage {
+                ActionErrorBanner(message: message)
+            } else if let message = diagnosisCardViewModel.copyReportBannerMessage {
                 ActionErrorBanner(message: message)
             }
         }

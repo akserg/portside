@@ -1,0 +1,108 @@
+// AI/DiagnosisReportFormatter.swift
+// Issue 1.11 — renders a copyable "diagnosis report" bundle (digest + diagnosis +
+// telemetry + versions) so a wrong-diagnosis report carries what the model actually saw.
+
+import Foundation
+
+/// Version metadata attached to a diagnosis report. Built once per copy, never blocking:
+/// callers pass whatever is already cached (see `AppState.diagnosisReportEnvironment`).
+struct DiagnosisReportEnvironment: Sendable, Equatable {
+    nonisolated static let unknownVersion = "unknown"
+
+    let wharfsideVersion: String
+    let runtimeVersion: String
+    let macOSVersion: String
+    let generatedAt: Date
+
+    /// Builds the environment from live process/bundle info plus a caller-supplied runtime
+    /// version (typically a cached `SystemHealth.apiServerVersion`, or nil if unavailable).
+    nonisolated static func current(
+        runtimeVersion: String?,
+        generatedAt: Date = .now
+    ) -> DiagnosisReportEnvironment {
+        DiagnosisReportEnvironment(
+            wharfsideVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? unknownVersion,
+            runtimeVersion: runtimeVersion?.isEmpty == false ? runtimeVersion! : unknownVersion,
+            macOSVersion: macOSVersionString(),
+            generatedAt: generatedAt
+        )
+    }
+
+    nonisolated private static func macOSVersionString() -> String {
+        let version = ProcessInfo.processInfo.operatingSystemVersion
+        guard version.patchVersion != 0 else {
+            return "\(version.majorVersion).\(version.minorVersion)"
+        }
+        return "\(version.majorVersion).\(version.minorVersion).\(version.patchVersion)"
+    }
+}
+
+/// Pure function: `(DiagnosisResult, ContainerDetail, DiagnosisReportEnvironment) -> String`.
+/// Deterministic for a given input — no locale-, timezone-, or ordering-dependent output.
+enum DiagnosisReportFormatter {
+    nonisolated static func render(
+        result: DiagnosisResult,
+        container: ContainerDetail,
+        environment: DiagnosisReportEnvironment
+    ) -> String {
+        var lines: [String] = []
+        lines.append("## Wharfside diagnosis report")
+        lines.append(
+            "Wharfside \(environment.wharfsideVersion) · "
+            + "container runtime \(environment.runtimeVersion) · "
+            + "macOS \(environment.macOSVersion)"
+        )
+        lines.append(
+            "Container: \(container.id) · image: \(container.image) · status: \(container.status.rawValue)"
+        )
+        lines.append("Generated: \(isoTimestamp(environment.generatedAt))")
+        lines.append("")
+        lines.append("### Digest (what the model saw)")
+        lines.append("```")
+        lines.append(result.renderedDigest)
+        lines.append("```")
+        lines.append("")
+        lines.append("### Diagnosis (what the model said)")
+        lines.append("Summary: \(result.diagnosis.summary)")
+        lines.append(
+            "Category: \(result.diagnosis.category.rawValue) · Confidence: \(result.diagnosis.confidence.rawValue)"
+        )
+        lines.append("Suggested actions:")
+        if result.diagnosis.suggestedActions.isEmpty {
+            lines.append("(none)")
+        } else {
+            for (index, action) in result.diagnosis.suggestedActions.enumerated() {
+                lines.append("\(index + 1). \(action)")
+            }
+        }
+        lines.append(
+            "Degraded: \(result.wasDegraded) · Retries: \(result.telemetry.retryCount) · "
+            + "Violations: \(violationsSummary(result.telemetry.violations))"
+        )
+        return lines.joined(separator: "\n")
+    }
+
+    nonisolated private static func violationsSummary(_ violations: [DiagnosisViolation]) -> String {
+        guard !violations.isEmpty else { return "none" }
+        return violations.map(describe).joined(separator: "; ")
+    }
+
+    nonisolated private static func describe(_ violation: DiagnosisViolation) -> String {
+        switch violation {
+        case .unknownDespiteErrors(let errorCount):
+            return "unknownDespiteErrors(\(errorCount))"
+        case .categoryWithoutEvidence(let category):
+            return "categoryWithoutEvidence(\(category.rawValue))"
+        case .fabricatedEvidence(let term):
+            return "fabricatedEvidence(\(term))"
+        case .wrongCLIVocabulary(let action):
+            return "wrongCLIVocabulary(\(action))"
+        }
+    }
+
+    nonisolated private static func isoTimestamp(_ date: Date) -> String {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+        return formatter.string(from: date)
+    }
+}

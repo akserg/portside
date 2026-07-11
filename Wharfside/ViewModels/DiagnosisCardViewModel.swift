@@ -44,18 +44,28 @@ final class DiagnosisCardViewModel {
     private var container: ContainerDetail?
     private var resultContainerID: String?
     var logEntriesProvider: () -> [LogEntry]
+    /// Issue 1.11 — resolved lazily at copy time so the report always carries whatever
+    /// version info is cached then, without this view model owning any AppState reference.
+    private let reportEnvironmentProvider: () -> DiagnosisReportEnvironment
     private var diagnosisTask: Task<Void, Never>?
     private var prewarmTask: Task<Void, Never>?
+    private var copyReportBannerClearTask: Task<Void, Never>?
+
+    /// Transient "Report copied" confirmation, mirroring `ContainerActionCoordinator`'s
+    /// banner pattern (auto-clears; the security-review reminder is the point of showing it).
+    private(set) var copyReportBannerMessage: String?
 
     init(
         containerID: String,
         diagnosisService: LogDiagnosisService,
         containerService: any ContainerServicing,
-        logEntriesProvider: @escaping () -> [LogEntry]
+        logEntriesProvider: @escaping () -> [LogEntry],
+        reportEnvironmentProvider: @escaping () -> DiagnosisReportEnvironment = { .current(runtimeVersion: nil) }
     ) {
         self.diagnosisService = diagnosisService
         self.containerService = containerService
         self.logEntriesProvider = logEntriesProvider
+        self.reportEnvironmentProvider = reportEnvironmentProvider
     }
 
     var isEligible: Bool {
@@ -93,6 +103,8 @@ final class DiagnosisCardViewModel {
         cancelInFlightWork(resetToIdle: true)
         prewarmTask?.cancel()
         prewarmTask = nil
+        copyReportBannerClearTask?.cancel()
+        copyReportBannerClearTask = nil
     }
 
     func explain() {
@@ -108,6 +120,28 @@ final class DiagnosisCardViewModel {
     func retryAfterFailure() {
         guard !isRunning else { return }
         explain()
+    }
+
+    /// Formats the copyable report for the currently displayed result (any result state,
+    /// including degraded). Returns nil when there's no result to report on. Pure — the
+    /// caller (a View) owns the actual pasteboard write (Issue 1.11).
+    func reportText() -> String? {
+        guard case .result(let state) = phase, let container else { return nil }
+        return DiagnosisReportFormatter.render(
+            result: state.result,
+            container: container,
+            environment: reportEnvironmentProvider()
+        )
+    }
+
+    func presentCopyConfirmation() {
+        copyReportBannerClearTask?.cancel()
+        copyReportBannerMessage = "Report copied — review log excerpts before sharing"
+        copyReportBannerClearTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(5))
+            guard !Task.isCancelled else { return }
+            self?.copyReportBannerMessage = nil
+        }
     }
 
     // MARK: - Private

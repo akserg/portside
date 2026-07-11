@@ -33,6 +33,10 @@ final class AppState {
     /// Updated by `SystemServicing.health()` polling from `MainView`.
     var isServiceRunning = false
 
+    /// Last successful health check, cached for surfaces (e.g. the diagnosis report) that
+    /// need a runtime version without making their own blocking call (Issue 1.11).
+    private(set) var cachedHealth: SystemHealth?
+
     let systemService: any SystemServicing
     let containerService: any ContainerServicing
     let imageService: any ImageServicing
@@ -54,10 +58,16 @@ final class AppState {
 
     func refreshServiceStatus() async {
         do {
-            _ = try await systemService.health()
+            cachedHealth = try await systemService.health()
             isServiceRunning = true
         } catch {
             isServiceRunning = false
         }
+    }
+
+    /// Builds report metadata from whatever is already cached — never blocks the copy path
+    /// with a fresh health call (Issue 1.11).
+    var diagnosisReportEnvironment: DiagnosisReportEnvironment {
+        .current(runtimeVersion: cachedHealth?.apiServerVersion)
     }
 }

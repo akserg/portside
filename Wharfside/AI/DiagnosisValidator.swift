@@ -23,6 +23,10 @@ struct DiagnosisResult: Sendable, Equatable {
     let diagnosis: ContainerDiagnosis
     let wasDegraded: Bool
     let telemetry: DiagnosisTelemetry
+    /// Issue 1.11 — the exact `PromptRenderer` output the FINAL generation attempt received
+    /// (includes the `CORRECTION:` suffix when a retry happened). Retained for the
+    /// copyable diagnosis report; never re-derived from the digest at copy time.
+    let renderedDigest: String
 }
 
 struct DiagnosisValidator: Sendable {

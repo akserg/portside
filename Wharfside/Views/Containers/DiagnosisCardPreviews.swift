@@ -16,7 +16,8 @@ enum DiagnosisCardPreviewData {
             confidence: .high
         ),
         wasDegraded: false,
-        telemetry: .init(violations: [], retryCount: 0, wasDegraded: false)
+        telemetry: .init(violations: [], retryCount: 0, wasDegraded: false),
+        renderedDigest: "CONTAINER: db\nIMAGE: postgres:16\nLAST_ERROR:\nNo space left on device"
     )
 
     static let mediumConfidence = DiagnosisResult(
@@ -30,7 +31,8 @@ enum DiagnosisCardPreviewData {
             confidence: .medium
         ),
         wasDegraded: false,
-        telemetry: .init(violations: [], retryCount: 0, wasDegraded: false)
+        telemetry: .init(violations: [], retryCount: 0, wasDegraded: false),
+        renderedDigest: "CONTAINER: api\nIMAGE: node:20\nLAST_ERROR:\nECONNREFUSED 127.0.0.1:5432"
     )
 
     static let lowConfidence = DiagnosisResult(
@@ -44,7 +46,8 @@ enum DiagnosisCardPreviewData {
             confidence: .low
         ),
         wasDegraded: false,
-        telemetry: .init(violations: [], retryCount: 0, wasDegraded: false)
+        telemetry: .init(violations: [], retryCount: 0, wasDegraded: false),
+        renderedDigest: "CONTAINER: quiet\nIMAGE: app:1\nEXIT_CODE: 0\nCOUNTS: INFO=4"
     )
 
     static let degraded = DiagnosisResult(
@@ -59,7 +62,9 @@ enum DiagnosisCardPreviewData {
             violations: [.fabricatedEvidence(term: "disk")],
             retryCount: 1,
             wasDegraded: true
-        )
+        ),
+        renderedDigest: "CONTAINER: db\nIMAGE: postgres:16\nLAST_ERROR:\nNo space left on device"
+            + "\n\nCORRECTION: The term \"disk\" does not appear in the digest; do not mention it."
     )
 }
 

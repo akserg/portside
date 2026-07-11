@@ -25,6 +25,7 @@ extension LogDiagnosisService {
         if let result = processDiagnosis(
             first,
             context: context,
+            renderedDigest: context.renderedDigest,
             retryCount: &retryCount,
             allViolations: &allViolations
         ) {
@@ -55,6 +56,7 @@ extension LogDiagnosisService {
         if let result = processDiagnosis(
             first,
             context: context,
+            renderedDigest: context.renderedDigest,
             retryCount: &retryCount,
             allViolations: &allViolations
         ) {
@@ -115,6 +117,8 @@ extension LogDiagnosisService {
         allViolations: inout [DiagnosisViolation]
     ) async throws -> DiagnosisResult {
         let corrections = validator.correctionLines(for: allViolations, digest: context.digest)
+        // Issue 1.11: this retry prompt — not the original context.renderedDigest — is what
+        // the FINAL generation attempt actually sees, so it's what DiagnosisResult must retain.
         let retryPrompt = context.basePrompt + "\n\nCORRECTION: " + corrections.joined(separator: " ")
         retryCount = 1
 
@@ -125,6 +129,7 @@ extension LogDiagnosisService {
         if let result = processDiagnosis(
             second,
             context: context,
+            renderedDigest: retryPrompt,
             retryCount: &retryCount,
             allViolations: &allViolations
         ) {
@@ -145,13 +150,15 @@ extension LogDiagnosisService {
                 violations: allViolations,
                 retryCount: retryCount,
                 wasDegraded: true
-            )
+            ),
+            renderedDigest: retryPrompt
         )
     }
 
     private func processDiagnosis(
         _ raw: ContainerDiagnosis,
         context: DiagnosisContext,
+        renderedDigest: String,
         retryCount: inout Int,
         allViolations: inout [DiagnosisViolation]
     ) -> DiagnosisResult? {
@@ -179,7 +186,8 @@ extension LogDiagnosisService {
                 violations: violations,
                 retryCount: retryCount,
                 wasDegraded: false
-            )
+            ),
+            renderedDigest: renderedDigest
         )
     }
 
