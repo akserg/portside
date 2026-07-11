@@ -169,16 +169,27 @@ actor XPCContainerService: ContainerServicing {
             throw WharfsideError.apiError("No log handles returned for container \(id)")
         }
 
-        while !Task.isCancelled {
+        while !Task.isCancelled, !labeledHandles.isEmpty {
+            var stillReadable: [(LogSource, FileHandle)] = []
             for (logSource, handle) in labeledHandles {
-                let data = handle.availableData
-                if !data.isEmpty {
-                    continuation.yield(LogChunk(source: logSource, data: data))
+                do {
+                    if let data = try handle.read(upToCount: Self.logReadChunkSize), !data.isEmpty {
+                        continuation.yield(LogChunk(source: logSource, data: data))
+                    }
+                    stillReadable.append((logSource, handle))
+                } catch {
+                    // The underlying fd is gone — e.g. a long-stopped container's boot-log pipe.
+                    // `availableData`/`readDataOfLength` would raise an uncatchable NSException
+                    // here; `read(upToCount:)` throws instead, so we can drop the dead handle
+                    // and keep tailing any others rather than crashing the app.
                 }
             }
+            labeledHandles = stillReadable
             try await Task.sleep(for: .milliseconds(250))
         }
     }
+
+    nonisolated private static let logReadChunkSize = 1 << 16
 }
 
 /// Thread-safe holder so `onTermination` can close log `FileHandle`s when the stream is cancelled.
