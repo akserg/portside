@@ -92,10 +92,11 @@ extension LogDiagnosisService {
 
     func buildContext(container: ContainerDetail, entries: [LogEntry]) async -> DiagnosisContext {
         let restartCount = await lifecycleObserver.restartCount(for: container.id)
+        let exitStatus = await resolvedExitStatus(for: container, entries: entries)
         let context = ContainerContext(
             containerName: container.id,
             image: container.image,
-            exitCode: container.exitCode,
+            exitStatus: exitStatus,
             restartCount: restartCount
         )
         let window = digestWindow(for: container)
@@ -236,5 +237,23 @@ extension LogDiagnosisService {
         case .unknown:
             DigestWindow(description: "available logs")
         }
+    }
+
+    /// Fetches init-process exit status at diagnosis time; boot-log fallback when runtime is gone.
+    func resolvedExitStatus(for container: ContainerDetail, entries: [LogEntry]) async -> ExitStatus {
+        switch container.status {
+        case .running:
+            return .unavailable(reason: .stillRunning)
+        case .stopping, .stopped, .unknown:
+            break
+        }
+
+        let runtime: ExitStatus
+        if let containerService {
+            runtime = await containerService.exitStatus(id: container.id)
+        } else {
+            runtime = container.exitStatus
+        }
+        return ExitStatusResolver.resolve(runtime: runtime, bootEntries: entries)
     }
 }

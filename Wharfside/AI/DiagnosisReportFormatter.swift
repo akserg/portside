@@ -10,22 +10,39 @@ struct DiagnosisReportEnvironment: Sendable, Equatable {
     nonisolated static let unknownVersion = "unknown"
 
     let wharfsideVersion: String
-    let runtimeVersion: String
+    /// e.g. `1.0.0 (commit ee848e3)` from cached `SystemHealth`.
+    let runtimeVersionLabel: String
     let macOSVersion: String
     let generatedAt: Date
 
-    /// Builds the environment from live process/bundle info plus a caller-supplied runtime
-    /// version (typically a cached `SystemHealth.apiServerVersion`, or nil if unavailable).
+    /// Builds the environment from live process/bundle info plus cached runtime metadata.
     nonisolated static func current(
         runtimeVersion: String?,
+        runtimeCommit: String? = nil,
         generatedAt: Date = .now
     ) -> DiagnosisReportEnvironment {
         DiagnosisReportEnvironment(
             wharfsideVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? unknownVersion,
-            runtimeVersion: runtimeVersion?.isEmpty == false ? runtimeVersion! : unknownVersion,
+            runtimeVersionLabel: formatRuntimeLabel(version: runtimeVersion, commit: runtimeCommit),
             macOSVersion: macOSVersionString(),
             generatedAt: generatedAt
         )
+    }
+
+    nonisolated static func formatRuntimeLabel(version: String?, commit: String?) -> String {
+        guard let version, !version.isEmpty else { return unknownVersion }
+        let semver = extractSemver(from: version)
+        guard let commit, !commit.isEmpty else { return semver }
+        let shortCommit = String(commit.prefix(7))
+        return "\(semver) (commit \(shortCommit))"
+    }
+
+    nonisolated private static func extractSemver(from versionString: String) -> String {
+        let pattern = #/(\d+\.\d+\.\d+)/#
+        if let match = versionString.firstMatch(of: pattern) {
+            return String(match.1)
+        }
+        return versionString
     }
 
     nonisolated private static func macOSVersionString() -> String {
@@ -49,7 +66,7 @@ enum DiagnosisReportFormatter {
         lines.append("## Wharfside diagnosis report")
         lines.append(
             "Wharfside \(environment.wharfsideVersion) · "
-            + "container runtime \(environment.runtimeVersion) · "
+            + "container runtime \(environment.runtimeVersionLabel) · "
             + "macOS \(environment.macOSVersion)"
         )
         lines.append(

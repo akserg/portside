@@ -6,6 +6,7 @@ import ContainerizationOCI
 import Foundation
 import MachineAPIClient
 import SystemPackage
+import WharfsideAnalysis
 
 enum RuntimeModelMapping {
     nonisolated static func containerSummary(from snapshot: ContainerSnapshot) -> ContainerSummary {
@@ -37,7 +38,9 @@ enum RuntimeModelMapping {
             command: [process.executable] + process.arguments,
             createdAt: snapshot.configuration.creationDate,
             startedAt: snapshot.startedDate,
-            exitCode: nil,
+            // `ContainerSnapshot` (pinned container revision) has no exit-status field — fetch via
+            // `containerWait` at diagnosis time (`ContainerServicing.exitStatus`).
+            exitStatus: .unavailable(reason: .noEvidence),
             restartCount: 0,
             ports: snapshot.configuration.publishedPorts.map(portBinding(from:)),
             mounts: snapshot.configuration.mounts.map(mount(from:)),

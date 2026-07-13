@@ -14,7 +14,7 @@ final class MockContainerService: ContainerServicing, @unchecked Sendable {
         command: ["/bin/sh"],
         createdAt: Date(timeIntervalSince1970: 1_700_000_000),
         startedAt: nil,
-        exitCode: nil,
+        exitStatus: .unavailable(reason: .noEvidence),
         restartCount: 0,
         ports: [],
         mounts: [],
@@ -85,6 +85,23 @@ final class MockContainerService: ContainerServicing, @unchecked Sendable {
             return detail
         }
         return detail
+    }
+
+    var exitStatusByID: [String: WharfsideAnalysis.ExitStatus] = [:]
+    var defaultExitStatus: WharfsideAnalysis.ExitStatus = .unavailable(reason: .noEvidence)
+    private(set) var exitStatusCallCount = 0
+    private(set) var lastExitStatusID: String?
+
+    func exitStatus(id: String) async -> WharfsideAnalysis.ExitStatus {
+        exitStatusCallCount += 1
+        lastExitStatusID = id
+        if let status = exitStatusByID[id] {
+            return status
+        }
+        if let detail = detailsByID[id] {
+            return detail.exitStatus
+        }
+        return defaultExitStatus
     }
 
     func create(id: String, image: String, command: [String]) async throws {}
@@ -161,7 +178,7 @@ extension ContainerDetail {
         status: ContainerRuntimeStatus = .running,
         createdAt: Date = Date(timeIntervalSince1970: 1_700_000_000),
         startedAt: Date? = Date(timeIntervalSince1970: 1_700_010_000),
-        exitCode: Int32? = nil,
+        exitStatus: WharfsideAnalysis.ExitStatus = .unavailable(reason: .noEvidence),
         restartCount: Int = 0,
         ports: [ContainerPortBinding] = [
             ContainerPortBinding(hostAddress: "0.0.0.0", hostPort: 8080, containerPort: 80, proto: "tcp")
@@ -189,7 +206,7 @@ extension ContainerDetail {
             command: ["/bin/sh"],
             createdAt: createdAt,
             startedAt: startedAt,
-            exitCode: exitCode,
+            exitStatus: exitStatus,
             restartCount: restartCount,
             ports: ports,
             mounts: mounts,

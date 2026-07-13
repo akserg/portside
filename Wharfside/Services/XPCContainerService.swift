@@ -23,8 +23,47 @@ actor XPCContainerService: ContainerServicing {
     func get(id: String) async throws -> ContainerDetail {
         try await connection.withContainerClient(retryOnInterrupt: true) { client in
             let snapshot = try await client.get(id: id)
-            return RuntimeModelMapping.containerDetail(from: snapshot)
+            var detail = RuntimeModelMapping.containerDetail(from: snapshot)
+            if snapshot.status == .stopped {
+                let status = await exitStatus(id: id)
+                detail = detail.replacingExitStatus(status)
+            }
+            return detail
         }
+    }
+
+    func exitStatus(id: String) async -> WharfsideAnalysis.ExitStatus {
+        let deadline = ContinuousClock.now + Self.exitStatusDeadline
+        var lastReason: WharfsideAnalysis.ExitStatusUnavailableReason = .runtimeGone
+
+        while ContinuousClock.now < deadline {
+            do {
+                let code = try await connection.fetchInitProcessExitCode(containerID: id)
+                return .known(code, source: .runtime)
+            } catch {
+                let mapped = ErrorMapper.map(error)
+                switch mapped {
+                case .serviceNotRunning:
+                    return .unavailable(reason: .noEvidence)
+                case .notFound:
+                    return .unavailable(reason: .noEvidence)
+                case .invalidState(let message)
+                    where message.contains("no runtime client") || message.contains("stopped"):
+                    return .unavailable(reason: .runtimeGone)
+                case .connectionFailed:
+                    lastReason = .runtimeGone
+                case .apiError(let message), .invalidArgument(let message), .invalidState(let message),
+                     .invalidOperation(let message):
+                    if message.contains("no runtime client") || message.contains("stopped") {
+                        return .unavailable(reason: .runtimeGone)
+                    }
+                    lastReason = .noEvidence
+                }
+            }
+            try? await Task.sleep(for: Self.exitStatusRetryInterval)
+        }
+
+        return .unavailable(reason: lastReason)
     }
 
     func create(id: String, image: String, command: [String]) async throws {
@@ -190,6 +229,8 @@ actor XPCContainerService: ContainerServicing {
     }
 
     nonisolated private static let logReadChunkSize = 1 << 16
+    nonisolated private static let exitStatusDeadline: Duration = .milliseconds(500)
+    nonisolated private static let exitStatusRetryInterval: Duration = .milliseconds(50)
 }
 
 /// Thread-safe holder so `onTermination` can close log `FileHandle`s when the stream is cancelled.

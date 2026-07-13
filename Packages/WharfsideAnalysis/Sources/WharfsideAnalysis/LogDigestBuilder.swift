@@ -123,7 +123,7 @@ public struct LogDigestBuilder: Sendable {
         LogDigest(
             containerName: context.containerName,
             image: context.image,
-            exitCode: context.exitCode,
+            exitStatus: context.exitStatus,
             windowDescription: window.description,
             counts: stats.counts,
             topPatterns: content.patterns,
@@ -162,7 +162,7 @@ public struct LogDigestBuilder: Sendable {
         return LogDigest(
             containerName: digest.containerName,
             image: digest.image,
-            exitCode: digest.exitCode,
+            exitStatus: digest.exitStatus,
             windowDescription: digest.windowDescription,
             counts: digest.counts,
             topPatterns: patterns,
@@ -243,7 +243,7 @@ public struct LogDigestBuilder: Sendable {
         LogDigest(
             containerName: digest.containerName,
             image: digest.image,
-            exitCode: digest.exitCode,
+            exitStatus: digest.exitStatus,
             windowDescription: digest.windowDescription,
             counts: digest.counts,
             topPatterns: patterns,

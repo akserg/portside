@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		167298AF2FFBE82200F394C6 /* ContainerAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D12FF9040000D04AFD /* ContainerAPIClient */; };
 		167298B02FFBE82200F394C6 /* MachineAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D22FF9040000D04AFD /* MachineAPIClient */; };
+		167298B12FFBE82200F394C6 /* ContainerXPC in Frameworks */ = {isa = PBXBuildFile; productRef = C1D2E3F42FF9050000D04AFD /* ContainerXPC */; };
 		B2C3D412FFBE82200F394C6 /* WharfsideAnalysis in Frameworks */ = {isa = PBXBuildFile; productRef = B2C3D422FF9040000D04AFD /* WharfsideAnalysis */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +60,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				167298B02FFBE82200F394C6 /* MachineAPIClient in Frameworks */,
+				167298B12FFBE82200F394C6 /* ContainerXPC in Frameworks */,
 				167298AF2FFBE82200F394C6 /* ContainerAPIClient in Frameworks */,
 				B2C3D412FFBE82200F394C6 /* WharfsideAnalysis in Frameworks */,
 			);
@@ -122,6 +124,7 @@
 			name = Wharfside;
 			packageProductDependencies = (
 				A1B2C3D12FF9040000D04AFD /* ContainerAPIClient */,
+				C1D2E3F42FF9050000D04AFD /* ContainerXPC */,
 				A1B2C3D22FF9040000D04AFD /* MachineAPIClient */,
 				B2C3D422FF9040000D04AFD /* WharfsideAnalysis */,
 			);
@@ -625,6 +628,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B2C3D402FF9040000D04AFD /* XCLocalSwiftPackageReference "Packages/WharfsideAnalysis" */;
 			productName = WharfsideAnalysis;
+		};
+		C1D2E3F42FF9050000D04AFD /* ContainerXPC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1B2C3D02FF9040000D04AFD /* XCRemoteSwiftPackageReference "container" */;
+			productName = ContainerXPC;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

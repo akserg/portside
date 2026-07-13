@@ -151,14 +151,20 @@ Also in this window: #33 docs site (feature tour + AI architecture/privacy page)
    The moat check is specific: does it use FoundationModels for diagnosis?
 2. **Apple ships an official GUI or builds diagnosis into `container`** — existential;
    mitigation is speed, the rulebook corpus, and the community flywheel.
-3. **FoundationModels quality on digests** — improved outlook: WWDC26 model is better
+3. **`container` runtime API churn** — **ongoing**, not frozen. The 0.x line (through
+   0.12.3) shipped breaking API markers most releases; **1.0.0** (Jun 2026) reset semver
+   and dropped 0.x XPC compatibility; **1.1.0** is already out. Wharfside pins an SPM
+   revision; users run daemons across several of these. Mitigation: `ContainerServicing`
+   protocol boundary, boot-log evidence over opportunistic XPC routes (exit status, stop
+   timing), and daemon version + commit in every copied diagnosis report.
+4. **FoundationModels quality on digests** — improved outlook: WWDC26 model is better
    at logic/tool-calling, ~20B-class on M3/M4 Macs; token-counting APIs let the digest
    size itself to hardware. Still: if quality disappoints, lean on rules and reduce AI
    claims honestly.
-4. **PCC entitlement uncertainty** — free PCC tier is defined in App Store terms
+5. **PCC entitlement uncertainty** — free PCC tier is defined in App Store terms
    (Small Business Program, <2M App Store downloads); Wharfside is Developer ID-only.
    Timeboxed spike before ever claiming anything PCC-based. On-device path unaffected.
-5. **Prompt injection via logs** (activates in M4) — logs are attacker-controlled;
+6. **Prompt injection via logs** (activates in M4) — logs are attacker-controlled;
    the confirmation queue is a security boundary and is tested as one.
-6. **Solo-dev burnout** — milestones are cut lines, not commitments. 0.1.1 + launch
+7. **Solo-dev burnout** — milestones are cut lines, not commitments. 0.1.1 + launch
    alone is a respectable public project; everything after is optional in order.

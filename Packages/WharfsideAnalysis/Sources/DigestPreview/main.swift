@@ -21,7 +21,7 @@ struct DigestPreview {
                 context: ContainerContext(
                     containerName: containerName,
                     image: image,
-                    exitCode: 1,
+                    exitStatus: .known(1, source: .runtime),
                     restartCount: 0
                 ),
                 window: DigestWindow(description: "full fixture log")

@@ -3,6 +3,7 @@
 
 import Foundation
 import Testing
+import WharfsideAnalysis
 @testable import Wharfside
 
 @Suite
@@ -132,17 +133,25 @@ struct DiagnosisReportFormatterTests {
 
     @Test func unknownRuntimeVersionFallsBackToUnknown() {
         let environment = DiagnosisReportEnvironment.current(runtimeVersion: nil, generatedAt: .now)
-        #expect(environment.runtimeVersion == DiagnosisReportEnvironment.unknownVersion)
+        #expect(environment.runtimeVersionLabel == DiagnosisReportEnvironment.unknownVersion)
     }
 
     @Test func emptyRuntimeVersionFallsBackToUnknown() {
         let environment = DiagnosisReportEnvironment.current(runtimeVersion: "", generatedAt: .now)
-        #expect(environment.runtimeVersion == DiagnosisReportEnvironment.unknownVersion)
+        #expect(environment.runtimeVersionLabel == DiagnosisReportEnvironment.unknownVersion)
     }
 
-    @Test func presentRuntimeVersionIsUsedVerbatim() {
+    @Test func presentRuntimeVersionWithoutCommitUsesSemverOnly() {
         let environment = DiagnosisReportEnvironment.current(runtimeVersion: "1.0.0", generatedAt: .now)
-        #expect(environment.runtimeVersion == "1.0.0")
+        #expect(environment.runtimeVersionLabel == "1.0.0")
+    }
+
+    @Test func runtimeVersionIncludesShortCommitWhenPresent() {
+        let label = DiagnosisReportEnvironment.formatRuntimeLabel(
+            version: "apiserver 1.0.0 build 42",
+            commit: "ee848e3abc123"
+        )
+        #expect(label == "1.0.0 (commit ee848e3)")
     }
 }
 
@@ -158,7 +167,7 @@ private func sampleContainer(
         command: ["postgres"],
         createdAt: Date(timeIntervalSince1970: 1_700_000_000),
         startedAt: nil,
-        exitCode: 1,
+        exitStatus: .known(1, source: .runtime),
         restartCount: 0,
         ports: [],
         mounts: [],
@@ -170,7 +179,7 @@ private func sampleContainer(
 private func sampleEnvironment() -> DiagnosisReportEnvironment {
     DiagnosisReportEnvironment(
         wharfsideVersion: "1.0",
-        runtimeVersion: "1.0.0",
+        runtimeVersionLabel: "1.0.0",
         macOSVersion: "26.0",
         generatedAt: Date(timeIntervalSince1970: 1_700_000_000)
     )

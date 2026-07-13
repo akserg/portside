@@ -303,5 +303,6 @@ private struct MockContainerService: ContainerServicing {
     func exec(id: String, command: [String]) async throws -> ExecResult {
         ExecResult(exitCode: 0, stdout: "", stderr: "")
     }
+    func exitStatus(id: String) async -> ExitStatus { .unavailable(reason: .noEvidence) }
 }
 #endif

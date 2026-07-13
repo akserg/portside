@@ -28,7 +28,7 @@ public struct LogPattern: Sendable, Equatable {
 public struct LogDigest: Sendable, Equatable {
     public let containerName: String
     public let image: String
-    public let exitCode: Int32?
+    public let exitStatus: ExitStatus
     public let windowDescription: String
     public let counts: [String: Int]
     public let topPatterns: [LogPattern]
@@ -48,7 +48,7 @@ public struct LogDigest: Sendable, Equatable {
     public init(
         containerName: String,
         image: String,
-        exitCode: Int32?,
+        exitStatus: ExitStatus,
         windowDescription: String,
         counts: [String: Int],
         topPatterns: [LogPattern],
@@ -63,7 +63,7 @@ public struct LogDigest: Sendable, Equatable {
     ) {
         self.containerName = containerName
         self.image = image
-        self.exitCode = exitCode
+        self.exitStatus = exitStatus
         self.windowDescription = windowDescription
         self.counts = counts
         self.topPatterns = topPatterns

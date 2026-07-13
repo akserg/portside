@@ -32,7 +32,8 @@ struct ContainerDetailView: View {
                 containerID: containerID,
                 diagnosisService: LogDiagnosisService(
                     availability: availability,
-                    lifecycleObserver: lifecycleObserver
+                    lifecycleObserver: lifecycleObserver,
+                    containerService: service
                 ),
                 containerService: service,
                 logEntriesProvider: { [] },

@@ -1,0 +1,7 @@
+@boot
+2026-07-09T05:54:30.774Z warning vminitd: current_bytes: 83759104, high_events_total: 55, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-09T05:54:30.776Z info vminitd: id: hello, pid: 109 started managed process
+2026-07-09T05:54:47.329Z info vminitd: id: hello sending signal 15 to process 109
+2026-07-09T05:54:57.792Z info vminitd: id: hello sending signal 9 to process 109
+2026-07-09T05:54:57.794Z info vminitd: id: hello, status: 137 managed process exit
+2026-07-09T05:54:58.100Z info vminitd: id: hello, status: 0 managed process exit

@@ -284,7 +284,7 @@ extension DiagnosisCardViewModel {
                 command: ["postgres"],
                 createdAt: .now,
                 startedAt: nil,
-                exitCode: 1,
+                exitStatus: .known(1, source: .runtime),
                 restartCount: 0,
                 ports: [],
                 mounts: [],
@@ -316,5 +316,6 @@ private struct PreviewLogContainerService: ContainerServicing {
     func exec(id: String, command: [String]) async throws -> ExecResult {
         ExecResult(exitCode: 0, stdout: "", stderr: "")
     }
+    func exitStatus(id: String) async -> ExitStatus { .unavailable(reason: .noEvidence) }
 }
 #endif

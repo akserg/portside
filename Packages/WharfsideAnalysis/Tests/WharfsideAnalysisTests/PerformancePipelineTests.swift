@@ -21,9 +21,15 @@ struct PerformancePipelineTests {
             return "failure \(index) host=\(host)"
         }
 
+        let context = ContainerContext(
+            containerName: "noisy",
+            image: "app:latest",
+            exitStatus: .known(137, source: .runtime),
+            restartCount: 5
+        )
         let digest = LogDigestBuilder(tokenBudget: 1500).build(
             logText: text,
-            context: ContainerContext(containerName: "noisy", image: "app:latest", exitCode: 137, restartCount: 5),
+            context: context,
             window: DigestWindow(description: "full log")
         )
 
@@ -39,9 +45,15 @@ struct PerformancePipelineTests {
         let builder = LogDigestBuilder()
 
         let start = ContinuousClock.now
+        let context = ContainerContext(
+            containerName: "perf",
+            image: "app:latest",
+            exitStatus: .unavailable(reason: .noEvidence),
+            restartCount: 0
+        )
         _ = builder.build(
             logText: text,
-            context: ContainerContext(containerName: "perf", image: "app:latest", exitCode: nil, restartCount: 0),
+            context: context,
             window: DigestWindow(description: "full log")
         )
         let elapsed = start.duration(to: ContinuousClock.now)

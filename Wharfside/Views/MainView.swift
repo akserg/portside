@@ -13,8 +13,15 @@ struct MainView: View {
         NavigationSplitView {
             Sidebar(selection: $appState.selectedSection)
         } detail: {
-            detailView(for: appState.selectedSection)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            VStack(alignment: .leading, spacing: 0) {
+                if appState.isPreOnePointZeroDaemon {
+                    PreOnePointZeroDaemonBanner()
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                }
+                detailView(for: appState.selectedSection)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            }
         }
         .navigationSplitViewStyle(.balanced)
         .navigationTitle(appState.selectedSection.rawValue)

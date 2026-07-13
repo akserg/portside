@@ -238,7 +238,7 @@ struct DiagnosisValidator: Sendable {
         let errorCount = signalCount(in: digest)
         var parts: [String] = []
         parts.append("Logs show \(errorCount) ERROR/WARN line(s)")
-        if let exitCode = digest.exitCode {
+        if case .known(let exitCode, _) = digest.exitStatus {
             parts.append("exit code \(exitCode)")
         }
         if let lastError = digest.lastError {

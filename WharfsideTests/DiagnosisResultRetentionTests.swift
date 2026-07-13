@@ -90,7 +90,7 @@ private func sampleDetail() -> ContainerDetail {
     command: ["app"],
     createdAt: .now,
     startedAt: nil,
-    exitCode: nil,
+    exitStatus: .unavailable(reason: .noEvidence),
     restartCount: 0,
     ports: [],
     mounts: [],

@@ -48,6 +48,17 @@ struct ContainerIntegrationTests {
             _ = try? await logTask.value
 
             try await service.stop(id: containerID, timeout: 5)
+
+            let exitStatus = await service.exitStatus(id: containerID)
+            if case .unavailable(.runtimeGone) = exitStatus {
+                // Expected after stop completes — init exit is recovered from boot log at diagnosis time (B1.1).
+            } else if case .known(let code, source: .runtime) = exitStatus {
+                #expect(code == 137 || code == 143 || code == 0,
+                        "transient runtime exit during stop, got \(code)")
+            } else {
+                Issue.record("expected runtimeGone after stop (or transient known runtime), got \(exitStatus)")
+            }
+
             try await service.delete(id: containerID, force: false)
         } catch {
             try? await service.stop(id: containerID, timeout: 1)

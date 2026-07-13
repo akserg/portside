@@ -68,6 +68,14 @@ final class AppState {
     /// Builds report metadata from whatever is already cached — never blocks the copy path
     /// with a fresh health call (Issue 1.11).
     var diagnosisReportEnvironment: DiagnosisReportEnvironment {
-        .current(runtimeVersion: cachedHealth?.apiServerVersion)
+        .current(
+            runtimeVersion: cachedHealth?.apiServerVersion,
+            runtimeCommit: cachedHealth?.apiServerCommit
+        )
+    }
+
+    /// True when the connected apiserver predates the 1.0 semver line (exit-status surface differs).
+    var isPreOnePointZeroDaemon: Bool {
+        DaemonVersionPolicy.isPreOnePointZero(apiServerVersion: cachedHealth?.apiServerVersion)
     }
 }
