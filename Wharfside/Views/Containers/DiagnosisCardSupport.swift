@@ -67,6 +67,7 @@ struct DiagnosisPresentation {
         if result.wasDegraded || diagnosis.confidence == .low {
             return Color.secondary.opacity(0.12)
         }
+        // Orderly stop stays informational blue — not brand amber (warning-adjacent).
         if diagnosis.category == .stopped {
             return Color.blue.opacity(0.12)
         }

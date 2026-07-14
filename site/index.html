@@ -4,13 +4,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Wharfside — the AI-native container manager for macOS</title>
+    <title>Wharfside — on-device AI crash diagnosis for Apple's container runtime</title>
     <meta name="description"
-        content="A native macOS app for Apple's container runtime with on-device AI: one-click crash diagnosis, natural-language commands, and nothing ever leaves your Mac.">
+        content="Wharfside explains why your containers crashed. On-device AI diagnosis for Apple's container runtime on macOS — no API keys, no cloud, logs never leave your Mac.">
     <meta property="og:title" content="Wharfside">
     <meta property="og:description"
-        content="The AI-native container manager for macOS. On-device intelligence, no API keys, no cloud.">
+        content="Explains why your containers crashed. On-device AI diagnosis for Apple's container runtime — no API keys, no cloud.">
     <meta property="og:url" content="https://wharfside.app">
+    <meta property="og:image" content="https://wharfside.app/assets/diagnosis-hero.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -176,188 +177,35 @@
             font-size: 13px;
         }
 
-        /* ---------- app window (signature) ---------- */
-        .window-frame {
+        /* ---------- hero shots (real app captures) ---------- */
+        .shot-frame {
             margin: 56px 0 0;
-            perspective: 1200px;
         }
 
-        .window {
-            background: var(--surface);
+        .shot-frame img {
+            display: block;
+            width: 100%;
+            height: auto;
             border: 1px solid var(--line);
             border-radius: 12px;
             box-shadow: 0 30px 80px rgba(0, 0, 0, .5), 0 2px 8px rgba(0, 0, 0, .4);
-            overflow: hidden;
-            font-size: 13px;
         }
 
-        .titlebar {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 14px;
-            border-bottom: 1px solid var(--line);
-            background: var(--raised);
-        }
-
-        .traffic {
-            display: flex;
-            gap: 7px;
-        }
-
-        .traffic span {
-            width: 11px;
-            height: 11px;
-            border-radius: 50%;
-            display: block;
-        }
-
-        .traffic .r {
-            background: #FF5F57;
-        }
-
-        .traffic .y {
-            background: #FEBC2E;
-        }
-
-        .traffic .g {
-            background: #28C840;
-        }
-
-        .titlebar .title {
+        .shot-frame figcaption {
+            margin-top: 12px;
             color: var(--dim);
-            font-size: 12px;
-            margin-left: 8px;
-        }
-
-        .win-body {
-            display: grid;
-            grid-template-columns: 190px 1fr;
-            min-height: 380px;
-        }
-
-        .win-side {
-            border-right: 1px solid var(--line);
-            padding: 12px 8px;
-            background: var(--raised);
-        }
-
-        .side-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--dim);
-            padding: 6px 10px;
-            border-radius: 6px;
             font-size: 13px;
+            text-align: center;
         }
 
-        .side-item.sel {
-            background: #23405C;
-            color: #fff;
-        }
-
-        .win-main {
-            padding: 16px 18px;
-        }
-
-        .row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 9px 12px;
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            margin-bottom: 8px;
+        .shot-frame figcaption code {
             font-family: var(--mono);
-            font-size: 12.5px;
-        }
-
-        .light {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            flex: none;
-        }
-
-        .light.on {
-            background: var(--starboard);
-            box-shadow: 0 0 8px rgba(53, 194, 94, .55);
-        }
-
-        .light.off {
-            background: var(--port);
-            box-shadow: 0 0 8px rgba(229, 72, 77, .45);
-        }
-
-        .row .name {
+            font-size: 12px;
             color: var(--text);
         }
 
-        .row .meta {
-            color: var(--dim);
-            margin-left: auto;
-        }
-
-        .row.crashed {
-            border-color: rgba(229, 72, 77, .45);
-        }
-
-        .diagnosis {
-            margin-top: 14px;
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            background: linear-gradient(180deg, #16242E 0%, var(--surface) 100%);
-            padding: 14px 16px;
-        }
-
-        .diag-head {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            color: var(--text);
-        }
-
-        .diag-head .spark {
-            color: var(--lamp);
-        }
-
-        .diag-badge {
-            margin-left: auto;
-            font-size: 11px;
-            color: var(--dim);
-            border: 1px solid var(--line);
-            padding: 2px 8px;
-            border-radius: 99px;
-        }
-
-        .diag-text {
-            margin-top: 10px;
-            font-size: 13px;
-            color: var(--dim);
-            min-height: 4.6em;
-        }
-
-        .diag-text strong {
-            color: var(--text);
-            font-weight: 600;
-        }
-
-        .caret {
-            display: inline-block;
-            width: 7px;
-            height: 14px;
-            background: var(--lamp);
-            vertical-align: -2px;
-            animation: blink 1s steps(1) infinite;
-        }
-
-        @keyframes blink {
-            50% {
-                opacity: 0;
-            }
+        .shot-frame.secondary {
+            margin-top: 28px;
         }
 
         /* ---------- features ---------- */
@@ -460,18 +308,6 @@
         }
 
         @media (max-width: 760px) {
-            .win-body {
-                grid-template-columns: 1fr;
-            }
-
-            .win-side {
-                display: flex;
-                gap: 4px;
-                overflow-x: auto;
-                border-right: 0;
-                border-bottom: 1px solid var(--line);
-            }
-
             .feature {
                 grid-template-columns: 1fr;
                 gap: 8px;
@@ -483,10 +319,6 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .caret {
-                animation: none;
-            }
-
             html {
                 scroll-behavior: auto;
             }
@@ -509,91 +341,83 @@
         <section class="hero">
             <h1>Your containers can explain <em>why they crashed.</em></h1>
             <p class="lede">
-                Wharfside is a native macOS app for Apple's
-                <a href="https://github.com/apple/container">container</a> runtime, with on-device
-                AI built in. Diagnosis, advice, and plain-English commands run on the model that
-                ships with Apple&nbsp;Intelligence — no API keys, no cloud, and your logs never
-                leave your Mac.
+                Wharfside is a native macOS app that diagnoses crashed containers on Apple's
+                <a href="https://github.com/apple/container">container</a> runtime.
+                Deterministic rules settle what the evidence settles; Apple's on-device model
+                explains the rest — no API keys, no cloud, and your logs never leave your Mac.
             </p>
             <div class="cta-row">
-                <a class="btn primary" href="https://github.com/wharfside/wharfside">Watch on GitHub</a>
-                <a class="btn ghost" href="#install">Install</a>
-                <span class="cta-note">In development — 0.1 ships with crash diagnosis.</span>
+                <a class="btn primary" href="#install">Install</a>
+                <a class="btn ghost" href="https://github.com/wharfside/wharfside">View on GitHub</a>
+                <span class="cta-note">0.1.1 — free, MIT-licensed, signed &amp; notarized.</span>
             </div>
 
-            <div class="window-frame" aria-label="Preview of the Wharfside app diagnosing a crashed container">
-                <div class="window">
-                    <div class="titlebar">
-                        <div class="traffic"><span class="r"></span><span class="y"></span><span class="g"></span></div>
-                        <span class="title">Wharfside — Containers</span>
-                    </div>
-                    <div class="win-body">
-                        <div class="win-side">
-                            <div class="side-item">Dashboard</div>
-                            <div class="side-item sel">Containers</div>
-                            <div class="side-item">Images</div>
-                            <div class="side-item">Volumes</div>
-                            <div class="side-item">Machines</div>
-                        </div>
-                        <div class="win-main">
-                            <div class="row">
-                                <span class="light on"></span><span class="name">api</span>
-                                <span class="meta">node:22 · 128 MB · :3000</span>
-                            </div>
-                            <div class="row">
-                                <span class="light on"></span><span class="name">cache</span>
-                                <span class="meta">redis:7 · 24 MB · :6379</span>
-                            </div>
-                            <div class="row crashed">
-                                <span class="light off"></span><span class="name">postgres</span>
-                                <span class="meta">exit 1 · restarted ×3</span>
-                            </div>
+            <!-- Real app capture, regenerated via scripts/capture-assets.sh — do not replace with mockups -->
+            <figure class="shot-frame" aria-label="Wharfside diagnosing a stopped container">
+                <img src="assets/hero-diagnose.gif" width="880" height="616"
+                    alt="Wharfside diagnosing a stopped container: the diagnosis card concludes 'orderly stop', attributed to deterministic rules, with Copy report and Regenerate actions.">
+                <figcaption>A real diagnosis — note the footer: <code>deterministic rules · orderly stop ·
+                        high</code>. The model was never invoked for this one.</figcaption>
+            </figure>
 
-                            <div class="diagnosis">
-                                <div class="diag-head">
-                                    <span class="spark">✦</span> Why did postgres crash?
-                                    <span class="diag-badge">on-device model · confidence: high</span>
-                                </div>
-                                <p class="diag-text" id="diag"><span class="caret"></span></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <figure class="shot-frame secondary" aria-label="A completed diagnosis card">
+                <img src="assets/diagnosis-hero.png" width="1040" height="560" loading="lazy"
+                    alt="Diagnosis card: container stopped via SIGTERM/SIGKILL (orderly stop); boot log shows signal 15, grace period, signal 9, exit 137. Category: orderly stop, confidence high, diagnosed by deterministic rules.">
+                <figcaption>Exit 137 isn't always out-of-memory. Wharfside reads the signal sequence
+                    and says so — deterministically.</figcaption>
+            </figure>
         </section>
 
         <section class="features">
             <div class="feature">
                 <h2>Diagnosis, not log spelunking</h2>
                 <div>
-                    <p>One click on a failed container returns the likely root cause, a category,
-                        and concrete next steps. Deterministic code digests the logs — parsing,
-                        clustering, counting — and the on-device model explains the evidence. It is
-                        never handed raw logs, and it never guesses beyond them.</p>
+                    <p>One click on a dead container returns the likely root cause, a category, and
+                        next steps. Deterministic code recovers the exit evidence, filters
+                        known-misleading noise, and settles clear-cut cases outright — the on-device
+                        model only ever sees a compact, pre-cleaned digest, and only for genuinely
+                        ambiguous failures. Every diagnosis is labeled with its source:
+                        <code>deterministic rules</code> or <code>on-device model</code>.
+                    </p>
                 </div>
             </div>
             <div class="feature">
-                <h2>Say it, confirm it</h2>
+                <h2>Wrong? That makes it better.</h2>
                 <div>
-                    <p>A ⌘K palette turns <code>stop everything using more than 2 GB</code> into
-                        real operations. Destructive actions are only ever <em>proposed</em> — nothing
-                        runs until you confirm it. The model has no ability to mutate state on its own.</p>
+                    <p><strong>Copy report</strong> produces a shareable Markdown reproduction — the
+                        exact digest that was analyzed, the conclusion, which rules fired, and
+                        version info. Wrong diagnoses become regression fixtures, and fixtures become
+                        rules in a versioned, Ed25519-signed rulebook. The report quotes the last few
+                        log lines as evidence, so the app reminds you to review it before posting.</p>
                 </div>
             </div>
             <div class="feature">
                 <h2>Private by architecture</h2>
                 <div>
-                    <p>Every AI feature runs on the Apple Intelligence on-device model. There is no
-                        API key to configure, no telemetry, and no network path for your logs to take.
-                        Without Apple Intelligence, Wharfside still works — the AI tier degrades to
-                        honestly-labeled heuristics.</p>
+                    <p>Analysis runs entirely on-device via Apple's Foundation Models. There is no
+                        API key to configure, no telemetry, and no network path for your logs to
+                        take. Without Apple Intelligence, the AI tier switches off honestly — and
+                        everything else keeps working.</p>
                 </div>
             </div>
             <div class="feature">
                 <h2>Native, the whole way down</h2>
                 <div>
                     <p>SwiftUI throughout, talking XPC directly to Apple's container runtime.
-                        Signed, notarized, and small — the way a Mac tool should arrive.</p>
+                        Signed, notarized, and small — the way a Mac tool should arrive. Need a
+                        full-featured management GUI? <a href="https://github.com/wouterdebie/davit">Davit</a> is
+                        excellent, and
+                        the two coexist fine — Wharfside is the one you open when something died.</p>
+                </div>
+            </div>
+            <div class="feature">
+                <h2>Next up</h2>
+                <div>
+                    <p>0.2 adds resource heuristics (idle CPU, memory trends, crash loops) with an
+                        AI advice tier that proposes a fix. 0.3 adds a ⌘K palette where the model can
+                        read anything, propose anything — and mutate nothing without your
+                        confirmation. <a href="https://github.com/wharfside/wharfside/blob/main/PLAN.md">Roadmap →</a>
+                    </p>
                 </div>
             </div>
         </section>
@@ -601,13 +425,12 @@
         <section class="install" id="install">
             <div class="install-card">
                 <h2>Install</h2>
-                <p>Wharfside 0.1 is under active development. When it ships, installation is one line:</p>
                 <div class="term"><span class="p">$</span> brew install wharfside/wharfside/wharfside</div>
-                <p class="req">Requires macOS 26+ on Apple silicon and
+                <p class="req">Or grab the notarized DMG from
+                    <a href="https://github.com/wharfside/wharfside/releases">Releases</a>.
+                    Requires macOS 26+ on Apple silicon and
                     <a href="https://github.com/apple/container">apple/container</a> 1.0+.
                     Apple&nbsp;Intelligence enables the AI tier; everything else works without it.
-                    Until release, <a href="https://github.com/wharfside/wharfside">star or watch the
-                        repo</a> to be there on day one.
                 </p>
             </div>
         </section>
@@ -621,50 +444,6 @@
         </footer>
     </div>
 
-    <script>
-        // Hero diagnosis: types itself once, instantly rendered for reduced-motion users.
-        const text = [
-            ["strong", "Dependency unreachable."],
-            ["", " The last 47 log lines show repeated "],
-            ["strong", "FATAL: could not open relation mapping file"],
-            ["", " after an unclean shutdown. Try: "],
-            ["strong", "1."],
-            ["", " remove the stale postmaster.pid from the data volume  "],
-            ["strong", "2."],
-            ["", " start with a clean mount to confirm  "],
-            ["strong", "3."],
-            ["", " raise the stop timeout above 5 s so shutdown completes."]
-        ];
-        const el = document.getElementById("diag");
-        const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-        function render(upTo, partial) {
-            let html = "";
-            for (let i = 0; i < upTo; i++) {
-                const [tag, s] = text[i];
-                html += tag ? `<${tag}>${s}</${tag}>` : s;
-            }
-            if (partial !== undefined) {
-                const [tag, s] = text[upTo];
-                const cut = s.slice(0, partial);
-                html += tag ? `<${tag}>${cut}</${tag}>` : cut;
-                html += '<span class="caret"></span>';
-            }
-            el.innerHTML = html;
-        }
-        if (reduced) {
-            render(text.length);
-        } else {
-            let seg = 0, ch = 0;
-            const tick = () => {
-                if (seg >= text.length) { render(text.length); return; }
-                render(seg, ch);
-                ch++;
-                if (ch > text[seg][1].length) { seg++; ch = 0; }
-                setTimeout(tick, 14);
-            };
-            setTimeout(tick, 700);
-        }
-    </script>
 </body>
 
 </html>
