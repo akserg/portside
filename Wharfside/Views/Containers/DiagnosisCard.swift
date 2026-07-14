@@ -33,7 +33,7 @@ struct DiagnosisCard: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
 
-            Text("On-device analysis of this container's logs. Nothing leaves your Mac.")
+            Text(DiagnosisPrivacyCopy.idleTagline)
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

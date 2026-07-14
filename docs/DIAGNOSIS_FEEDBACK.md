@@ -5,13 +5,13 @@ it" — but that last step is manual by design. This doc is the procedure.
 
 ## Why this isn't scripted
 
-A copied diagnosis report's `### Digest (what the model saw)` block is the rendered
-*output* of `LogDigestBuilder` + `PromptRenderer` (`CONTAINER:`, `COUNTS:`, `TOP_PATTERNS:`,
-`LAST_LINES:`, …) — it's already-digested, structured text, not the raw log lines that
-`DiagnosisRegressionFixture` expects as input (`Packages/WharfsideAnalysis/Tests/Fixtures/*.log`,
-parsed by `LogParser`/`LabeledFixtureParser` and re-digested from scratch). Regenerating raw
-log lines that would digest back to an *equivalent* rendered block isn't a lossless,
-mechanical transform — the whole point of digestion is that it's lossy. Auto-converting a
+A copied diagnosis report's `### Digest` block is the rendered *output* of
+`LogDigestBuilder` + `PromptRenderer` (`CONTAINER:`, `COUNTS:`, `TOP_PATTERNS:`,
+`LAST_LINES:`, …) — structured, bounded digests, **not** a full raw log dump. Digestion
+is lossy, but `LAST_LINES` still contains verbatim excerpts of recent log lines (and can
+carry secrets from application stdio). Redaction / review bounds what you share; it does
+not mean "no log lines." Regenerating raw log lines that would digest back to an
+*equivalent* rendered block isn't a lossless, mechanical transform. Auto-converting a
 report into a fixture would mean guessing at raw lines and asserting against a
 best-effort reconstruction, which is worse than a short manual pass. So: convert by hand,
 using the reporter's own words plus the digest as your guide.

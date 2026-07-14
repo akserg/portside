@@ -136,7 +136,7 @@ final class DiagnosisCardViewModel {
 
     func presentCopyConfirmation() {
         copyReportBannerClearTask?.cancel()
-        copyReportBannerMessage = "Report copied — review log excerpts before sharing"
+        copyReportBannerMessage = DiagnosisPrivacyCopy.copyReportToast
         copyReportBannerClearTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(5))
             guard !Task.isCancelled else { return }
@@ -294,6 +294,32 @@ extension DiagnosisCardViewModel {
         )
         vm.phase = phase
         return vm
+    }
+
+    /// Injects a completed diagnosis without the 200 ms verifying shimmer — launch assets.
+    func applyCompletedResult(_ result: DiagnosisResult) {
+        cancelInFlightWork(resetToIdle: false)
+        phase = .result(ResultState(result: result, isVerifying: false))
+        resultContainerID = container?.id
+    }
+
+    func applyRunningPartial(_ summary: String?) {
+        cancelInFlightWork(resetToIdle: false)
+        phase = .running(
+            RunningState(
+                partialSummary: summary,
+                hasReceivedFirstToken: summary != nil
+            )
+        )
+    }
+
+    func applyIdlePhase() {
+        cancelInFlightWork(resetToIdle: true)
+        phase = .idle
+    }
+
+    func presentCopyConfirmationForSnapshot() {
+        copyReportBannerMessage = DiagnosisPrivacyCopy.copyReportToast
     }
 }
 

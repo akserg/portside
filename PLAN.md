@@ -25,8 +25,7 @@ died — and launch publicly on the strength of that one story.
 "Proposes a fix" may only be claimed once the advice tier actually ships ("a fix",
 never "the fix"). "Applies it when you say so" waits for M4.
 
-**Cadence assumption**: solo developer, part-time (~10–15 h/week), agent-driven
-(Claude Code / Cursor executing detailed briefs; PRs reviewed before merge).
+**Cadence assumption**: solo developer, part-time (~10–15 h/week).
 Estimates stay conservative; cut scope, not quality.
 
 ---
@@ -60,7 +59,7 @@ Agent briefs B1 → B3 → B4 → B2 → B5 are written.*
 | 2a.1 | Fix nil `exitCode` at diagnosis time | B1 | Exit status fetched at diagnosis time; explicit `unavailable` state; fail-closed precheck |
 | 2a.2 | Rulebook migration, Layers 1–2 (precheck + noise) onto `RulebookCore` | B3 | Signed bundled rulebook; report2.md fix expressed as rules; hardcoded path demoted to fail-closed fallback for one release |
 | 2a.3 | Regression suite green on migrated pipeline | B4 | Includes tampered/malformed-rulebook and unavailable-exit-code fixtures; Linux build of RulebookCore in CI |
-| 2a.4 | Copyable diagnosis report + wrong-diagnosis feedback | B2 | The launch artifact. Digest-and-metadata only — redaction enforced by test; prefilled GitHub issue, no network path |
+| 2a.4 | Copyable diagnosis report + wrong-diagnosis feedback | B2 | The launch artifact. Bounded digest + metadata (includes LAST_LINES excerpts — review before paste); redaction tests bound/scrub secrets, they don't eliminate log lines; prefilled GitHub issue, no network path |
 | 2a.5 | Launch assets automation: snapshot + pose modes (#18) | B5 | Fixture-driven `ImageRenderer` PNGs + posed-window capture for the hero GIF; assets provably match the regression suite. Launch gate, not a binary release blocker |
 
 **Exit criteria**: report2.md yields "user-initiated stop", not OOM, on the shipped
@@ -74,7 +73,10 @@ including purity grep.
   stop-vs-OOM story; gracious Davit paragraph with link to its thread; honest
   limitations section.
 - Rewrite #19's angle: drop "the only apple/container GUI…" phrasing ("only" now
-  invites a fact-check); keep "no API keys, logs never leave your Mac."
+  invites a fact-check); keep "no API keys, raw logs never leave your Mac
+  automatically." Accurate report claim: the copyable report is a **bounded digest**
+  (including the last few log lines) plus metadata — review before pasting publicly;
+  do **not** claim "never raw log lines / safe to paste into a public issue."
 - Pre-post checklist lives in the launch draft (notarized artifact verified, README
   rewritten diagnosis-first, demo GIF/screenshot regenerated via B5's
   `capture-assets.sh`, scratch issue with a pasted report, post Tue–Thu

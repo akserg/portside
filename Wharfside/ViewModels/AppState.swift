@@ -56,6 +56,14 @@ final class AppState {
         self.registryService = registryService
     }
 
+#if DEBUG
+    /// Seeds cached health for fixture / launch-asset modes (no live daemon).
+    func seedCachedHealth(_ health: SystemHealth) {
+        cachedHealth = health
+        isServiceRunning = true
+    }
+#endif
+
     func refreshServiceStatus() async {
         do {
             cachedHealth = try await systemService.health()

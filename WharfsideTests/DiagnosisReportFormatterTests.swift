@@ -229,7 +229,7 @@ private func digestGoldenEnvironment() -> DiagnosisReportEnvironment {
         wharfsideVersion: "0.1.1",
         runtimeVersionLabel: "1.0.0 (commit ee848e3)",
         macOSVersion: "26.5.2",
-        generatedAt: Date(timeIntervalSince1970: 1_700_000_000)
+        generatedAt: Date(timeIntervalSince1970: 1_783_576_497) // 2026-07-09T05:54:57Z
     )
 }
 

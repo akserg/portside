@@ -1,4 +1,4 @@
-.PHONY: build test lint purity ci ai-test sign-rulebook verify-rulebook
+.PHONY: build test lint purity ci ai-test sign-rulebook verify-rulebook snapshot-assets demo-env
 
 # Propagate failures from pipelines (xcodebuild | xcbeautify).
 SHELL := /bin/bash
@@ -67,3 +67,11 @@ ai-test:
 	  -destination 'platform=macOS,arch=arm64' \
 	  -only-testing:WharfsideTests/DiagnosisRegressionTests \
 	  -parallel-testing-enabled NO | xcbeautify
+
+# B5 bonus — Debug snapshot smoke (ImageRenderer PNGs; no daemon).
+snapshot-assets:
+	./scripts/capture-assets.sh .artifacts/launch-assets
+
+# Curated hello/crashy/web cast for live MainView marketing captures.
+demo-env:
+	./scripts/setup-demo-env.sh --purge

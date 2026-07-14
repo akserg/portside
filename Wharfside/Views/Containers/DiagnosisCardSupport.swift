@@ -4,6 +4,15 @@
 import AppKit
 import SwiftUI
 
+/// Shared privacy / share framing for idle tagline, copy-report toast, and launch copy.
+/// Analysis stays on-device; sharing a report is an explicit user paste of a bounded digest.
+enum DiagnosisPrivacyCopy {
+    static let idleTagline =
+        "On-device analysis of this container's logs. Nothing leaves your Mac."
+    static let copyReportToast =
+        "Report copied — review before sharing (includes last log lines)"
+}
+
 struct DiagnosisPresentation {
     let result: DiagnosisResult
 
@@ -76,7 +85,13 @@ struct DiagnosisPresentation {
 
     var footerText: String {
         let confidence = diagnosis.confidence.displayTitle.lowercased()
-        return "on-device · \(categoryTitle.lowercased()) · \(confidence)"
+        let sourceLabel: String = switch result.source {
+        case .deterministicPrecheck:
+            "deterministic rules"
+        case .onDeviceModel:
+            "on-device model"
+        }
+        return "\(sourceLabel) · \(categoryTitle.lowercased()) · \(confidence)"
     }
 
     static func containsCopyableCommand(_ action: String) -> Bool {

@@ -122,6 +122,24 @@ final class LogViewModel {
         .joined(separator: "\n")
     }
 
+#if DEBUG
+    /// Seeds the ring buffer from fixture chunks without starting a live stream.
+    /// Used by launch-asset snapshot / pose modes (`scrollable: false` LogView).
+    func seedFixtureChunks(_ chunks: [LogChunk], containerIsRunning: Bool) {
+        stop()
+        buffer.clear()
+        for chunk in chunks {
+            buffer.append(chunk: chunk)
+        }
+        self.containerIsRunning = containerIsRunning
+        isStreamFinished = true
+        isStreamActive = false
+        isTailPinned = true
+        hasUnseenLinesWhileUnpinned = false
+        bufferRevision += 1
+    }
+#endif
+
     /// Returns parsed log entries from the in-memory buffer within the given time window.
     ///
     /// Issue 1.6 (`LogDiagnosisService`) should call this with the visible tail window

@@ -1,7 +1,7 @@
 ## Wharfside diagnosis report
 Wharfside 0.1.1 · container runtime 1.0.0 (commit ee848e3) · macOS 26.5.2
 Container: crashy · image: crashy:latest · status: stopped
-Generated: 2023-11-14T22:13:20Z
+Generated: 2026-07-09T05:54:57Z
 
 ### Digest
 ```

@@ -27,6 +27,8 @@ struct AIGated<Content: View>: View {
 struct AIStatusBanner: View {
     @Environment(AIAvailabilityService.self) private var availability
     let reason: DegradedReason
+    /// Link button fails under `ImageRenderer` (yellow missing-glyph placeholder) — off for stills.
+    var showsActionButton: Bool = true
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
@@ -40,7 +42,7 @@ struct AIStatusBanner: View {
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
-                if reason.isUserActionable {
+                if showsActionButton, reason.isUserActionable {
                     Button("Open System Settings…") {
                         availability.openAppleIntelligenceSettings()
                     }

@@ -9,6 +9,12 @@ struct DiagnosisResultCard: View {
     let isDimmed: Bool
     let isVerifying: Bool
     let showsRegenerate: Bool
+    /// Footer "Copy report" / "Regenerate" controls. Off for some `ImageRenderer` stills.
+    var showsFooterActions: Bool = true
+    /// SF Symbol labels in the footer. Off for ImageRenderer — those glyphs paint yellow.
+    var showsFooterActionSymbols: Bool = true
+    /// Per-action `doc.on.doc` copy chips next to suggested commands.
+    var showsInlineCopyButtons: Bool = true
     let isRunning: Bool
     let onRegenerate: () -> Void
     let onCopyReport: () -> Void
@@ -79,16 +85,37 @@ struct DiagnosisResultCard: View {
 
                 Spacer(minLength: 0)
 
-                Button("Copy report", systemImage: "doc.on.doc", action: onCopyReport)
-                    .buttonStyle(.borderless)
-                    .font(.caption)
-                    .help("Copy a reproduction bundle (digest, diagnosis, versions) to paste into a bug report")
+                if showsFooterActions {
+                    if showsFooterActionSymbols {
+                        footerActionButton(
+                            title: "Copy report",
+                            systemImage: "doc.on.doc",
+                            action: onCopyReport
+                        )
+                        .help(
+                            "Copy a reproduction bundle (digest, diagnosis, versions) to paste into a bug report"
+                        )
 
-                if showsRegenerate {
-                    Button("Regenerate", systemImage: "arrow.clockwise", action: onRegenerate)
-                        .buttonStyle(.borderless)
-                        .font(.caption)
-                        .disabled(isRunning)
+                        if showsRegenerate {
+                            footerActionButton(
+                                title: "Regenerate",
+                                systemImage: "arrow.clockwise",
+                                action: onRegenerate
+                            )
+                            .disabled(isRunning)
+                        }
+                    } else {
+                        // ImageRenderer paints yellow placeholders for borderless Buttons —
+                        // stills use inert text so the action bar remains legible.
+                        Text("Copy report")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        if showsRegenerate {
+                            Text("Regenerate")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 }
             }
         }
@@ -99,8 +126,23 @@ struct DiagnosisResultCard: View {
             in: RoundedRectangle(cornerRadius: 10)
         )
         .contextMenu {
-            Button("Copy report", systemImage: "doc.on.doc", action: onCopyReport)
+            Button(action: onCopyReport) {
+                Label("Copy report", systemImage: "doc.on.doc")
+            }
         }
+    }
+
+    @ViewBuilder
+    private func footerActionButton(
+        title: String,
+        systemImage: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Label(title, systemImage: systemImage)
+        }
+        .buttonStyle(.borderless)
+        .font(.caption)
     }
 
     private func summaryColor(presentation: DiagnosisPresentation) -> Color {
@@ -138,7 +180,7 @@ struct DiagnosisResultCard: View {
                 .textSelection(.enabled)
                 .fixedSize(horizontal: false, vertical: true)
 
-            if DiagnosisPresentation.containsCopyableCommand(action) {
+            if showsInlineCopyButtons, DiagnosisPresentation.containsCopyableCommand(action) {
                 DiagnosisCopyActionButton(
                     text: DiagnosisPresentation.extractCommand(from: action) ?? action
                 )

@@ -162,7 +162,7 @@ struct DiagnosisCardViewModelTests {
 
         #expect(viewModel.copyReportBannerMessage == nil)
         viewModel.presentCopyConfirmation()
-        #expect(viewModel.copyReportBannerMessage == "Report copied — review log excerpts before sharing")
+        #expect(viewModel.copyReportBannerMessage == DiagnosisPrivacyCopy.copyReportToast)
     }
 
     @Test func copyReportReachableInDegradedState() async throws {
