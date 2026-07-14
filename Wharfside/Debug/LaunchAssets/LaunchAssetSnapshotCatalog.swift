@@ -18,6 +18,13 @@ private struct SnapshotContainerRow: Identifiable {
     let running: Bool
 }
 
+private struct SnapshotLogLine: Identifiable {
+    let id: Int
+    let level: String
+    let color: Color
+    let text: String
+}
+
 @MainActor
 enum LaunchAssetSnapshotCatalog {
     static let scale: CGFloat = 2
@@ -46,80 +53,96 @@ enum LaunchAssetSnapshotCatalog {
         wrong: DiagnosisResult
     ) -> [LaunchAssetSnapshotSpec] {
         [
-            // Pre-diagnosis: Explain CTA + on-device privacy tagline (AI available, idle).
-            LaunchAssetSnapshotSpec(
-                id: "diagnosis-idle",
-                size: CGSize(width: 520, height: 120)
-            ) {
-                AnyView(
-                    diagnosisSection {
-                        DiagnosisCard(
-                            viewModel: DiagnosisCardViewModel.preview(
-                                phase: .idle,
-                                containerID: container.id
-                            )
-                        )
-                    }
-                    .padding(16)
-                    .frame(width: 520, height: 120, alignment: .topLeading)
-                    .background(Color(nsColor: .windowBackgroundColor))
-                )
-            },
-            // Completed diagnosis with actionable footer (Copy report / Regenerate).
-            LaunchAssetSnapshotSpec(
-                id: "diagnosis-hero",
-                size: CGSize(width: 520, height: 280)
-            ) {
-                AnyView(
-                    diagnosisSection {
-                        diagnosisCard(
-                            result: corrected,
-                            showsFooterActions: true,
-                            showsRegenerate: true
-                        )
-                    }
-                    .padding(16)
-                    .frame(width: 520, height: 280, alignment: .topLeading)
-                    .background(Color(nsColor: .windowBackgroundColor))
-                )
-            },
-            LaunchAssetSnapshotSpec(
-                id: "report-markdown",
-                size: CGSize(width: 720, height: 560)
-            ) {
-                AnyView(
-                    DiagnosisReportPreview(
-                        reportText: reportText,
-                        scrollable: false,
-                        allowsTextSelection: false
-                    )
-                    .frame(width: 720, alignment: .topLeading)
-                    .background(Color(nsColor: .windowBackgroundColor))
-                )
-            },
-            LaunchAssetSnapshotSpec(
-                id: "wrong-diagnosis",
-                size: CGSize(width: 520, height: 280)
-            ) {
-                AnyView(
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text("Historical misdiagnosis (report2 — fixed in 0.1.1)")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 16)
-                            .padding(.top, 10)
-                            .padding(.bottom, 6)
-                        ActionErrorBanner(
-                            message: DiagnosisPrivacyCopy.copyReportToast
-                        )
-                        diagnosisCard(result: wrong)
-                            .padding(16)
-                    }
-                    .frame(width: 520, height: 280, alignment: .topLeading)
-                    .background(Color(nsColor: .windowBackgroundColor))
-                )
-            }
+            diagnosisIdleSpec(containerID: container.id),
+            diagnosisHeroSpec(corrected: corrected),
+            reportMarkdownSpec(reportText: reportText),
+            wrongDiagnosisSpec(wrong: wrong)
         ]
+    }
+
+    private static func diagnosisIdleSpec(containerID: String) -> LaunchAssetSnapshotSpec {
+        // Pre-diagnosis: Explain CTA + on-device privacy tagline (AI available, idle).
+        LaunchAssetSnapshotSpec(
+            id: "diagnosis-idle",
+            size: CGSize(width: 520, height: 120)
+        ) {
+            AnyView(
+                diagnosisSection {
+                    DiagnosisCard(
+                        viewModel: DiagnosisCardViewModel.preview(
+                            phase: .idle,
+                            containerID: containerID
+                        )
+                    )
+                }
+                .padding(16)
+                .frame(width: 520, height: 120, alignment: .topLeading)
+                .background(Color(nsColor: .windowBackgroundColor))
+            )
+        }
+    }
+
+    private static func diagnosisHeroSpec(corrected: DiagnosisResult) -> LaunchAssetSnapshotSpec {
+        // Completed diagnosis with actionable footer (Copy report / Regenerate).
+        LaunchAssetSnapshotSpec(
+            id: "diagnosis-hero",
+            size: CGSize(width: 520, height: 280)
+        ) {
+            AnyView(
+                diagnosisSection {
+                    diagnosisCard(
+                        result: corrected,
+                        showsFooterActions: true,
+                        showsRegenerate: true
+                    )
+                }
+                .padding(16)
+                .frame(width: 520, height: 280, alignment: .topLeading)
+                .background(Color(nsColor: .windowBackgroundColor))
+            )
+        }
+    }
+
+    private static func reportMarkdownSpec(reportText: String) -> LaunchAssetSnapshotSpec {
+        LaunchAssetSnapshotSpec(
+            id: "report-markdown",
+            size: CGSize(width: 720, height: 560)
+        ) {
+            AnyView(
+                DiagnosisReportPreview(
+                    reportText: reportText,
+                    scrollable: false,
+                    allowsTextSelection: false
+                )
+                .frame(width: 720, alignment: .topLeading)
+                .background(Color(nsColor: .windowBackgroundColor))
+            )
+        }
+    }
+
+    private static func wrongDiagnosisSpec(wrong: DiagnosisResult) -> LaunchAssetSnapshotSpec {
+        LaunchAssetSnapshotSpec(
+            id: "wrong-diagnosis",
+            size: CGSize(width: 520, height: 280)
+        ) {
+            AnyView(
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Historical misdiagnosis (report2 — fixed in 0.1.1)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 10)
+                        .padding(.bottom, 6)
+                    ActionErrorBanner(
+                        message: DiagnosisPrivacyCopy.copyReportToast
+                    )
+                    diagnosisCard(result: wrong)
+                        .padding(16)
+                }
+                .frame(width: 520, height: 280, alignment: .topLeading)
+                .background(Color(nsColor: .windowBackgroundColor))
+            )
+        }
     }
 
     private static func surfaceSpecs(
@@ -208,34 +231,14 @@ enum LaunchAssetSnapshotCatalog {
         // Avoid LogView toolbar (Picker/search Buttons) — ImageRenderer paints
         // yellow missing-glyph placeholders for those controls.
         _ = chunks
-        let lines: [(level: String, color: Color, text: String)] = [
-            ("INFO", .primary, "2026-07-09T10:00:01.123Z LOG:  database system is ready to accept connections"),
-            ("INFO", .primary, "2026-07-09T10:00:05.456Z INFO:  checkpoint starting"),
-            ("ERROR", Color(red: 1, green: 0.35, blue: 0.35),
-             "2026-07-09T10:00:10.789Z FATAL:  terminating connection due to administrator command"),
-            ("INFO", .primary, "2026-07-09T10:00:10.790Z LOG:  database system is shut down"),
-            ("ERROR", Color(red: 1, green: 0.35, blue: 0.35),
-             "2026-07-09T10:00:10.791Z ERROR: could not write to file \"pg_wal/…\": No space left on device")
-        ]
         return VStack(alignment: .leading, spacing: 0) {
             Text("Logs — db")
                 .font(.headline)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
             Divider()
-            ForEach(Array(lines.enumerated()), id: \.offset) { _, line in
-                HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text(line.level)
-                        .font(.caption2.weight(.semibold).monospaced())
-                        .foregroundStyle(line.color)
-                        .frame(width: 52, alignment: .leading)
-                    Text(line.text)
-                        .font(.body.monospaced())
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 2)
+            ForEach(snapshotLogLines) { line in
+                logViewerRow(line)
             }
             HStack(spacing: 8) {
                 Text("●")
@@ -249,6 +252,57 @@ enum LaunchAssetSnapshotCatalog {
         }
         .frame(width: 720, height: 200, alignment: .topLeading)
         .background(Color(nsColor: .windowBackgroundColor))
+    }
+
+    private static func logViewerRow(_ line: SnapshotLogLine) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Text(line.level)
+                .font(.caption2.weight(.semibold).monospaced())
+                .foregroundStyle(line.color)
+                .frame(width: 52, alignment: .leading)
+            Text(line.text)
+                .font(.body.monospaced())
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 2)
+    }
+
+    private static var snapshotLogLines: [SnapshotLogLine] {
+        let errorColor = Color(red: 1, green: 0.35, blue: 0.35)
+        return [
+            SnapshotLogLine(
+                id: 0,
+                level: "INFO",
+                color: .primary,
+                text: "2026-07-09T10:00:01.123Z LOG:  database system is ready to accept connections"
+            ),
+            SnapshotLogLine(
+                id: 1,
+                level: "INFO",
+                color: .primary,
+                text: "2026-07-09T10:00:05.456Z INFO:  checkpoint starting"
+            ),
+            SnapshotLogLine(
+                id: 2,
+                level: "ERROR",
+                color: errorColor,
+                text: "2026-07-09T10:00:10.789Z FATAL:  terminating connection due to administrator command"
+            ),
+            SnapshotLogLine(
+                id: 3,
+                level: "INFO",
+                color: .primary,
+                text: "2026-07-09T10:00:10.790Z LOG:  database system is shut down"
+            ),
+            SnapshotLogLine(
+                id: 4,
+                level: "ERROR",
+                color: errorColor,
+                text: "2026-07-09T10:00:10.791Z ERROR: could not write to file \"pg_wal/…\": No space left on device"
+            )
+        ]
     }
 
     private static func containersList() -> some View {
