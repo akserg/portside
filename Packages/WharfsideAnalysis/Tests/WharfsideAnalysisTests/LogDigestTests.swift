@@ -14,7 +14,7 @@ import Testing
     let digest = LogDigest(
         containerName: "api",
         image: "myapp:latest",
-        exitCode: 1,
+        exitStatus: .known(1, source: .runtime),
         windowDescription: "last 5 minutes before exit",
         counts: ["ERROR": 3, "INFO": 10],
         topPatterns: [pattern],

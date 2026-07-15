@@ -7,127 +7,6 @@ import Testing
 import WharfsideAnalysis
 @testable import Wharfside
 
-// MARK: - Test doubles
-
-final class StubDiagnosisSession: DiagnosisSessioning, @unchecked Sendable {
-  enum Mode: Sendable {
-    case hang
-    case emit(ContainerDiagnosis)
-    case emitSequence([ContainerDiagnosis])
-    case delayedEmit(ContainerDiagnosis, delay: Duration)
-  }
-
-  let mode: Mode
-  private let lock = NSLock()
-  private var _prewarmCallCount = 0
-  private var _streamCallCount = 0
-  private var _sequenceIndex = 0
-  private var _lastOptions: DiagnosisGenerationSettings?
-
-  var prewarmCallCount: Int { lock.withLock { _prewarmCallCount } }
-  var streamCallCount: Int { lock.withLock { _streamCallCount } }
-  var lastOptions: DiagnosisGenerationSettings? { lock.withLock { _lastOptions } }
-
-  init(mode: Mode) {
-    self.mode = mode
-  }
-
-  func prewarm(instructions: String) async throws {
-    lock.withLock { _prewarmCallCount += 1 }
-  }
-
-  func stream(
-    instructions: String,
-    prompt: String,
-    options: DiagnosisGenerationSettings
-  ) -> AsyncThrowingStream<ContainerDiagnosis.PartiallyGenerated, Error> {
-    lock.withLock {
-      _streamCallCount += 1
-      _lastOptions = options
-    }
-    let diagnosis: ContainerDiagnosis
-    switch mode {
-    case .hang:
-      return hangStream()
-    case .emit(let value):
-      diagnosis = value
-    case .emitSequence(let values):
-      diagnosis = lock.withLock {
-        let index = min(_sequenceIndex, values.count - 1)
-        _sequenceIndex += 1
-        return values[index]
-      }
-    case .delayedEmit(let value, let delay):
-      return delayedStream(value, delay: delay)
-    }
-    return emitStream(diagnosis)
-  }
-
-  private func emitStream(
-    _ diagnosis: ContainerDiagnosis
-  ) -> AsyncThrowingStream<ContainerDiagnosis.PartiallyGenerated, Error> {
-    AsyncThrowingStream { continuation in
-      continuation.yield(diagnosis.asPartial)
-      continuation.finish()
-    }
-  }
-
-  private func hangStream() -> AsyncThrowingStream<ContainerDiagnosis.PartiallyGenerated, Error> {
-    AsyncThrowingStream { continuation in
-      let task = Task {
-        try? await Task.sleep(for: .seconds(120))
-        continuation.finish()
-      }
-      continuation.onTermination = { @Sendable _ in
-        task.cancel()
-      }
-    }
-  }
-
-  private func delayedStream(
-    _ diagnosis: ContainerDiagnosis,
-    delay: Duration
-  ) -> AsyncThrowingStream<ContainerDiagnosis.PartiallyGenerated, Error> {
-    AsyncThrowingStream { continuation in
-      let task = Task {
-        try await Task.sleep(for: delay)
-        continuation.yield(diagnosis.asPartial)
-        continuation.finish()
-      }
-      continuation.onTermination = { @Sendable _ in
-        task.cancel()
-      }
-    }
-  }
-}
-
-private extension ContainerDiagnosis {
-  var asPartial: PartiallyGenerated {
-    asPartiallyGenerated()
-  }
-}
-
-private func sampleDetail(
-  id: String = "app",
-  status: ContainerRuntimeStatus = .stopped,
-  exitCode: Int32? = nil
-) -> ContainerDetail {
-  ContainerDetail(
-    id: id,
-    image: "app:1",
-    status: status,
-    command: ["app"],
-    createdAt: .now,
-    startedAt: nil,
-    exitCode: exitCode,
-    restartCount: 0,
-    ports: [],
-    mounts: [],
-    environment: [],
-    networks: []
-  )
-}
-
 // MARK: - Tests
 
 @MainActor
@@ -267,16 +146,58 @@ private func sampleDetail(
     let service = LogDiagnosisService(
       availability: StubProvider(sequence: [.full]),
       lifecycleObserver: ContainerLifecycleObserver(),
+      containerService: ExitStatusStubContainerService(
+        exitStatus: .unavailable(reason: .runtimeGone)
+      ),
       sessionFactory: capturing
     )
 
     _ = try await service.diagnose(
-      container: sampleDetail(exitCode: nil),
+      container: sampleDetail(),
       entries: sampleEntries()
     )
 
     let prompt = try #require(capturing.lastPrompt)
     #expect(!prompt.contains("EXIT_CODE:"))
+  }
+
+  @Test func diagnosisRefreshesExitStatusFromRuntime() async throws {
+    let capturing = CapturingDiagnosisSession()
+    let service = LogDiagnosisService(
+      availability: StubProvider(sequence: [.full]),
+      lifecycleObserver: ContainerLifecycleObserver(),
+      containerService: ExitStatusStubContainerService(exitStatus: .known(137, source: .runtime)),
+      sessionFactory: capturing
+    )
+
+    _ = try await service.diagnose(
+      container: sampleDetail(exitStatus: .unavailable(reason: .noEvidence)),
+      entries: sampleEntries()
+    )
+
+    let prompt = try #require(capturing.lastPrompt)
+    #expect(prompt.contains("EXIT_CODE: 137"))
+    #expect(!prompt.contains("(from boot log)"))
+  }
+
+  @Test func diagnosisFallsBackToBootLogExitWhenRuntimeGone() async throws {
+    let session = StubDiagnosisSession(mode: .emit(sampleDiagnosis))
+    let service = LogDiagnosisService(
+      availability: StubProvider(sequence: [.full]),
+      lifecycleObserver: ContainerLifecycleObserver(),
+      containerService: ExitStatusStubContainerService(exitStatus: .unavailable(reason: .runtimeGone)),
+      sessionFactory: session
+    )
+
+    // Full stop signature short-circuits via precheck; exit evidence still comes from boot log.
+    let result = try await service.diagnose(
+      container: sampleDetail(),
+      entries: userStopBootLogEntries()
+    )
+
+    #expect(result.renderedDigest.contains("EXIT_CODE: 137 (from boot log)"))
+    #expect(session.streamCallCount == 0)
+    #expect(result.source == .deterministicPrecheck(ruleID: "precheck.stop-escalation"))
   }
 
   @Test func digestUsesLifecycleRestartCount() async throws {
@@ -404,49 +325,5 @@ private func sampleDetail(
     )
 
     #expect(session.lastOptions == settings)
-  }
-}
-
-// MARK: - Helpers
-
-private let sampleDiagnosis = ContainerDiagnosis(
-  summary: "Connection refused.",
-  category: .dependencyUnreachable,
-  suggestedActions: ["Inspect logs"],
-  confidence: .high
-)
-
-private func sampleEntries() -> [LogEntry] {
-  [
-    LogEntry(
-      timestamp: Date(timeIntervalSince1970: 1_700_000_000),
-      level: .error,
-      message: "connection refused",
-      raw: "ERROR: connection refused"
-    )
-  ]
-}
-
-final class CapturingDiagnosisSession: DiagnosisSessioning, @unchecked Sendable {
-  private let lock = NSLock()
-  private var _lastPrompt: String?
-
-  var lastPrompt: String? {
-    lock.withLock { _lastPrompt }
-  }
-
-  func prewarm(instructions: String) async throws {}
-
-  func stream(
-    instructions: String,
-    prompt: String,
-    options: DiagnosisGenerationSettings
-  ) -> AsyncThrowingStream<ContainerDiagnosis.PartiallyGenerated, Error> {
-    lock.withLock { _lastPrompt = prompt }
-    return StubDiagnosisSession(mode: .emit(sampleDiagnosis)).stream(
-      instructions: instructions,
-      prompt: prompt,
-      options: options
-    )
   }
 }

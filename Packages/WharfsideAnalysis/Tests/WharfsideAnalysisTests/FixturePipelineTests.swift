@@ -51,7 +51,12 @@ import Testing
     let text = try FixtureLoader.loadLog(named: "silent_exit.log")
     let digest = LogDigestBuilder().build(
         logText: text,
-        context: ContainerContext(containerName: "quiet", image: "app:1", exitCode: 0, restartCount: 0),
+        context: ContainerContext(
+            containerName: "quiet",
+            image: "app:1",
+            exitStatus: .known(0, source: .runtime),
+            restartCount: 0
+        ),
         window: DigestWindow(description: "full log")
     )
 
@@ -63,7 +68,12 @@ import Testing
 
 @Test func digestBuildIsDeterministic() throws {
     let text = try FixtureLoader.loadLog(named: "postgres_crash.log")
-    let context = ContainerContext(containerName: "db", image: "postgres:16", exitCode: 1, restartCount: 1)
+    let context = ContainerContext(
+        containerName: "db",
+        image: "postgres:16",
+        exitStatus: .known(1, source: .runtime),
+        restartCount: 1
+    )
     let window = DigestWindow(description: "last 5 minutes before exit")
     let builder = LogDigestBuilder()
 
@@ -106,9 +116,15 @@ import Testing
     for entry in manifest.fixtures {
         let text = try FixtureLoader.loadLog(named: entry.file)
         let parsed = parser.parse(text: text)
+        let context = ContainerContext(
+            containerName: "test",
+            image: "img:latest",
+            exitStatus: .unavailable(reason: .noEvidence),
+            restartCount: 0
+        )
         let digest = builder.build(
             logText: text,
-            context: ContainerContext(containerName: "test", image: "img:latest", exitCode: nil, restartCount: 0),
+            context: context,
             window: DigestWindow(description: "full log")
         )
 
@@ -161,7 +177,12 @@ import Testing
     let text = try FixtureLoader.loadLog(named: "postgres_crash.log")
     let digest = LogDigestBuilder().build(
         logText: text,
-        context: ContainerContext(containerName: "db", image: "postgres:16", exitCode: 1, restartCount: 0),
+        context: ContainerContext(
+            containerName: "db",
+            image: "postgres:16",
+            exitStatus: .known(1, source: .runtime),
+            restartCount: 0
+        ),
         window: DigestWindow(description: "full fixture log")
     )
     let rendered = PromptRenderer().render(digest)
@@ -178,7 +199,12 @@ import Testing
     let text = try FixtureLoader.loadLog(named: "single_line.log")
     let digest = LogDigestBuilder().build(
         logText: text,
-        context: ContainerContext(containerName: "app", image: "app:1", exitCode: 0, restartCount: 0),
+        context: ContainerContext(
+            containerName: "app",
+            image: "app:1",
+            exitStatus: .known(0, source: .runtime),
+            restartCount: 0
+        ),
         window: DigestWindow(description: "full log")
     )
     let rendered = PromptRenderer().render(digest)
@@ -191,7 +217,12 @@ import Testing
     let errorText = "2024-01-01T00:00:00Z ERROR: boom"
     let errorDigest = LogDigestBuilder().build(
         logText: errorText,
-        context: ContainerContext(containerName: "app", image: "app:1", exitCode: 1, restartCount: 0),
+        context: ContainerContext(
+            containerName: "app",
+            image: "app:1",
+            exitStatus: .known(1, source: .runtime),
+            restartCount: 0
+        ),
         window: DigestWindow(description: "full log")
     )
     let errorRendered = PromptRenderer().render(errorDigest)
@@ -205,7 +236,12 @@ import Testing
     let text = try FixtureLoader.loadLog(named: "postgres_crash.log")
     let digest = LogDigestBuilder().build(
         logText: text,
-        context: ContainerContext(containerName: "db", image: "postgres:16", exitCode: 1, restartCount: 0),
+        context: ContainerContext(
+            containerName: "db",
+            image: "postgres:16",
+            exitStatus: .known(1, source: .runtime),
+            restartCount: 0
+        ),
         window: DigestWindow(description: "last 5 minutes before exit")
     )
     let rendered = PromptRenderer().render(digest)

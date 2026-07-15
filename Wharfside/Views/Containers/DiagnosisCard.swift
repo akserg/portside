@@ -1,6 +1,7 @@
 // Views/Containers/DiagnosisCard.swift
 // Issue 1.7 — "Explain this crash" diagnosis card.
 
+import AppKit
 import SwiftUI
 
 struct DiagnosisCard: View {
@@ -32,7 +33,7 @@ struct DiagnosisCard: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
 
-            Text("On-device analysis of this container's logs. Nothing leaves your Mac.")
+            Text(DiagnosisPrivacyCopy.idleTagline)
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -75,8 +76,16 @@ struct DiagnosisCard: View {
             isVerifying: state.isVerifying,
             showsRegenerate: true,
             isRunning: viewModel.isRunning,
-            onRegenerate: { viewModel.regenerate() }
+            onRegenerate: { viewModel.regenerate() },
+            onCopyReport: copyReport
         )
+    }
+
+    private func copyReport() {
+        guard let text = viewModel.reportText() else { return }
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+        viewModel.presentCopyConfirmation()
     }
 
     private func failedContent(_ message: String) -> some View {

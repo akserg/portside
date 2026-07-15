@@ -21,12 +21,15 @@ struct CopyableValueView: View {
                 Text(value)
                     .font(monospaced ? .body.monospaced() : .body)
                     .textSelection(.enabled)
-                    .lineLimit(3)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
                 if isHovering {
                     copyButton
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             Spacer(minLength: 0)
         }
@@ -74,12 +77,15 @@ struct CopyableRowView: View {
                 Text(value)
                     .font(monospaced ? .body.monospaced() : .body)
                     .textSelection(.enabled)
-                    .lineLimit(3)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
                 if isHovering {
                     copyButton
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             Spacer(minLength: 0)
         }

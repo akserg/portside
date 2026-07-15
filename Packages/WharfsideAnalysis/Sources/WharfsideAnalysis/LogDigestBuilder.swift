@@ -1,13 +1,12 @@
 import Foundation
+import RulebookCore
 
 /// Assembles a token-budgeted `LogDigest` from parsed entries and container context.
 public struct LogDigestBuilder: Sendable {
     public var tokenBudget: Int
     public var lastLinesCount: Int
-    /// Maximum patterns considered before token-budget trimming (prevents O(n²) renders).
     public var maxPatterns: Int
     public var spikeConfig: SpikeDetectionConfig
-    /// Boot lines retained in the demoted section when stdio output is also present.
     public var bootTailLineCap: Int
 
     private let clusterer: PatternClusterer
@@ -31,26 +30,51 @@ public struct LogDigestBuilder: Sendable {
         self.renderer = renderer
     }
 
+    /// Builds a digest with a single rule evaluation (I2 — evaluate once).
+    public func buildWithRules(
+        entries: [LogEntry],
+        context: ContainerContext,
+        window: DigestWindow,
+        rulebookPipeline: RulebookPipeline = .load(rulebookData: nil)
+    ) -> DigestBuildResult {
+        let evaluation = rulebookPipeline.evaluate(entries: entries, context: context)
+        let digest = build(
+            entries: entries,
+            context: context,
+            window: window,
+            evaluation: evaluation
+        )
+        return DigestBuildResult(
+            digest: digest,
+            evaluation: evaluation,
+            rulebookVersion: rulebookPipeline.rulebook.version,
+            rulebookSource: rulebookPipeline.source,
+            fallbackReason: rulebookPipeline.fallbackReason,
+            skippedUnknownKinds: rulebookPipeline.rulebook.skippedUnknownKinds
+        )
+    }
+
     /// Builds a digest from pre-parsed entries. Same input always yields byte-identical output.
     public func build(
         entries: [LogEntry],
         context: ContainerContext,
-        window: DigestWindow
+        window: DigestWindow,
+        evaluation: RuleEvaluation = .empty
     ) -> LogDigest {
-        let partition = partitionForDigest(entries)
+        let partition = partitionForDigest(entries, noisePatterns: evaluation.noisePatterns)
         let stats = WindowStatistics.compute(
-            entries: partition.primaryEntries,
+            entries: partition.countEntries,
             window: window,
             lastLinesCount: lastLinesCount,
             spikeConfig: spikeConfig
         )
 
-        let filtered = filterEntries(partition.primaryEntries, window: window)
+        let filtered = filterEntries(partition.clusterEntries, window: window)
         var patterns = clusterer.cluster(entries: filtered)
         if patterns.count > maxPatterns {
             patterns = Array(patterns.prefix(maxPatterns))
         }
-        var lastLines = stats.lastLines
+        var lastLines = Array(filtered.suffix(lastLinesCount).map(\.raw))
         var demotedBootLines = partition.demotedBootLines
 
         var digest = makeDigest(
@@ -61,7 +85,8 @@ public struct LogDigestBuilder: Sendable {
                 patterns: patterns,
                 lastLines: lastLines,
                 bootLines: demotedBootLines,
-                sourceNote: partition.sourceNote
+                sourceNote: partition.sourceNote,
+                facts: evaluation.facts
             )
         )
 
@@ -73,38 +98,66 @@ public struct LogDigestBuilder: Sendable {
         )
     }
 
-    /// Convenience: parse raw log text then build.
     public func build(
         logText: String,
         context: ContainerContext,
         window: DigestWindow,
-        parser: LogParser = LogParser()
+        parser: LogParser = LogParser(),
+        evaluation: RuleEvaluation = .empty
     ) -> LogDigest {
-        build(entries: parser.parse(text: logText), context: context, window: window)
+        build(
+            entries: parser.parse(text: logText),
+            context: context,
+            window: window,
+            evaluation: evaluation
+        )
     }
 
     private struct DigestPartition {
-        let primaryEntries: [LogEntry]
+        let clusterEntries: [LogEntry]
+        let countEntries: [LogEntry]
         let demotedBootLines: [String]
         let sourceNote: String?
     }
 
-    private func partitionForDigest(_ entries: [LogEntry]) -> DigestPartition {
+    private func partitionForDigest(
+        _ entries: [LogEntry],
+        noisePatterns: [String]
+    ) -> DigestPartition {
         let split = splitEntriesBySource(entries)
         let useBootAsPrimary = split.stdio.isEmpty && !split.boot.isEmpty
-        let primaryEntries = useBootAsPrimary ? split.boot : split.stdio
+        // Shared window with MatchContext / exit parser: final lifecycle cycle only.
+        let scopedBoot = BootLogCycleSegmenter.finalCycleEntries(from: split.boot)
+        let primaryEntries = useBootAsPrimary ? scopedBoot : split.stdio
         let sourceNote = useBootAsPrimary ? "boot log only (no application output)" : nil
+
+        let clusterEntries = primaryEntries.filter { entry in
+            !isNoiseBootLine(entry, patterns: noisePatterns)
+        }
+
         let demotedBootLines: [String]
-        if useBootAsPrimary || split.boot.isEmpty {
+        if useBootAsPrimary || scopedBoot.isEmpty {
             demotedBootLines = []
         } else {
-            demotedBootLines = Array(split.boot.suffix(bootTailLineCap).map(\.raw))
+            demotedBootLines = Array(
+                scopedBoot
+                    .filter { !isNoiseBootLine($0, patterns: noisePatterns) }
+                    .suffix(bootTailLineCap)
+                    .map(\.raw)
+            )
         }
+
         return DigestPartition(
-            primaryEntries: primaryEntries,
+            clusterEntries: clusterEntries,
+            countEntries: primaryEntries,
             demotedBootLines: demotedBootLines,
             sourceNote: sourceNote
         )
+    }
+
+    private func isNoiseBootLine(_ entry: LogEntry, patterns: [String]) -> Bool {
+        guard entry.source == .boot, !patterns.isEmpty else { return false }
+        return RuleEngine.lineMatchesNoise(entry.raw, patterns: patterns)
     }
 
     private struct DigestContent {
@@ -112,6 +165,7 @@ public struct LogDigestBuilder: Sendable {
         var lastLines: [String]
         var bootLines: [String]
         let sourceNote: String?
+        let facts: [String]
     }
 
     private func makeDigest(
@@ -123,7 +177,7 @@ public struct LogDigestBuilder: Sendable {
         LogDigest(
             containerName: context.containerName,
             image: context.image,
-            exitCode: context.exitCode,
+            exitStatus: context.exitStatus,
             windowDescription: window.description,
             counts: stats.counts,
             topPatterns: content.patterns,
@@ -133,6 +187,7 @@ public struct LogDigestBuilder: Sendable {
             restartCount: context.restartCount,
             bootLines: content.bootLines,
             sourceNote: content.sourceNote,
+            facts: content.facts,
             errorSpikeDetected: stats.errorSpikeDetected,
             estimatedTokens: 0
         )
@@ -162,7 +217,7 @@ public struct LogDigestBuilder: Sendable {
         return LogDigest(
             containerName: digest.containerName,
             image: digest.image,
-            exitCode: digest.exitCode,
+            exitStatus: digest.exitStatus,
             windowDescription: digest.windowDescription,
             counts: digest.counts,
             topPatterns: patterns,
@@ -172,6 +227,7 @@ public struct LogDigestBuilder: Sendable {
             restartCount: digest.restartCount,
             bootLines: bootLines,
             sourceNote: digest.sourceNote,
+            facts: digest.facts,
             errorSpikeDetected: digest.errorSpikeDetected,
             estimatedTokens: tokens
         )
@@ -203,7 +259,6 @@ public struct LogDigestBuilder: Sendable {
         }
     }
 
-    /// Returns false when no further reduction is possible.
     private func shrinkDigest(
         _ digest: inout LogDigest,
         patterns: inout [LogPattern],
@@ -243,7 +298,7 @@ public struct LogDigestBuilder: Sendable {
         LogDigest(
             containerName: digest.containerName,
             image: digest.image,
-            exitCode: digest.exitCode,
+            exitStatus: digest.exitStatus,
             windowDescription: digest.windowDescription,
             counts: digest.counts,
             topPatterns: patterns,
@@ -253,6 +308,7 @@ public struct LogDigestBuilder: Sendable {
             restartCount: digest.restartCount,
             bootLines: bootLines,
             sourceNote: digest.sourceNote,
+            facts: digest.facts,
             errorSpikeDetected: digest.errorSpikeDetected,
             estimatedTokens: digest.estimatedTokens
         )

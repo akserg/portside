@@ -99,7 +99,13 @@ struct LogRingBuffer: Sendable {
             }
     }
 
-    private mutating func appendLine(_ line: String, source: LogSource, receivedAt: Date) {
+    private mutating func appendLine(_ rawLine: String, source: LogSource, receivedAt: Date) {
+        // Kernel/boot output is CRLF-terminated; we split on "\n" only, leaving a trailing "\r".
+        // It's invisible with lineLimit(1) but renders as a blank second line once wrap is on,
+        // and it dirties copied/quoted lines. Strip trailing carriage returns.
+        var line = rawLine
+        while line.hasSuffix("\r") { line.removeLast() }
+
         let entry = parser.parse(lines: [line]).first
             ?? LogEntry(timestamp: nil, level: .unknown, message: line, raw: line)
         let buffered = BufferedLogLine(

@@ -215,6 +215,11 @@ Notes:
   a container detail view to hide model load time.
 - Sessions are single-turn here; a fresh digest is sent each time. Multi-turn context
   is reserved for the command palette (Feature C).
+- **Observability closes the loop**: `DiagnosisResult` retains the exact rendered digest
+  the final generation attempt saw (post-retry, if a retry happened). `DiagnosisResultCard`
+  exposes a "Copy report" action that bundles that digest with the diagnosis, telemetry,
+  and versions into one pasteable markdown block for the `wrong-diagnosis` issue template —
+  every report is a candidate regression fixture (Issue 1.11).
 
 ---
 

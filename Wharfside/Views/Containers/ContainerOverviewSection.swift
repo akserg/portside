@@ -2,12 +2,14 @@
 // Issue 1.7 — Overview tab content including the diagnosis section.
 
 import SwiftUI
+import WharfsideAnalysis
 
 struct ContainerOverviewSection: View {
     @Environment(AIAvailabilityService.self) private var aiAvailability
 
     let detail: ContainerDetail
     let displayStatus: String
+    let overviewExitStatus: ExitStatus
     let observerRestartCount: Int
     let isDiagnosisEligible: Bool
     @Bindable var diagnosisCardViewModel: DiagnosisCardViewModel
@@ -24,7 +26,7 @@ struct ContainerOverviewSection: View {
             }
             CopyableValueView(
                 label: "Exit code",
-                value: detail.exitCode.map(String.init) ?? "—",
+                value: overviewExitStatus.overviewDisplay ?? "—",
                 monospaced: false
             )
             CopyableValueView(

@@ -32,7 +32,7 @@ private struct ContainerDetailPreviewService: ContainerServicing {
             command: ["/bin/sleep", "600"],
             createdAt: .now,
             startedAt: .now,
-            exitCode: 1,
+            exitStatus: .known(1, source: .runtime),
             restartCount: 0,
             ports: [ContainerPortBinding(hostAddress: "0.0.0.0", hostPort: 8080, containerPort: 80, proto: "tcp")],
             mounts: [],
@@ -52,6 +52,7 @@ private struct ContainerDetailPreviewService: ContainerServicing {
     func exec(id: String, command: [String]) async throws -> ExecResult {
         ExecResult(exitCode: 0, stdout: "", stderr: "")
     }
+    func exitStatus(id: String) async -> ExitStatus { .known(1, source: .runtime) }
 }
 
 struct PreviewAvailabilityProvider: AvailabilityProviding {

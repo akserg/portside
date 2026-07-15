@@ -16,13 +16,18 @@ public struct PromptRenderer: Sendable {
     private func appendHeaderSections(for digest: LogDigest, to sections: inout [String]) {
         sections.append("CONTAINER: \(digest.containerName)")
         sections.append("IMAGE: \(digest.image)")
-        if let exitCode = digest.exitCode {
-            sections.append("EXIT_CODE: \(exitCode)")
+        if let exitLine = digest.exitStatus.digestExitLine {
+            sections.append(exitLine)
         }
         sections.append("WINDOW: \(digest.windowDescription)")
         sections.append("RESTARTS: \(digest.restartCount)")
         if let sourceNote = digest.sourceNote {
             sections.append("SOURCE: \(sourceNote)")
+        }
+
+        if !digest.facts.isEmpty {
+            sections.append("FACTS:")
+            sections.append(contentsOf: digest.facts)
         }
 
         let countLine = digest.counts

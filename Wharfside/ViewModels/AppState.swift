@@ -33,12 +33,24 @@ final class AppState {
     /// Updated by `SystemServicing.health()` polling from `MainView`.
     var isServiceRunning = false
 
+    /// Last successful health check, cached for surfaces (e.g. the diagnosis report) that
+    /// need a runtime version without making their own blocking call (Issue 1.11).
+    private(set) var cachedHealth: SystemHealth?
+
     let systemService: any SystemServicing
     let containerService: any ContainerServicing
     let imageService: any ImageServicing
     let registryService: any RegistryServicing
     /// App-derived restart counts from container list polling (issue 1.6).
     let lifecycleObserver = ContainerLifecycleObserver()
+
+    /// Session-scoped Overview exit-code backfill from diagnosis (B6).
+    let exitStatusBackfill = ExitStatusBackfillCache()
+
+    /// Owned here (not by the view) so the container list and the detail column are
+    /// siblings in one flattened NavigationSplitView; selection/filters survive section
+    /// switches and both columns read the same source of truth.
+    let containerList: ContainerListViewModel
 
     init(
         systemService: any SystemServicing,
@@ -50,14 +62,40 @@ final class AppState {
         self.containerService = containerService
         self.imageService = imageService
         self.registryService = registryService
+        self.containerList = ContainerListViewModel(
+            service: containerService,
+            lifecycleObserver: lifecycleObserver
+        )
     }
+
+#if DEBUG
+    /// Seeds cached health for fixture / launch-asset modes (no live daemon).
+    func seedCachedHealth(_ health: SystemHealth) {
+        cachedHealth = health
+        isServiceRunning = true
+    }
+#endif
 
     func refreshServiceStatus() async {
         do {
-            _ = try await systemService.health()
+            cachedHealth = try await systemService.health()
             isServiceRunning = true
         } catch {
             isServiceRunning = false
         }
+    }
+
+    /// Builds report metadata from whatever is already cached — never blocks the copy path
+    /// with a fresh health call (Issue 1.11).
+    var diagnosisReportEnvironment: DiagnosisReportEnvironment {
+        .current(
+            runtimeVersion: cachedHealth?.apiServerVersion,
+            runtimeCommit: cachedHealth?.apiServerCommit
+        )
+    }
+
+    /// True when the connected apiserver predates the 1.0 semver line (exit-status surface differs).
+    var isPreOnePointZeroDaemon: Bool {
+        DaemonVersionPolicy.isPreOnePointZero(apiServerVersion: cachedHealth?.apiServerVersion)
     }
 }

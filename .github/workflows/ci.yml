@@ -54,7 +54,7 @@ jobs:
             | xcbeautify --renderer github-actions
 
   analysis-package:
-    name: WharfsideAnalysis (swift test)
+    name: WharfsideAnalysis + RulebookCore (macOS swift test)
     runs-on: macos-26
     timeout-minutes: 15
 
@@ -65,13 +65,34 @@ jobs:
         working-directory: Packages/WharfsideAnalysis
         run: swift test -c release -Xswiftc -warnings-as-errors
 
+      - name: Test RulebookCore package
+        working-directory: Packages/RulebookCore
+        run: swift test -c release -Xswiftc -warnings-as-errors
+
+      - name: Verify bundled rulebook signatures
+        run: make verify-rulebook
+
       - name: Enforce layer purity (no UI/AI imports in analysis)
-        working-directory: Packages/WharfsideAnalysis
         run: |
-          if grep -rnE '^\s*import (SwiftUI|FoundationModels|AppKit)' Sources/; then
-            echo "::error::WharfsideAnalysis must stay pure — no SwiftUI/FoundationModels/AppKit imports (AI_INTEGRATION.md §2)"
+          if grep -rnE '^\s*import (SwiftUI|FoundationModels|AppKit)' \
+            Packages/WharfsideAnalysis/Sources/ \
+            Packages/RulebookCore/Sources/; then
+            echo "::error::WharfsideAnalysis and RulebookCore must stay pure — no SwiftUI/FoundationModels/AppKit imports"
             exit 1
           fi
+
+  rulebook-core-linux:
+    name: RulebookCore (Linux swift test)
+    runs-on: ubuntu-latest
+    container: swift:6.0
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test RulebookCore on Linux
+        working-directory: Packages/RulebookCore
+        run: swift test -c release -Xswiftc -warnings-as-errors
 
   lint:
     name: SwiftLint
@@ -85,12 +106,20 @@ jobs:
           brew install swiftlint
           swiftlint --strict --reporter github-actions-logging
 
+      - name: Validate issue template YAML
+        run: |
+          for f in .github/ISSUE_TEMPLATE/*.yml; do
+            ruby -ryaml -e "YAML.load_file('$f')" \
+              && echo "OK: $f" \
+              || { echo "::error file=$f::invalid YAML"; exit 1; }
+          done
+
   release:
     name: Sign, Notarize & Package
     runs-on: macos-26
     timeout-minutes: 30
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [build-and-test, analysis-package, lint]
+    needs: [build-and-test, analysis-package, rulebook-core-linux, lint]
     # softprops/action-gh-release needs contents:write to create the GitHub
     # release; the default GITHUB_TOKEN is read-only unless granted here.
     permissions:

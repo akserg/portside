@@ -4,11 +4,17 @@ import Testing
 
 @Test func bootNoiseContaminationDemotesBootLog() throws {
     let entries = try LabeledFixtureLoader.loadLog(named: "boot_noise_contamination.log")
-    let digest = LogDigestBuilder().build(
-        entries: entries,
-        context: ContainerContext(containerName: "crashy", image: "crashy:latest", exitCode: 1, restartCount: 0),
-        window: DigestWindow(description: "logs before container exit")
+    let context = ContainerContext(
+        containerName: "crashy",
+        image: "crashy:latest",
+        exitStatus: .known(1, source: .runtime),
+        restartCount: 0
     )
+    let digest = LogDigestBuilder().buildWithRules(
+        entries: entries,
+        context: context,
+        window: DigestWindow(description: "logs before container exit")
+    ).digest
     let rendered = PromptRenderer().render(digest)
 
   #expect(digest.counts["ERROR", default: 0] == 1)
@@ -25,11 +31,17 @@ import Testing
 
 @Test func bootOnlyCrashPromotesBootToPrimary() throws {
     let entries = try LabeledFixtureLoader.loadLog(named: "boot_only_crash.log")
-    let digest = LogDigestBuilder().build(
-        entries: entries,
-        context: ContainerContext(containerName: "init-fail", image: "broken:latest", exitCode: 1, restartCount: 0),
-        window: DigestWindow(description: "logs before container exit")
+    let context = ContainerContext(
+        containerName: "init-fail",
+        image: "broken:latest",
+        exitStatus: .known(1, source: .runtime),
+        restartCount: 0
     )
+    let digest = LogDigestBuilder().buildWithRules(
+        entries: entries,
+        context: context,
+        window: DigestWindow(description: "logs before container exit")
+    ).digest
     let rendered = PromptRenderer().render(digest)
 
   #expect(digest.sourceNote == "boot log only (no application output)")
@@ -44,7 +56,12 @@ import Testing
     let manifest = try FixtureLoader.loadManifest()
     let builder = LogDigestBuilder()
     let renderer = PromptRenderer()
-    let context = ContainerContext(containerName: "test", image: "img:latest", exitCode: 1, restartCount: 0)
+    let context = ContainerContext(
+        containerName: "test",
+        image: "img:latest",
+        exitStatus: .known(1, source: .runtime),
+        restartCount: 0
+    )
     let window = DigestWindow(description: "full log")
 
     for entry in manifest.fixtures {

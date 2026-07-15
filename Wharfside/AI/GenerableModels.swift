@@ -26,6 +26,7 @@ enum FailureCategory: String, Sendable {
     case outOfMemory
     case applicationBug
     case imageOrRuntime
+    case stopped
     case unknown
 }
 

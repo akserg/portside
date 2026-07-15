@@ -17,14 +17,14 @@ import WharfsideAnalysis
   }
 
   @Test func passesWhenUnknownWithCleanLogs() {
-    let digest = makeDigest(counts: ["INFO": 3], exitCode: 0)
+    let digest = makeDigest(counts: ["INFO": 3], exitStatus: .known(0, source: .runtime))
     let diagnosis = makeDiagnosis(category: .unknown, confidence: .low)
     let violations = validator.validate(diagnosis, against: digest, renderedDigest: render(digest))
   #expect(violations.isEmpty)
   }
 
   @Test func categoryWithoutEvidenceWhenNoErrors() {
-    let digest = makeDigest(counts: ["INFO": 2], exitCode: 0)
+    let digest = makeDigest(counts: ["INFO": 2], exitStatus: .known(0, source: .runtime))
     let diagnosis = makeDiagnosis(category: .configuration)
     let violations = validator.validate(diagnosis, against: digest, renderedDigest: render(digest))
     #expect(violations.contains(.categoryWithoutEvidence(category: .configuration)))
@@ -117,7 +117,7 @@ import WharfsideAnalysis
   @Test func degradeBuildsFactSummary() {
     let digest = makeDigest(
       counts: ["ERROR": 2],
-      exitCode: 1,
+      exitStatus: .known(1, source: .runtime),
       lastError: "ERROR: No space left on device"
     )
     let degraded = validator.degrade(
@@ -132,7 +132,7 @@ import WharfsideAnalysis
   }
 
   @Test func degradeUsesUnknownForCleanExitViolation() {
-    let digest = makeDigest(counts: ["INFO": 2], exitCode: 0)
+    let digest = makeDigest(counts: ["INFO": 2], exitStatus: .known(0, source: .runtime))
     let degraded = validator.degrade(
       diagnosis: makeDiagnosis(category: .configuration),
       digest: digest,
@@ -167,7 +167,7 @@ import WharfsideAnalysis
 
 private func makeDigest(
   counts: [String: Int],
-  exitCode: Int32? = 1,
+  exitStatus: WharfsideAnalysis.ExitStatus = .known(1, source: .runtime),
   lastError: String? = nil,
   firstError: String? = nil,
   patterns: [LogPattern] = []
@@ -175,7 +175,7 @@ private func makeDigest(
   LogDigest(
     containerName: "app",
     image: "app:1",
-    exitCode: exitCode,
+    exitStatus: exitStatus,
     windowDescription: "test",
     counts: counts,
     topPatterns: patterns,

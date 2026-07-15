@@ -6,13 +6,21 @@ import WharfsideAnalysis
 
 struct LogView: View {
     let containerStatus: ContainerRuntimeStatus
+    /// When `false`, lays out all lines at full height (no `ScrollView`) so
+    /// `ImageRenderer` can capture the complete log surface for launch assets.
+    let scrollable: Bool
 
     @Bindable var viewModel: LogViewModel
     @FocusState private var isSearchFocused: Bool
 
-    init(viewModel: LogViewModel, containerStatus: ContainerRuntimeStatus) {
+    init(
+        viewModel: LogViewModel,
+        containerStatus: ContainerRuntimeStatus,
+        scrollable: Bool = true
+    ) {
         self.viewModel = viewModel
         self.containerStatus = containerStatus
+        self.scrollable = scrollable
     }
 
     var body: some View {
@@ -23,19 +31,22 @@ struct LogView: View {
             Divider()
             ZStack(alignment: .bottom) {
                 logList
-                if viewModel.showJumpToLatest {
+                if scrollable, viewModel.showJumpToLatest {
                     jumpToLatestPill
                         .padding(.bottom, 12)
                 }
             }
         }
         .onAppear {
+            guard scrollable else { return }
             viewModel.start(containerStatus: containerStatus)
         }
         .onDisappear {
+            guard scrollable else { return }
             viewModel.stop()
         }
         .onChange(of: containerStatus) { _, status in
+            guard scrollable else { return }
             viewModel.updateContainerStatus(status)
         }
         .background {
@@ -96,46 +107,56 @@ struct LogView: View {
         .padding(.vertical, 8)
     }
 
+    @ViewBuilder
     private var logList: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    ForEach(viewModel.displayRows) { row in
-                        switch row {
-                        case .line(let line):
-                            LogLineRow(line: line, wraps: viewModel.isLineWrapEnabled)
-                                .id(row.id)
-                        case .stoppedCap:
-                            LogStoppedCapRow()
-                                .id(row.id)
-                        }
+        if scrollable {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    logRows
+                }
+                .font(.body.monospaced())
+                .onScrollGeometryChange(for: CGFloat.self) { geometry in
+                    geometry.contentOffset.y
+                } action: { oldOffset, newOffset in
+                    if newOffset < oldOffset - 1 {
+                        viewModel.userScrolledUp()
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 12)
-            }
-            .font(.body.monospaced())
-            .onScrollGeometryChange(for: CGFloat.self) { geometry in
-                geometry.contentOffset.y
-            } action: { oldOffset, newOffset in
-                if newOffset < oldOffset - 1 {
-                    viewModel.userScrolledUp()
+                .onChange(of: viewModel.bufferRevision) { _, _ in
+                    guard viewModel.isTailPinned,
+                          let lastID = viewModel.displayRows.last?.id else { return }
+                    withAnimation(.easeOut(duration: 0.15)) {
+                        proxy.scrollTo(lastID, anchor: .bottom)
+                    }
+                }
+                .onChange(of: viewModel.isTailPinned) { _, pinned in
+                    guard pinned, let lastID = viewModel.displayRows.last?.id else { return }
+                    withAnimation(.easeOut(duration: 0.15)) {
+                        proxy.scrollTo(lastID, anchor: .bottom)
+                    }
                 }
             }
-            .onChange(of: viewModel.bufferRevision) { _, _ in
-                guard viewModel.isTailPinned,
-                      let lastID = viewModel.displayRows.last?.id else { return }
-                withAnimation(.easeOut(duration: 0.15)) {
-                    proxy.scrollTo(lastID, anchor: .bottom)
-                }
-            }
-            .onChange(of: viewModel.isTailPinned) { _, pinned in
-                guard pinned, let lastID = viewModel.displayRows.last?.id else { return }
-                withAnimation(.easeOut(duration: 0.15)) {
-                    proxy.scrollTo(lastID, anchor: .bottom)
+        } else {
+            logRows
+                .font(.body.monospaced())
+        }
+    }
+
+    private var logRows: some View {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            ForEach(viewModel.displayRows) { row in
+                switch row {
+                case .line(let line):
+                    LogLineRow(line: line, wraps: viewModel.isLineWrapEnabled)
+                        .id(row.id)
+                case .stoppedCap:
+                    LogStoppedCapRow()
+                        .id(row.id)
                 }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 12)
     }
 
     private var jumpToLatestPill: some View {
@@ -162,20 +183,25 @@ private struct LogLineRow: View {
     let wraps: Bool
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Text(line.level.label)
-                .font(.caption2.weight(.semibold).monospaced())
-                .foregroundStyle(levelColor)
-                .frame(width: 52, alignment: .leading)
-
-            Text(line.text)
-                .foregroundStyle(textColor)
-                .textSelection(.enabled)
-                .lineLimit(wraps ? nil : 1)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 1)
+        // The message must be a standalone Text (not an HStack sibling of the fixed-width
+        // level label): in an HStack, SwiftUI's width negotiation makes the message fall back
+        // to word-wrap-with-truncation, so a long tail shows a stray "…" even at lineLimit(nil).
+        // Reserving a leading gutter and floating the level label in an overlay keeps the
+        // aligned column while letting the message wrap like a lone Text.
+        Text(line.text)
+            .foregroundStyle(textColor)
+            .textSelection(.enabled)
+            .lineLimit(wraps ? nil : 1)
+            .padding(.leading, 60)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .overlay(alignment: .topLeading) {
+                Text(line.level.label)
+                    .font(.caption2.weight(.semibold).monospaced())
+                    .foregroundStyle(levelColor)
+                    .frame(width: 52, alignment: .leading)
+                    .padding(.top, 2)
+            }
+            .padding(.vertical, 1)
     }
 
     private var levelColor: Color {
@@ -231,7 +257,7 @@ private struct PreviewLogService: ContainerServicing {
             command: ["/bin/sh"],
             createdAt: .now,
             startedAt: .now,
-            exitCode: nil,
+            exitStatus: .unavailable(reason: .noEvidence),
             restartCount: 0,
             ports: [],
             mounts: [],
@@ -255,5 +281,6 @@ private struct PreviewLogService: ContainerServicing {
     func exec(id: String, command: [String]) async throws -> ExecResult {
         ExecResult(exitCode: 0, stdout: "", stderr: "")
     }
+    func exitStatus(id: String) async -> ExitStatus { .unavailable(reason: .noEvidence) }
 }
 #endif

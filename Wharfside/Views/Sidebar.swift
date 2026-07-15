@@ -3,7 +3,10 @@
 import SwiftUI
 
 private enum SidebarMetrics {
-    static let width: CGFloat = 160
+    /// Labels never clip at this min. I-UI-2: 190 + list(260) + detail(440) ≈ 890 < 1100.
+    static let minWidth: CGFloat = 190
+    static let idealWidth: CGFloat = 210
+    static let maxWidth: CGFloat = 260
 }
 
 struct Sidebar: View {
@@ -13,9 +16,14 @@ struct Sidebar: View {
         List(NavigationSection.allCases, selection: $selection) { section in
             NavigationLink(value: section) {
                 Label(section.rawValue, systemImage: section.systemImage)
+                    .lineLimit(1)
             }
         }
-        .navigationSplitViewColumnWidth(SidebarMetrics.width)
+        .navigationSplitViewColumnWidth(
+            min: SidebarMetrics.minWidth,
+            ideal: SidebarMetrics.idealWidth,
+            max: SidebarMetrics.maxWidth
+        )
         .listStyle(.sidebar)
     }
 }
@@ -51,5 +59,5 @@ struct SettingsPlaceholderView: View {
 
 #Preview {
     Sidebar(selection: .constant(.containers))
-        .frame(width: SidebarMetrics.width, height: 400)
+        .frame(width: SidebarMetrics.idealWidth, height: 400)
 }

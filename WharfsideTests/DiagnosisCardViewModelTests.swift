@@ -50,6 +50,24 @@ struct DiagnosisCardViewModelTests {
         }
     }
 
+    @Test func finalizedDiagnosisPublishesExitStatus() async throws {
+        let session = StubDiagnosisSession(mode: .emit(cardSampleDiagnosis))
+        let viewModel = makeViewModel(session: session)
+        viewModel.updateContainer(stoppedContainer(id: "app"))
+
+        // Qualify: Containerization also defines ExitStatus; bare name is ambiguous in tests.
+        var published: (String, WharfsideAnalysis.ExitStatus)?
+        viewModel.onExitStatusResolved = { id, status in
+            published = (id, status)
+        }
+
+        viewModel.explain()
+        #expect(await TestPolling.waitUntil { published != nil })
+
+        #expect(published?.0 == "app")
+        #expect(published?.1 == .known(1, source: .runtime))
+    }
+
     @Test func degradedResultPreservesFlag() async throws {
         let violating = ContainerDiagnosis(
             summary: "Unknown failure.",
@@ -145,6 +163,56 @@ struct DiagnosisCardViewModelTests {
         })
     }
 
+    @Test func copyReportReachableInResultStateAndFiresConfirmation() async throws {
+        let viewModel = makeViewModel()
+        viewModel.updateContainer(stoppedContainer(id: "app"))
+
+        viewModel.explain()
+        #expect(await TestPolling.waitUntil {
+            if case .result = viewModel.phase { return true }
+            return false
+        })
+
+        let report = viewModel.reportText()
+        #expect(report != nil)
+        #expect(report?.contains("## Wharfside diagnosis report") == true)
+        #expect(report?.contains(cardSampleDiagnosis.summary) == true)
+
+        #expect(viewModel.copyReportBannerMessage == nil)
+        viewModel.presentCopyConfirmation()
+        #expect(viewModel.copyReportBannerMessage == DiagnosisPrivacyCopy.copyReportToast)
+    }
+
+    @Test func copyReportReachableInDegradedState() async throws {
+        let violating = ContainerDiagnosis(
+            summary: "Unknown failure.",
+            category: .unknown,
+            suggestedActions: ["Inspect logs"],
+            confidence: .high
+        )
+        let session = StubDiagnosisSession(mode: .emitSequence([violating, violating]))
+        let viewModel = makeViewModel(session: session)
+        viewModel.logEntriesProvider = { cardSampleEntries() }
+        viewModel.updateContainer(stoppedContainer(id: "db"))
+
+        viewModel.explain()
+        #expect(await TestPolling.waitUntil {
+            if case .result = viewModel.phase { return true }
+            return false
+        })
+
+        let report = viewModel.reportText()
+        #expect(report != nil)
+        #expect(report?.contains("Degraded: true") == true)
+    }
+
+    @Test func reportTextIsNilOutsideResultState() {
+        let viewModel = makeViewModel()
+        viewModel.updateContainer(stoppedContainer(id: "app"))
+
+        #expect(viewModel.reportText() == nil)
+    }
+
     @Test func usesBufferedEntriesBeforeColdFetch() async throws {
         let session = CapturingDiagnosisSession()
         let viewModel = makeViewModel(session: session)
@@ -237,7 +305,7 @@ private func stoppedContainer(id: String) -> ContainerDetail {
         command: ["app"],
         createdAt: .now,
         startedAt: nil,
-        exitCode: 1,
+        exitStatus: .known(1, source: .runtime),
         restartCount: 0,
         ports: [],
         mounts: [],
@@ -254,7 +322,7 @@ private func runningContainer(id: String) -> ContainerDetail {
         command: ["app"],
         createdAt: .now,
         startedAt: .now,
-        exitCode: nil,
+        exitStatus: .unavailable(reason: .stillRunning),
         restartCount: 0,
         ports: [],
         mounts: [],

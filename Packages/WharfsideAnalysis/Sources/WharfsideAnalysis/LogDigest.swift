@@ -28,7 +28,7 @@ public struct LogPattern: Sendable, Equatable {
 public struct LogDigest: Sendable, Equatable {
     public let containerName: String
     public let image: String
-    public let exitCode: Int32?
+    public let exitStatus: ExitStatus
     public let windowDescription: String
     public let counts: [String: Int]
     public let topPatterns: [LogPattern]
@@ -40,6 +40,8 @@ public struct LogDigest: Sendable, Equatable {
     public let bootLines: [String]
     /// Optional note when digest is boot-only (no stdio application output).
     public let sourceNote: String?
+    /// Precheck facts from the rulebook (stable rulebook order).
+    public let facts: [String]
     /// Whether error volume in the recent window exceeds the preceding baseline.
     public let errorSpikeDetected: Bool
     /// Approximate token count of the rendered prompt (`PromptRenderer`), using chars / 4.
@@ -48,7 +50,7 @@ public struct LogDigest: Sendable, Equatable {
     public init(
         containerName: String,
         image: String,
-        exitCode: Int32?,
+        exitStatus: ExitStatus,
         windowDescription: String,
         counts: [String: Int],
         topPatterns: [LogPattern],
@@ -58,12 +60,13 @@ public struct LogDigest: Sendable, Equatable {
         restartCount: Int,
         bootLines: [String] = [],
         sourceNote: String? = nil,
+        facts: [String] = [],
         errorSpikeDetected: Bool = false,
         estimatedTokens: Int = 0
     ) {
         self.containerName = containerName
         self.image = image
-        self.exitCode = exitCode
+        self.exitStatus = exitStatus
         self.windowDescription = windowDescription
         self.counts = counts
         self.topPatterns = topPatterns
@@ -73,6 +76,7 @@ public struct LogDigest: Sendable, Equatable {
         self.restartCount = restartCount
         self.bootLines = bootLines
         self.sourceNote = sourceNote
+        self.facts = facts
         self.errorSpikeDetected = errorSpikeDetected
         self.estimatedTokens = estimatedTokens
     }

@@ -1,0 +1,4 @@
+@boot
+2026-07-09T05:54:30.772Z info vminitd: id: quiet, pid: 109 started managed process
+2026-07-09T05:54:30.774Z warning vminitd: current_bytes: 83759104 vminitd memory threshold exceeded
+[   27.388960] EXT4-fs (vdb): unmounting filesystem c144d1a9-fddc-4377-a923-57a0acbbe56f.

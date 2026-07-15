@@ -25,7 +25,7 @@ struct ImagesView: View {
 
         NavigationStack {
             listContent
-                .searchable(text: $viewModel.searchText, prompt: "Search images…")
+                .searchable(text: $viewModel.searchText, prompt: "Search…")
                 .focused($isSearchFocused)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -227,35 +227,11 @@ private struct ImageRowView: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(displayReference)
-                    .font(.body.monospaced())
-                    .foregroundStyle(isUntagged ? .secondary : .primary)
-                    .lineLimit(1)
-                Text(ImageSummaryFormatting.shortDigest(image.digest))
-                    .font(.caption.monospaced())
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
-            .frame(minWidth: 180, alignment: .leading)
-            .layoutPriority(1)
-
-            Text(ImageSummaryFormatting.formattedSize(image.sizeBytes))
-                .font(.callout)
-                .foregroundStyle(.secondary)
-                .frame(width: 90, alignment: .trailing)
-
-            Text(ImageSummaryFormatting.relativeCreated(image.createdAt))
-                .font(.callout)
-                .foregroundStyle(.secondary)
-                .frame(width: 110, alignment: .trailing)
-
-            if isPerformingAction {
-                ProgressView()
-                    .controlSize(.regular)
-                    .frame(width: 32, height: 28)
-            }
+        // Drop size/date before clipping mid-glyph when the content column is near min width.
+        ViewThatFits(in: .horizontal) {
+            row(showsSize: true, showsDate: true)
+            row(showsSize: true, showsDate: false)
+            row(showsSize: false, showsDate: false)
         }
         .padding(.vertical, 6)
         .contentShape(Rectangle())
@@ -263,6 +239,47 @@ private struct ImageRowView: View {
             Button("Tag…", systemImage: "tag", action: onTag)
             Divider()
             Button("Delete", systemImage: "trash", role: .destructive, action: onDelete)
+        }
+    }
+
+    private func row(showsSize: Bool, showsDate: Bool) -> some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(displayReference)
+                    .font(.body.monospaced())
+                    .foregroundStyle(isUntagged ? .secondary : .primary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                Text(ImageSummaryFormatting.shortDigest(image.digest))
+                    .font(.caption.monospaced())
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .layoutPriority(1)
+
+            if showsSize {
+                Text(ImageSummaryFormatting.formattedSize(image.sizeBytes))
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+            }
+
+            if showsDate {
+                Text(ImageSummaryFormatting.relativeCreated(image.createdAt))
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+            }
+
+            if isPerformingAction {
+                ProgressView()
+                    .controlSize(.regular)
+                    .frame(width: 32, height: 28)
+            }
         }
     }
 }

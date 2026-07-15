@@ -1,7 +1,9 @@
 # XPC Capability Map — apple/container 1.0.0
 
-**Spike date:** 2026-07-04  
-**Environment:** macOS 26 (Apple silicon), Xcode 26.6, `container` CLI 1.0.0 (commit `ee848e3`), apiserver running  
+**Spike date:** 2026-07-04 (revised 2026-07-13 — version-label note)  
+**Environment:** macOS 26 (Apple silicon), Xcode 26.6, `container` CLI **1.0.0** (commit `ee848e3`), apiserver running  
+**SPM pin:** `container` 1.0.0 @ `ee848e3` — matches installed daemon (`container system version`).  
+**Versioning:** repo tags include 0.x (through 0.12.3) and 1.x (1.0.0, 1.1.0 latest); 1.0.0 dropped 0.x XPC compat.  
 **Evidence:** `Spikes/xpc-probe/` — run with `.build/debug/xpc-probe run-all` and `failure-modes`
 
 ---
@@ -51,6 +53,7 @@ Roughly **85% of Wharfside M0 container/image/volume/system operations can be pu
 | 18 | Machines / VM management | ✅ | `MachineClient.list/create/delete/boot/stop/inspect/logs/setConfig/getDefault/setDefault` | Separate service `machine-apiserver`. List returned 0 machines; inspect missing → `notFound`. Create not exercised (would pull image + boot VM — heavy). API surface is substantial. | No for list/inspect/stop; create is complex |
 | 19 | System status / health | ✅ | `ClientHealthCheck.ping(timeout:) async throws -> SystemHealth` | Returns version, commit, appRoot, installRoot, logRoot. Clean signal when daemon up. When down → see failure appendix. | No |
 | 20 | Events / notifications | ❌ | *None* | `XPCRoute.containerEvent` and `.containerState` exist in client enum but **not registered** on apiserver. Raw send → **connection interrupted**. No watch/subscribe API. **Polling only.** | N/A |
+| 21 | Init exit status | ⚠️ | `containerWait` XPC (`processIdentifier == containerID`) → `exitCode` + `exitedAt` | **Not** in `ContainerSnapshot` from `list`/`get` on pinned revision — Wharfside fetches at diagnosis time via `ContainerServicing.exitStatus`. Returns immediately for stopped containers. Unknown routes still drop the connection; guard once and degrade to `ExitStatus.unavailable`. Exit-waiter behavior changed in 0.12.0 (#1397); re-verify on daemon upgrades. See `docs/OBSERVED_STOP_SIGNATURE.md`. | No |
 
 ---
 

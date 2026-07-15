@@ -34,6 +34,7 @@ struct ProbeCommands: AsyncParsableCommand {
             MachineProbe.self,
             SystemHealthProbe.self,
             EventsProbe.self,
+            ExitStatusProbe.self,
             FailureModes.self,
             Cleanup.self,
         ],
@@ -508,6 +509,32 @@ struct SystemHealthProbe: AsyncParsableCommand {
         printResult("health.apiServerCommit", health.apiServerCommit.prefix(8))
         printResult("health.appRoot", health.appRoot.path())
         printResult("health.installRoot", health.installRoot.path())
+    }
+}
+
+struct ExitStatusProbe: AsyncParsableCommand {
+    static let configuration = CommandConfiguration(
+        commandName: "exit-status",
+        abstract: "B1 manual check — init exit code via containerWait"
+    )
+
+    @Argument(help: "Stopped container IDs")
+    var containerIDs: [String]
+
+    func run() async throws {
+        let client = XPCClient(service: "com.apple.container.apiserver")
+        for id in containerIDs {
+            let request = XPCMessage(route: .containerWait)
+            request.set(key: .id, value: id)
+            request.set(key: .processIdentifier, value: id)
+            do {
+                let response = try await client.send(request)
+                let code = response.int64(key: .exitCode)
+                printResult("exitStatus.\(id)", Int32(code))
+            } catch {
+                printResult("exitStatus.\(id)", formatError(error))
+            }
+        }
     }
 }
 

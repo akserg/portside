@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "minAppVersion": "0.1.1",
+  "rules": [
+    {
+      "kind": "precheck",
+      "id": "precheck.stop-escalation",
+      "criteria": {
+        "exitCodes": [137],
+        "logPatterns": [
+          "sending signal 15 to process",
+          "sending signal 9 to process",
+          "status: 137 managed process exit"
+        ]
+      },
+      "emitsFact": "TERMINATION: container stopped via SIGTERM then SIGKILL (orderly stop, exit 137)",
+      "suppressesCategories": ["outOfMemory", "crash"],
+      "conclusionCategory": "stopped",
+      "conclusionSummary": "Container stopped via SIGTERM/SIGKILL (orderly stop); boot log shows signal 15 → grace period → signal 9 → exit 137."
+    },
+    {
+      "kind": "noise",
+      "id": "noise.vminitd-memory-threshold",
+      "criteria": {},
+      "linePattern": "vminitd memory threshold exceeded"
+    }
+  ]
+}

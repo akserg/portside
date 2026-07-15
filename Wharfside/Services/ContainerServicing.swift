@@ -6,6 +6,8 @@ import WharfsideAnalysis
 protocol ContainerServicing: Sendable {
     func list() async throws -> [ContainerSummary]
     func get(id: String) async throws -> ContainerDetail
+    /// Init-process exit status for a stopped container. Always returns an explicit `ExitStatus`.
+    func exitStatus(id: String) async -> WharfsideAnalysis.ExitStatus
     func create(id: String, image: String, command: [String]) async throws
     func start(id: String) async throws
     func stop(id: String, timeout: TimeInterval) async throws

@@ -1,6 +1,7 @@
 // Models/ContainerDetail.swift
 
 import Foundation
+import WharfsideAnalysis
 
 struct ContainerDetail: Sendable, Hashable, Identifiable {
     let id: String
@@ -9,7 +10,7 @@ struct ContainerDetail: Sendable, Hashable, Identifiable {
     let command: [String]
     let createdAt: Date
     let startedAt: Date?
-    let exitCode: Int32?
+    let exitStatus: ExitStatus
     let restartCount: Int
     let ports: [ContainerPortBinding]
     let mounts: [ContainerMount]

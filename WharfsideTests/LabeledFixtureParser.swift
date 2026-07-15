@@ -36,4 +36,21 @@ enum LabeledFixtureParser {
 
     return entries
   }
+
+  static func loadBootLog(named filename: String) throws -> [LogEntry] {
+    let url = URL(fileURLWithPath: #filePath)
+      .deletingLastPathComponent()
+      .deletingLastPathComponent()
+      .appendingPathComponent("Packages/WharfsideAnalysis/Tests/Fixtures/\(filename)")
+    let text = try String(contentsOf: url, encoding: .utf8)
+    return LogParser().parse(text: text).map {
+      LogEntry(
+        timestamp: $0.timestamp,
+        level: $0.level,
+        message: $0.message,
+        raw: $0.raw,
+        source: .boot
+      )
+    }
+  }
 }

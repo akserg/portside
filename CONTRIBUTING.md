@@ -66,9 +66,16 @@ These are checked by CI and lint — PRs that violate them fail automatically:
 
 ## Reporting bugs
 
-Include: macOS version, `container --version`, whether Apple Intelligence is enabled,
-and the app's error text. For diagnosis-quality issues (bad AI output), attach the
-log digest if you can — never raw logs with secrets in them.
+Use the issue templates: `bug.yml` for general bugs (macOS version, `container --version`,
+Apple Intelligence status, steps, and the app's error text), `wrong-diagnosis.yml` for bad
+AI output. For a wrong diagnosis, click **Copy report** on the diagnosis card (or use its
+context menu) and paste the result into the template's report field — it bundles the
+exact digest the model saw, its diagnosis, and version info in one step. Review the pasted
+report before submitting: digests can contain log fragments, and log fragments can contain
+secrets (connection strings, tokens in error text).
+
+Maintainers: see [docs/DIAGNOSIS_FEEDBACK.md](docs/DIAGNOSIS_FEEDBACK.md) for the procedure
+that turns a wrong-diagnosis report into a `DiagnosisRegressionTests` fixture.
 
 ## Licensing
 

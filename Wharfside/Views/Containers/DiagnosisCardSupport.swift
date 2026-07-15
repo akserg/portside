@@ -4,6 +4,15 @@
 import AppKit
 import SwiftUI
 
+/// Shared privacy / share framing for idle tagline, copy-report toast, and launch copy.
+/// Analysis stays on-device; sharing a report is an explicit user paste of a bounded digest.
+enum DiagnosisPrivacyCopy {
+    static let idleTagline =
+        "On-device analysis of this container's logs. Nothing leaves your Mac."
+    static let copyReportToast =
+        "Report copied — review before sharing (includes last log lines)"
+}
+
 struct DiagnosisPresentation {
     let result: DiagnosisResult
 
@@ -25,6 +34,11 @@ struct DiagnosisPresentation {
         showsMediumConfidenceChip
     }
 
+    /// Precheck short-circuit: orderly stop is observed evidence, not a failure diagnosis.
+    var showsOrderlyStopSubtext: Bool {
+        diagnosis.category == .stopped && !result.wasDegraded
+    }
+
     var categoryTitle: String {
         switch diagnosis.category {
         case .dependencyUnreachable: "Dependency unreachable"
@@ -32,6 +46,7 @@ struct DiagnosisPresentation {
         case .outOfMemory: "Out of memory"
         case .applicationBug: "Application bug"
         case .imageOrRuntime: "Image / runtime"
+        case .stopped: "Orderly stop"
         case .unknown: "Unknown"
         }
     }
@@ -43,6 +58,7 @@ struct DiagnosisPresentation {
         case .outOfMemory: "memorychip"
         case .applicationBug: "ladybug"
         case .imageOrRuntime: "shippingbox"
+        case .stopped: "stop.circle"
         case .unknown: "questionmark.circle"
         }
     }
@@ -51,6 +67,10 @@ struct DiagnosisPresentation {
         if result.wasDegraded || diagnosis.confidence == .low {
             return Color.secondary.opacity(0.12)
         }
+        // Orderly stop stays informational blue — not brand amber (warning-adjacent).
+        if diagnosis.category == .stopped {
+            return Color.blue.opacity(0.12)
+        }
         return Color.accentColor.opacity(0.12)
     }
 
@@ -58,12 +78,21 @@ struct DiagnosisPresentation {
         if result.wasDegraded || diagnosis.confidence == .low {
             return .secondary
         }
+        if diagnosis.category == .stopped {
+            return .blue
+        }
         return .primary
     }
 
     var footerText: String {
         let confidence = diagnosis.confidence.displayTitle.lowercased()
-        return "on-device · \(categoryTitle.lowercased()) · \(confidence)"
+        let sourceLabel: String = switch result.source {
+        case .deterministicPrecheck:
+            "deterministic rules"
+        case .onDeviceModel:
+            "on-device model"
+        }
+        return "\(sourceLabel) · \(categoryTitle.lowercased()) · \(confidence)"
     }
 
     static func containsCopyableCommand(_ action: String) -> Bool {

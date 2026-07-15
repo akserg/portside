@@ -1,107 +1,180 @@
 # Wharfside — Development Plan
 
-**Goal**: Ship the first AI-native container manager for macOS — a native SwiftUI app for
-`apple/container` with on-device FoundationModels intelligence — and reach a public,
-notarized 0.1 release with the crash-diagnosis feature as the hero.
+**Goal**: Ship the definitive crash-diagnosis tool for `apple/container` — a native
+SwiftUI app whose on-device FoundationModels intelligence explains why containers
+died — and launch publicly on the strength of that one story.
 
-**Strategy recap** (decided during planning):
-- Compete on the AI layer, not the checklist — seven free GUIs already cover CRUD
-- Deterministic-first architecture: parsing/stats in plain Swift, LLM only for synthesis
-- Narrow beats broad: macOS 26 + Apple silicon only; no cross-platform plans
-- Professional distribution (signed, notarized, Homebrew) is itself a differentiator
-- Safety story: on-device inference + confirmation queue (contrast with Gordon's CVE)
+**Strategy recap** (updated July 2026, post-Davit):
+- **Diagnosis-first, not GUI-first.** Davit's Show HN (150+ points) now owns the
+  "full-featured native GUI" positioning. That race is over — and it validates the
+  market without touching the moat: nobody uses FoundationModels for crash diagnosis.
+  Wharfside answers *why did my container die*; Davit answers *what's running*.
+- Deterministic-first architecture: rules and parsing settle what they can settle;
+  the model synthesizes over pre-digested, clean input only. The stop-vs-OOM
+  misdiagnosis (report2.md) is the founding story of this design.
+- Narrow beats broad: macOS 26+ / Apple silicon only; no cross-platform plans.
+- Professional distribution (Developer ID signed, notarized, Homebrew) stays a
+  differentiator. Mac App Store remains impossible (sandbox vs `com.apple.container.*`
+  XPC) — which also makes free PCC access an open question (see risks).
+- Safety story: on-device inference, raw logs never leave the Mac, and (in M4) a
+  structurally enforced confirmation queue — contrast with Gordon's prompt-injection CVE.
+- Acknowledge Davit graciously and by name in all launch material; preempt the
+  comparison rather than answer it defensively.
 
-**Cadence assumption**: solo developer, part-time (~10–15 h/week). Estimates are
-deliberately conservative; cut scope, not quality.
+**Slogan discipline**: the tagline leads with diagnosis, not "container manager."
+"Proposes a fix" may only be claimed once the advice tier actually ships ("a fix",
+never "the fix"). "Applies it when you say so" waits for M4.
+
+**Cadence assumption**: solo developer, part-time (~10–15 h/week).
+Estimates stay conservative; cut scope, not quality.
 
 ---
 
 ## Milestone 0 — Foundation (Done)
 
-*Everything needed before feature work can go fast.*
+Shipped: project scaffold (Swift 6 strict concurrency), CI with warnings-as-errors +
+SwiftLint, XPC capability spike and `ContainerService` protocol (XPC + CLI fallback),
+`AIAvailabilityService` with degraded modes, app shell, wharfside.app landing page.
 
-| # | Issue | Notes |
-|---|-------|-------|
-| ~~0.1~~ | Xcode project scaffold: SwiftUI app, MVVM folders, Swift 6 strict concurrency | Bundle ID `app.wharfside.Wharfside`, min target macOS 26 |
-| ~~0.2~~ | CI: GitHub Actions build + unit tests on macOS 26 runner | Fail PRs on warnings; add SwiftLint/SwiftFormat |
-| ~~0.3~~ | Spike: connect to `container-apiserver` via ContainerAPIClient (XPC) | Validate list/inspect/start/stop; document what XPC does NOT expose |
-| ~~0.4~~ | `ContainerService` protocol + XPC implementation + CLI-fallback implementation | All runtime access behind one protocol; mockable for tests |
-| ~~0.5~~ | `AIAvailabilityService` with degraded-mode plumbing | Per AI_INTEGRATION.md §3; UI banner states for each unavailability reason |
-| ~~0.6~~ | App shell: sidebar navigation, empty states, settings window skeleton | No features, just structure |
-| ~~0.7~~ | Website: one-page landing on wharfside.app (Cloudflare Pages) + hello@ email check | "Coming soon" + GitHub link is enough |
+## Milestone 1 — MVP (Done, shipped as 0.1.0)
 
-**Exit criteria**: `main` builds green in CI; app launches, connects to a running
-container service, lists real containers in a debug view.
+Shipped: Containers / Images views, log viewer (100k+ lines, follow-tail), the
+`WharfsideAnalysis` digestion pipeline, `@Generable` diagnosis via
+`LogDiagnosisService`, streaming diagnosis card, prompt regression suite,
+signing/notarization pipeline, Homebrew tap.
 
----
-
-## Milestone 1 — MVP: Containers, Images, Logs + Crash Diagnosis (In Development)
-
-*The public 0.1. Three views done well, plus the hero AI feature.*
-
-| # | Issue | Notes |
-|---|-------|-------|
-| ~~1.1~~ | Containers view: list with status, search/filter, start/stop/delete with confirmation | Live refresh via polling first; optimize later |
-| ~~1.2~~ | Container detail: inspect data, ports, mounts, env | Read-only in 0.1 |
-| ~~1.3~~ | Images view: list, pull with progress, delete, registry login | |
-| ~~1.4~~ | Log viewer: streaming, follow-tail, level colorization, search | Virtualized list; must handle noisy containers |
-| ~~1.5~~ | Log digestion pipeline (Layer 1): level parsing, template clustering, digests | Pure Swift package `WharfsideAnalysis`; heavy unit tests, fixture logs |
-| ~~1.6~~ | `@Generable` diagnosis models + `LogDiagnosisService` | Per AI_INTEGRATION.md §4 |
-| ~~1.7~~ | Diagnosis UI: "Explain this crash" card with streaming render + confidence styling | prewarm() on detail-view open |
-| ~~1.8~~ | Prompt regression test suite (fixture digests → typed assertions) | Category ∈ expected set, non-empty actions |
-| 1.9 | Signing + notarization pipeline; Sparkle (or GitHub releases) auto-update decision | The polish gap competitors left open |
-| 1.10 | Homebrew tap `wharfside/homebrew-wharfside` with cask | `brew install wharfside/wharfside/wharfside` |
-| 1.11 | README badges/screenshots, demo GIF of crash diagnosis, CONTRIBUTING.md | Hero asset for launch |
-| 1.12 | 0.1.0 release + Show HN / r/macapps / Product Hunt post | Lead with the AI demo, cite on-device privacy |
-
-**Exit criteria**: a stranger on macOS 26 can `brew install` Wharfside, manage
-containers, and get a useful crash diagnosis with Apple Intelligence enabled — or a
-clear explanation when it's not.
+Deliberately **not** launched publicly at 0.1.0 — launch moved behind 0.1.1 (below)
+after the strategic recut. Launch assets issue (old 1.11/1.12, now #18/#19) carries
+forward with a rewritten diagnosis-first angle.
 
 ---
 
-## Milestone 2 — Depth: Volumes, Machines, Dashboard, Recommendations 
+## Milestone 2a — 0.1.1 "Diagnosis" (ACTIVE — launch gate)
+
+*Four release blockers plus the launch-asset pipeline, then we go public.
+Agent briefs B1 → B3 → B4 → B2 → B5 are written.*
+
+| # | Item | Brief | Notes |
+|---|------|-------|-------|
+| 2a.1 | Fix nil `exitCode` at diagnosis time | B1 | Exit status fetched at diagnosis time; explicit `unavailable` state; fail-closed precheck |
+| 2a.2 | Rulebook migration, Layers 1–2 (precheck + noise) onto `RulebookCore` | B3 | Signed bundled rulebook; report2.md fix expressed as rules; hardcoded path demoted to fail-closed fallback for one release |
+| 2a.3 | Regression suite green on migrated pipeline | B4 | Includes tampered/malformed-rulebook and unavailable-exit-code fixtures; Linux build of RulebookCore in CI |
+| 2a.4 | Copyable diagnosis report + wrong-diagnosis feedback | B2 | The launch artifact. Bounded digest + metadata (includes LAST_LINES excerpts — review before paste); redaction tests bound/scrub secrets, they don't eliminate log lines; prefilled GitHub issue, no network path |
+| 2a.5 | Launch assets automation: snapshot + pose modes (#18) | B5 | Fixture-driven `ImageRenderer` PNGs + posed-window capture for the hero GIF; assets provably match the regression suite. Launch gate, not a binary release blocker |
+
+**Exit criteria**: report2.md yields "user-initiated stop", not OOM, on the shipped
+build; a pasted report renders as a clean public GitHub issue; `make ci` green
+including purity grep.
+
+## Launch — Show HN (immediately after 0.1.1)
+
+- Post drafted (three title options; recommended: *"Show HN: On-device AI that
+  diagnoses macOS container crashes (exit 137 ≠ OOM)"*). Body leads with the
+  stop-vs-OOM story; gracious Davit paragraph with link to its thread; honest
+  limitations section.
+- Rewrite #19's angle: drop "the only apple/container GUI…" phrasing ("only" now
+  invites a fact-check); keep "no API keys, raw logs never leave your Mac
+  automatically." Accurate report claim: the copyable report is a **bounded digest**
+  (including the last few log lines) plus metadata — review before pasting publicly;
+  do **not** claim "never raw log lines / safe to paste into a public issue."
+- Pre-post checklist lives in the launch draft (notarized artifact verified, README
+  rewritten diagnosis-first, demo GIF/screenshot regenerated via B5's
+  `capture-assets.sh`, scratch issue with a pasted report, post Tue–Thu
+  ~14:00–16:00 UTC).
+- Prepare one ambiguous-failure example beyond report2.md where the model adds value
+  over rules alone — the answer to "the AI is just decoration."
+- Timing note: `fm` CLI on macOS 27 means anyone can pipe logs into the raw model and
+  get the confident-wrong OOM answer — that side-by-side is the strongest demo asset.
+
+## Post-launch polish — 0.1.2 (not a launch blocker)
+
+- Cache completed diagnosis cards across section switches / detail recreation so a
+  model-path result survives sidebar browsing (exit backfill already persists in
+  `AppState`; card state today lives only in `ContainerDetailView` `@State`). Prefetch
+  invalidation mirrors the backfill restart/stale rules. Skip for 0.1.1 — precheck
+  re-runs are free; model re-runs are the Show HN cost.
+
+## Milestone 2b — 0.2.0 "Advice" (post-launch)
+
+*The remaining diagnosis-story work from the original M2.*
 
 | # | Issue | Notes |
 |---|-------|-------|
-| 2.1 | Volumes view: list, create, delete, attach info | |
-| 2.2 | Machines view: manage host VMs (WWDC 2026 feature) | iContainer already has this — table stakes now |
-| 2.3 | Stats collection service + ring-buffer history store | Foundation for dashboard + heuristics |
-| 2.4 | Dashboard: per-container CPU/memory charts (Swift Charts) | |
-| 2.5 | Heuristic engine: idle-CPU, memory-trend, crash-loop detectors | Labeled "Heuristic" in UI; unit-tested thresholds |
-| 2.6 | AI advice tier: `ResourceAdvice` guided generation over heuristic findings | Per AI_INTEGRATION.md §5.2 |
-| 2.7 | Exec/shell: interactive terminal into a container (SwiftTerm) | Big usability win; scope carefully |
-| 2.8 | 0.2.0 release + changelog post | |
+| 2b.1 | #22 Stats collection service + ring buffer | **Trimmed scope**: only what heuristics need; dashboard-driven polish (retention UI etc.) moves to M3 |
+| 2b.2 | #24 Heuristic engine: idle-CPU, memory-trend, crash-loop | Labeled "Heuristic", never "AI"; unit-tested thresholds |
+| 2b.3 | #25 `ResourceAdvice` guided generation over heuristic findings | Model prioritizes and phrases; detects nothing itself. Unlocks "proposes a fix" in the tagline |
+| 2b.4 | #27 0.2.0 release + changelog | |
 
----
+## Milestone 3 — "Parity" (demand-driven, interruptible)
 
-## Milestone 3 — The Moat: ⌘K Command Palette 
+*The former GUI-race features. Davit does these today; we ship them when users ask,
+in whatever order they ask. "Just use Davit for that" is an acceptable interim answer.*
 
 | # | Issue | Notes |
 |---|-------|-------|
-| 3.1 | Tool definitions: list/inspect/logs (read-only, immediate execution) | Per AI_INTEGRATION.md §6 |
-| 3.2 | `PendingActionQueue` + confirmation chips UI for destructive tools | The safety story — never mutate without a click |
-| 3.3 | Palette UI: ⌘K overlay, streaming transcript, multi-turn session | Session reset w/ summary on context overflow |
-| 3.4 | Tool-calling test harness with mocked ContainerService | Assert tool sequence + zero unconfirmed mutations |
-| 3.5 | Multi-container correlation digests ("db died 3 s before api errored") | Feeds both diagnosis and palette |
-| 3.6 | Docs site: feature tour + AI architecture page (privacy positioning) | Reuse AI_INTEGRATION.md content |
-| 3.7 | 0.3.0 release + demo video of palette | This is the launch that can go viral |
+| 3.1 | #20 Volumes view | |
+| 3.2 | #21 Machines view | |
+| 3.3 | #23 Dashboard (Swift Charts) | Absorbs the stats polish trimmed from 2b.1 |
+| 3.4 | #26 Exec shell (SwiftTerm) | Human feature only — the model never gets an exec tool |
+
+No release number reserved; parity items ride along in whatever release is current.
+
+## Milestone 4 — "Actions" (0.3.0)
+
+*Full definition in M4-actions-milestone.md. Summary: the model can read anything,
+propose anything, mutate nothing without a click.*
+
+| # | Issue | Notes |
+|---|-------|-------|
+| 4.1 | #28 Read-only tools (list/inspect/logs) | Immediate execution; outputs summarized for context window |
+| 4.2 | #29 `PendingActionQueue` + confirmation chips | The security boundary. Structural enforcement: mutating handlers *cannot* call ContainerService, only construct PendingActions |
+| 4.3 | #31 Tool-calling harness, mocked ContainerService | Lands right after #29; includes adversarial prompt-injection log fixtures; runs on every PR |
+| 4.4 | #30 ⌘K palette: overlay, streaming transcript, multi-turn | Spike tool-calling quality first; cut palette ambitions, never queue guarantees |
+| 4.5 | #32 Multi-container correlation digests | Enriches, not enables — last |
+| 4.6 | #34 0.3.0 release + palette demo video | Unlocks "applies it when you say so" |
+
+Also in this window: #33 docs site (feature tour + AI architecture/privacy page).
 
 ---
 
 ## Deferred / explicitly out of scope for v0.x
 
-- Cross-platform (Windows/Linux) — market owned by Docker Gordon; revisit never or year 2
-- compose-style multi-container orchestration — candidate for a future Pro tier
-- Custom CreateML models, telemetry, cloud AI fallback — see AI_INTEGRATION.md §7
-- Mac App Store distribution — sandbox likely conflicts with XPC/CLI access; direct + brew only
-- Trademark registration, company formation — only if revenue becomes real
+- **Community knowledge flywheel** (consented distilled reports → Cloudflare Worker
+  intake → human+CI-gated rulebook publication). M2a's report format is designed to
+  feed it; nothing ships until well after launch.
+- **Cloud escalation ladder**: on-device (absolute privacy) → BYOK Claude/Gemini via
+  the new `LanguageModel` protocol (user's key, user's trust) → Wharfside-hosted
+  fine-tune (paid, digest-only, zero-retention). Each rung optional; marketed honestly
+  as *different* privacy tiers, never "same security in the cloud." BYOK first — it
+  validates demand at zero hosting cost.
+- **LoRA / custom model**: gates unchanged (failure class rules can't fix; corpus at
+  training scale; economics work) — but note WWDC26: no bring-your-own-fine-tune path
+  in FoundationModels; a custom on-device model means **Core AI**, and a hosted one
+  means the cloud ladder above.
+- Cross-platform, compose orchestration, Mac App Store, trademark/company — unchanged.
 
 ## Standing risks to monitor
 
-1. **Apple ships an official GUI** — existential; mitigation is speed and the AI layer
-2. **apple/container API churn** — low now that 1.0 froze CLI/XPC APIs
-3. **FoundationModels quality on small digests** — validate early in 1.6; if diagnosis
-   quality disappoints, double down on Layer 1 heuristics and reduce AI claims honestly
-4. **Solo-dev burnout** — milestones are cut lines, not commitments; M1 alone is a
-   respectable public project
+1. ~~**A competitor ships a polished GUI first**~~ — **happened (Davit, July 2026).**
+   Resolution: ceded the GUI race, repositioned diagnosis-first. Treat any future
+   competitor launch the same way: market validation first, threat assessment second.
+   The moat check is specific: does it use FoundationModels for diagnosis?
+2. **Apple ships an official GUI or builds diagnosis into `container`** — existential;
+   mitigation is speed, the rulebook corpus, and the community flywheel.
+3. **`container` runtime API churn** — **ongoing**, not frozen. The 0.x line (through
+   0.12.3) shipped breaking API markers most releases; **1.0.0** (Jun 2026) reset semver
+   and dropped 0.x XPC compatibility; **1.1.0** is already out. Wharfside pins an SPM
+   revision; users run daemons across several of these. Mitigation: `ContainerServicing`
+   protocol boundary, boot-log evidence over opportunistic XPC routes (exit status, stop
+   timing), and daemon version + commit in every copied diagnosis report.
+4. **FoundationModels quality on digests** — improved outlook: WWDC26 model is better
+   at logic/tool-calling, ~20B-class on M3/M4 Macs; token-counting APIs let the digest
+   size itself to hardware. Still: if quality disappoints, lean on rules and reduce AI
+   claims honestly.
+5. **PCC entitlement uncertainty** — free PCC tier is defined in App Store terms
+   (Small Business Program, <2M App Store downloads); Wharfside is Developer ID-only.
+   Timeboxed spike before ever claiming anything PCC-based. On-device path unaffected.
+6. **Prompt injection via logs** (activates in M4) — logs are attacker-controlled;
+   the confirmation queue is a security boundary and is tested as one.
+7. **Solo-dev burnout** — milestones are cut lines, not commitments. 0.1.1 + launch
+   alone is a respectable public project; everything after is optional in order.

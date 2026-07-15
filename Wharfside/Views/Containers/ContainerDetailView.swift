@@ -17,13 +17,19 @@ struct ContainerDetailView: View {
         service: any ContainerServicing,
         lifecycleObserver: ContainerLifecycleObserver,
         availability: any AvailabilityProviding,
+        exitStatusBackfill: ExitStatusBackfillCache? = nil,
+        reportEnvironmentProvider: @escaping () -> DiagnosisReportEnvironment = { .current(runtimeVersion: nil) },
         onBackToList: @escaping () -> Void
     ) {
         self.service = service
         self.lifecycleObserver = lifecycleObserver
         self.onBackToList = onBackToList
         _viewModel = State(
-            initialValue: ContainerDetailViewModel(containerID: containerID, service: service)
+            initialValue: ContainerDetailViewModel(
+                containerID: containerID,
+                service: service,
+                exitStatusBackfill: exitStatusBackfill
+            )
         )
         _logViewModel = State(initialValue: LogViewModel(containerID: containerID, service: service))
         _diagnosisCardViewModel = State(
@@ -31,10 +37,12 @@ struct ContainerDetailView: View {
                 containerID: containerID,
                 diagnosisService: LogDiagnosisService(
                     availability: availability,
-                    lifecycleObserver: lifecycleObserver
+                    lifecycleObserver: lifecycleObserver,
+                    containerService: service
                 ),
                 containerService: service,
-                logEntriesProvider: { [] }
+                logEntriesProvider: { [] },
+                reportEnvironmentProvider: reportEnvironmentProvider
             )
         )
     }
@@ -59,6 +67,8 @@ struct ContainerDetailView: View {
         .toolbar { toolbarContent(for: viewModel.detail) }
         .safeAreaInset(edge: .top, spacing: 0) {
             if let message = viewModel.actions.actionBannerMessage {
+                ActionErrorBanner(message: message)
+            } else if let message = diagnosisCardViewModel.copyReportBannerMessage {
                 ActionErrorBanner(message: message)
             }
         }
@@ -105,12 +115,13 @@ struct ContainerDetailView: View {
         @Bindable var viewModel = viewModel
 
         VStack(alignment: .leading, spacing: 0) {
-            Picker("Section", selection: $viewModel.selectedTab) {
-                ForEach(ContainerDetailTab.allCases) { tab in
-                    Text(tab.rawValue).tag(tab)
-                }
+            ViewThatFits(in: .horizontal) {
+                tabPicker(selection: $viewModel.selectedTab)
+                    .pickerStyle(.segmented)
+                tabPicker(selection: $viewModel.selectedTab)
+                    .pickerStyle(.menu)
+                    .fixedSize()
             }
-            .pickerStyle(.segmented)
             .labelsHidden()
             .padding(.horizontal)
             .padding(.vertical, 10)
@@ -120,6 +131,14 @@ struct ContainerDetailView: View {
             tabContent(for: detail, tab: viewModel.selectedTab)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    private func tabPicker(selection: Binding<ContainerDetailTab>) -> some View {
+        Picker("Section", selection: selection) {
+            ForEach(ContainerDetailTab.allCases) { tab in
+                Text(tab.rawValue).tag(tab)
+            }
+        }
     }
 
     @ViewBuilder
@@ -138,6 +157,7 @@ struct ContainerDetailView: View {
                         ContainerOverviewSection(
                             detail: detail,
                             displayStatus: viewModel.displayStatusLabel(for: detail),
+                            overviewExitStatus: viewModel.overviewExitStatus,
                             observerRestartCount: diagnosisCardViewModel.observerRestartCount,
                             isDiagnosisEligible: diagnosisCardViewModel.isEligible,
                             diagnosisCardViewModel: diagnosisCardViewModel,
@@ -178,6 +198,10 @@ struct ContainerDetailView: View {
     private func bindDiagnosisContext() {
         diagnosisCardViewModel.logEntriesProvider = {
             logViewModel.recentEntries(window: DiagnosisCardViewModel.logEntriesWindow)
+        }
+        diagnosisCardViewModel.onExitStatusResolved = { [viewModel] id, status in
+            guard id == viewModel.containerID else { return }
+            viewModel.recordDiagnosisExitStatus(status)
         }
 
         guard let detail = viewModel.detail else { return }

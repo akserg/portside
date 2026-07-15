@@ -1,6 +1,13 @@
 // WharfsideTests/DiagnosisRegressionTests.swift
 // Issue 1.6 / 1.8 — prompt regression against real FoundationModels output.
 // Enabled when `.artifacts/.run-ai-regression` exists (see Makefile `ai-test`).
+//
+// Two-tier suite (B4):
+// - Deterministic / `make ci`: LogDiagnosisServiceReport2Tests (hello / Digest16) —
+//   model never invoked; do not wire report2 into this live-model suite.
+// - Nightly / `make ai-test`: this file — genuine synthesis cases (e.g. crashy /
+//   boot_noise_contamination). Digest15 formatter golden covers the model-path
+//   report *shape* without requiring FoundationModels in CI.
 
 #if canImport(FoundationModels)
 import Foundation
@@ -107,7 +114,7 @@ struct DiagnosisRegressionFixture: Sendable {
       context: ContainerContext(
         containerName: container.id,
         image: container.image,
-        exitCode: container.exitCode,
+        exitStatus: container.exitStatus,
         restartCount: container.restartCount
       ),
       window: DigestWindow(description: "fixture log window")
@@ -166,7 +173,7 @@ struct DiagnosisRegressionFixture: Sendable {
         command: ["postgres"],
         createdAt: Date(timeIntervalSince1970: 1_700_000_000),
         startedAt: nil,
-        exitCode: nil,
+        exitStatus: .unavailable(reason: .noEvidence),
         restartCount: 0,
         ports: [],
         mounts: [],
@@ -205,7 +212,7 @@ struct DiagnosisRegressionFixture: Sendable {
     DiagnosisRegressionFixture(
       name: "silent_exit",
       logFile: "silent_exit.log",
-      container: stoppedContainer(id: "quiet", image: "app:1", exitCode: 0),
+      container: stoppedContainer(id: "quiet", image: "app:1", exitStatus: .known(0, source: .runtime)),
       expectedCategories: [.unknown],
       extraValidation: { diagnosis in
         diagnosis.confidence == .low || diagnosis.confidence == .medium
@@ -245,7 +252,7 @@ struct DiagnosisRegressionFixture: Sendable {
 private func stoppedContainer(
   id: String,
   image: String,
-  exitCode: Int32? = nil
+  exitStatus: WharfsideAnalysis.ExitStatus = .unavailable(reason: .noEvidence)
 ) -> ContainerDetail {
   ContainerDetail(
     id: id,
@@ -254,7 +261,7 @@ private func stoppedContainer(
     command: ["app"],
     createdAt: Date(timeIntervalSince1970: 1_700_000_000),
     startedAt: nil,
-    exitCode: exitCode,
+    exitStatus: exitStatus,
     restartCount: 0,
     ports: [],
     mounts: [],

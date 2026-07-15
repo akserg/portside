@@ -1,0 +1,6 @@
+@stdio
+2026-07-09T12:00:00.000Z info app: status: 0 managed process exit
+2026-07-09T12:00:00.001Z info app: sending signal 15 to process 1
+2026-07-09T12:00:00.002Z info app: sending signal 9 to process 1
+@boot
+2026-07-09T05:54:30.774Z warning vminitd: vminitd memory threshold exceeded

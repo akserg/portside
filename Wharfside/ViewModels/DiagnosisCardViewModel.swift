@@ -44,18 +44,32 @@ final class DiagnosisCardViewModel {
     private var container: ContainerDetail?
     private var resultContainerID: String?
     var logEntriesProvider: () -> [LogEntry]
+    /// Issue 1.11 — resolved lazily at copy time so the report always carries whatever
+    /// version info is cached then, without this view model owning any AppState reference.
+    private let reportEnvironmentProvider: () -> DiagnosisReportEnvironment
     private var diagnosisTask: Task<Void, Never>?
     private var prewarmTask: Task<Void, Never>?
+    private var copyReportBannerClearTask: Task<Void, Never>?
+
+    /// Invoked when a diagnosis finalizes with a resolved exit status (B6 Overview backfill).
+    /// Kept as a callback so this view model does not own AppState / the backfill cache.
+    var onExitStatusResolved: ((String, ExitStatus) -> Void)?
+
+    /// Transient "Report copied" confirmation, mirroring `ContainerActionCoordinator`'s
+    /// banner pattern (auto-clears; the security-review reminder is the point of showing it).
+    private(set) var copyReportBannerMessage: String?
 
     init(
         containerID: String,
         diagnosisService: LogDiagnosisService,
         containerService: any ContainerServicing,
-        logEntriesProvider: @escaping () -> [LogEntry]
+        logEntriesProvider: @escaping () -> [LogEntry],
+        reportEnvironmentProvider: @escaping () -> DiagnosisReportEnvironment = { .current(runtimeVersion: nil) }
     ) {
         self.diagnosisService = diagnosisService
         self.containerService = containerService
         self.logEntriesProvider = logEntriesProvider
+        self.reportEnvironmentProvider = reportEnvironmentProvider
     }
 
     var isEligible: Bool {
@@ -93,6 +107,8 @@ final class DiagnosisCardViewModel {
         cancelInFlightWork(resetToIdle: true)
         prewarmTask?.cancel()
         prewarmTask = nil
+        copyReportBannerClearTask?.cancel()
+        copyReportBannerClearTask = nil
     }
 
     func explain() {
@@ -108,6 +124,28 @@ final class DiagnosisCardViewModel {
     func retryAfterFailure() {
         guard !isRunning else { return }
         explain()
+    }
+
+    /// Formats the copyable report for the currently displayed result (any result state,
+    /// including degraded). Returns nil when there's no result to report on. Pure — the
+    /// caller (a View) owns the actual pasteboard write (Issue 1.11).
+    func reportText() -> String? {
+        guard case .result(let state) = phase, let container else { return nil }
+        return DiagnosisReportFormatter.render(
+            result: state.result,
+            container: container,
+            environment: reportEnvironmentProvider()
+        )
+    }
+
+    func presentCopyConfirmation() {
+        copyReportBannerClearTask?.cancel()
+        copyReportBannerMessage = DiagnosisPrivacyCopy.copyReportToast
+        copyReportBannerClearTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(5))
+            guard !Task.isCancelled else { return }
+            self?.copyReportBannerMessage = nil
+        }
     }
 
     // MARK: - Private
@@ -189,6 +227,7 @@ final class DiagnosisCardViewModel {
     private func applyFinalized(_ result: DiagnosisResult, containerID: String) async {
         phase = .result(ResultState(result: result, isVerifying: true))
         resultContainerID = containerID
+        onExitStatusResolved?(containerID, result.exitStatus)
 
         try? await Task.sleep(for: .milliseconds(200))
         guard !Task.isCancelled else { return }
@@ -250,7 +289,7 @@ extension DiagnosisCardViewModel {
                 command: ["postgres"],
                 createdAt: .now,
                 startedAt: nil,
-                exitCode: 1,
+                exitStatus: .known(1, source: .runtime),
                 restartCount: 0,
                 ports: [],
                 mounts: [],
@@ -260,6 +299,35 @@ extension DiagnosisCardViewModel {
         )
         vm.phase = phase
         return vm
+    }
+
+    /// Injects a completed diagnosis without the 200 ms verifying shimmer — launch assets.
+    func applyCompletedResult(_ result: DiagnosisResult) {
+        cancelInFlightWork(resetToIdle: false)
+        phase = .result(ResultState(result: result, isVerifying: false))
+        resultContainerID = container?.id
+        if let id = container?.id {
+            onExitStatusResolved?(id, result.exitStatus)
+        }
+    }
+
+    func applyRunningPartial(_ summary: String?) {
+        cancelInFlightWork(resetToIdle: false)
+        phase = .running(
+            RunningState(
+                partialSummary: summary,
+                hasReceivedFirstToken: summary != nil
+            )
+        )
+    }
+
+    func applyIdlePhase() {
+        cancelInFlightWork(resetToIdle: true)
+        phase = .idle
+    }
+
+    func presentCopyConfirmationForSnapshot() {
+        copyReportBannerMessage = DiagnosisPrivacyCopy.copyReportToast
     }
 }
 
@@ -282,5 +350,6 @@ private struct PreviewLogContainerService: ContainerServicing {
     func exec(id: String, command: [String]) async throws -> ExecResult {
         ExecResult(exitCode: 0, stdout: "", stderr: "")
     }
+    func exitStatus(id: String) async -> ExitStatus { .unavailable(reason: .noEvidence) }
 }
 #endif

@@ -13,6 +13,10 @@ xcuserdata/
 *.dSYM.zip
 *.dSYM
 
+## LLVM / coverage profiles (written by instrumented Debug runs)
+*.profraw
+*.profdata
+
 ## Playgrounds
 timeline.xctimeline
 playground.xcworkspace

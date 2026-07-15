@@ -1,6 +1,7 @@
 // Services/RuntimeConnection.swift
 
 import ContainerAPIClient
+import ContainerXPC
 import Foundation
 import MachineAPIClient
 
@@ -11,6 +12,25 @@ import MachineAPIClient
 actor RuntimeConnection {
     private var containerClient = ContainerClient()
     private var machineClient = MachineClient()
+    private var exitStatusClient: XPCClient?
+
+    func fetchInitProcessExitCode(containerID: String) async throws -> Int32 {
+        if exitStatusClient == nil {
+            exitStatusClient = ContainerExitStatusReader.makeClient()
+        }
+        return try await perform(
+            retryOnInterrupt: true,
+            recreate: recreateExitStatusClient
+        ) {
+            guard let client = exitStatusClient else {
+                throw WharfsideError.apiError("exit status XPC client unavailable")
+            }
+            return try await ContainerExitStatusReader.fetchInitProcessExitCode(
+                containerID: containerID,
+                client: client
+            )
+        }
+    }
 
     func withContainerClient<T>(
         retryOnInterrupt: Bool,
@@ -36,6 +56,10 @@ actor RuntimeConnection {
 
     private func recreateMachineClient() {
         machineClient = MachineClient()
+    }
+
+    private func recreateExitStatusClient() {
+        exitStatusClient = ContainerExitStatusReader.makeClient()
     }
 
     private func perform<T>(
