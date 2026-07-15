@@ -115,12 +115,13 @@ struct ContainerDetailView: View {
         @Bindable var viewModel = viewModel
 
         VStack(alignment: .leading, spacing: 0) {
-            Picker("Section", selection: $viewModel.selectedTab) {
-                ForEach(ContainerDetailTab.allCases) { tab in
-                    Text(tab.rawValue).tag(tab)
-                }
+            ViewThatFits(in: .horizontal) {
+                tabPicker(selection: $viewModel.selectedTab)
+                    .pickerStyle(.segmented)
+                tabPicker(selection: $viewModel.selectedTab)
+                    .pickerStyle(.menu)
+                    .fixedSize()
             }
-            .pickerStyle(.segmented)
             .labelsHidden()
             .padding(.horizontal)
             .padding(.vertical, 10)
@@ -130,6 +131,14 @@ struct ContainerDetailView: View {
             tabContent(for: detail, tab: viewModel.selectedTab)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    private func tabPicker(selection: Binding<ContainerDetailTab>) -> some View {
+        Picker("Section", selection: selection) {
+            ForEach(ContainerDetailTab.allCases) { tab in
+                Text(tab.rawValue).tag(tab)
+            }
+        }
     }
 
     @ViewBuilder

@@ -47,6 +47,11 @@ final class AppState {
     /// Session-scoped Overview exit-code backfill from diagnosis (B6).
     let exitStatusBackfill = ExitStatusBackfillCache()
 
+    /// Owned here (not by the view) so the container list and the detail column are
+    /// siblings in one flattened NavigationSplitView; selection/filters survive section
+    /// switches and both columns read the same source of truth.
+    let containerList: ContainerListViewModel
+
     init(
         systemService: any SystemServicing,
         containerService: any ContainerServicing,
@@ -57,6 +62,10 @@ final class AppState {
         self.containerService = containerService
         self.imageService = imageService
         self.registryService = registryService
+        self.containerList = ContainerListViewModel(
+            service: containerService,
+            lifecycleObserver: lifecycleObserver
+        )
     }
 
 #if DEBUG

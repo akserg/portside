@@ -3,83 +3,71 @@
 import SwiftUI
 import WharfsideAnalysis
 
-private enum ContainerListMetrics {
-    static let columnWidth: CGFloat = 460
+enum ContainerListMetrics {
+    /// Content-column widths. With sidebar(190) + detail(440) → ≈890 < 1100 (I-UI-2).
+    static let listMinWidth: CGFloat = 260
+    static let listIdealWidth: CGFloat = 320
+    static let listMaxWidth: CGFloat = 480
     static let topContentInset: CGFloat = 16
 }
 
+/// The container list — the `content` column of the app's single NavigationSplitView.
+/// Selection lives in `AppState.containerList`, so the detail column (a sibling column,
+/// not a nested split) renders the chosen container.
 struct ContainersView: View {
     @Environment(AppState.self) private var appState
-    @Environment(AIAvailabilityService.self) private var aiAvailability
-    @State private var viewModel: ContainerListViewModel
     @FocusState private var isSearchFocused: Bool
 
-    private let service: any ContainerServicing
-
-    init(service: any ContainerServicing, lifecycleObserver: ContainerLifecycleObserver) {
-        self.service = service
-        _viewModel = State(
-            initialValue: ContainerListViewModel(service: service, lifecycleObserver: lifecycleObserver)
-        )
-    }
+    private var viewModel: ContainerListViewModel { appState.containerList }
 
     var body: some View {
-        @Bindable var viewModel = viewModel
+        @Bindable var viewModel = appState.containerList
 
-        NavigationSplitView(columnVisibility: .constant(.doubleColumn)) {
-            NavigationStack {
-                listColumn
-                    .searchable(text: $viewModel.searchText, prompt: "Search containers…")
-                    .focused($isSearchFocused)
-            }
-            .navigationSplitViewColumnWidth(ContainerListMetrics.columnWidth)
-        } detail: {
-            detailColumn
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-        .navigationSplitViewStyle(.balanced)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .navigationTitle("Containers")
-        .toolbar { toolbarContent }
-        .safeAreaInset(edge: .top, spacing: 0) {
-            if let message = viewModel.actions.actionBannerMessage {
-                ActionErrorBanner(message: message)
-            }
-        }
-        .confirmationDialog(
-            viewModel.actions.pendingConfirmation.map { viewModel.confirmationTitle(for: $0) } ?? "",
-            isPresented: Binding(
-                get: { viewModel.actions.pendingConfirmation != nil },
-                set: { if !$0 { viewModel.cancelPendingAction() } }
-            ),
-            titleVisibility: .visible
-        ) {
-            if let action = viewModel.actions.pendingConfirmation {
-                Button(viewModel.destructiveConfirmationLabel(for: action), role: .destructive) {
-                    let confirmed = action
-                    Task { await viewModel.confirm(confirmed) }
-                }
-                Button("Cancel", role: .cancel) {
-                    viewModel.cancelPendingAction()
+        listColumn
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .searchable(text: $viewModel.searchText, prompt: "Search containers…")
+            .focused($isSearchFocused)
+            .navigationTitle("Containers")
+            .toolbar { toolbarContent }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                if let message = viewModel.actions.actionBannerMessage {
+                    ActionErrorBanner(message: message)
                 }
             }
-        } message: {
-            if let action = viewModel.actions.pendingConfirmation {
-                Text(viewModel.confirmationMessage(for: action))
+            .confirmationDialog(
+                viewModel.actions.pendingConfirmation.map { viewModel.confirmationTitle(for: $0) } ?? "",
+                isPresented: Binding(
+                    get: { viewModel.actions.pendingConfirmation != nil },
+                    set: { if !$0 { viewModel.cancelPendingAction() } }
+                ),
+                titleVisibility: .visible
+            ) {
+                if let action = viewModel.actions.pendingConfirmation {
+                    Button(viewModel.destructiveConfirmationLabel(for: action), role: .destructive) {
+                        let confirmed = action
+                        Task { await viewModel.confirm(confirmed) }
+                    }
+                    Button("Cancel", role: .cancel) {
+                        viewModel.cancelPendingAction()
+                    }
+                }
+            } message: {
+                if let action = viewModel.actions.pendingConfirmation {
+                    Text(viewModel.confirmationMessage(for: action))
+                }
             }
-        }
-        .onAppear { viewModel.startPolling() }
-        .onDisappear { viewModel.stopPolling() }
-        .onDeleteCommand(perform: deleteSelectedContainer)
-        .onKeyPress(.space) {
-            viewModel.toggleSelectedContainer()
-            return .handled
-        }
-        .background {
-            Button("") { isSearchFocused = true }
-                .keyboardShortcut("f", modifiers: .command)
-                .hidden()
-        }
+            .onAppear { viewModel.startPolling() }
+            .onDisappear { viewModel.stopPolling() }
+            .onDeleteCommand(perform: deleteSelectedContainer)
+            .onKeyPress(.space) {
+                viewModel.toggleSelectedContainer()
+                return .handled
+            }
+            .background {
+                Button("") { isSearchFocused = true }
+                    .keyboardShortcut("f", modifiers: .command)
+                    .hidden()
+            }
     }
 
     @ViewBuilder
@@ -96,31 +84,10 @@ struct ContainersView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
-    @ViewBuilder
-    private var detailColumn: some View {
-        if let selectedID = viewModel.selectedContainerID {
-            ContainerDetailView(
-                containerID: selectedID,
-                service: service,
-                lifecycleObserver: appState.lifecycleObserver,
-                availability: aiAvailability,
-                exitStatusBackfill: appState.exitStatusBackfill,
-                reportEnvironmentProvider: { appState.diagnosisReportEnvironment },
-                onBackToList: { viewModel.selectedContainerID = nil }
-            )
-            .id(selectedID)
-        } else {
-            ContentUnavailableView {
-                Label("No Selection", systemImage: "shippingbox")
-            } description: {
-                Text("Select a container to inspect its configuration.")
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-    }
-
     private var containerList: some View {
-        VStack(spacing: 0) {
+        @Bindable var viewModel = appState.containerList
+
+        return VStack(spacing: 0) {
             Spacer()
                 .frame(height: ContainerListMetrics.topContentInset)
             List(viewModel.filteredContainers, selection: $viewModel.selectedContainerID) { container in
@@ -182,7 +149,10 @@ struct ContainersView: View {
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .automatic) {
-            Picker("Status", selection: $viewModel.statusFilter) {
+            Picker("Status", selection: Binding(
+                get: { appState.containerList.statusFilter },
+                set: { appState.containerList.statusFilter = $0 }
+            )) {
                 ForEach(ContainerStatusFilter.allCases) { filter in
                     Text(filter.rawValue).tag(filter)
                 }
@@ -230,6 +200,7 @@ private struct ContainerRowView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
+                    .truncationMode(.middle)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(1)
@@ -285,8 +256,15 @@ private struct ContainerRowView: View {
 
 #if DEBUG
 #Preview {
-    ContainersView(service: MockContainerService(), lifecycleObserver: ContainerLifecycleObserver())
-        .frame(width: 900, height: 500)
+    ContainersView()
+        .environment(AppState(
+            systemService: XPCSystemService(),
+            containerService: MockContainerService(),
+            imageService: XPCImageService(),
+            registryService: CLIRegistryService()
+        ))
+        .environment(AIAvailabilityService())
+        .frame(width: 360, height: 500)
 }
 
 private struct MockContainerService: ContainerServicing {

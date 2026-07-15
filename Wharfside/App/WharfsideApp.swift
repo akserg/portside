@@ -64,10 +64,12 @@ struct WharfsideApp: App {
             MainView()
                 .environment(appState)
                 .environment(aiAvailability)
-                .frame(minWidth: 900, minHeight: 600)
+                // I-UI-2: sidebar(190) + list(260) + detail(440) ≈ 890 < 1100 floor.
+                .frame(minWidth: 1_100, minHeight: 560)
 #endif
         }
-        .defaultSize(width: 1_000, height: 700)
+        .defaultSize(width: 1_200, height: 700)
+        .windowResizability(.contentMinSize)
         .windowToolbarStyle(.unified)
 
         Settings {
@@ -83,7 +85,8 @@ struct WharfsideApp: App {
             MainView()
                 .environment(appState)
                 .environment(aiAvailability)
-                .frame(minWidth: 900, minHeight: 600)
+                // I-UI-2: sidebar(190) + list(260) + detail(440) ≈ 890 < 1100 floor.
+                .frame(minWidth: 1_100, minHeight: 560)
         case .snapshot:
             // Snapshot work starts from LaunchAssetAppDelegate — keep a tiny host view alive.
             Color.clear.frame(width: 1, height: 1)

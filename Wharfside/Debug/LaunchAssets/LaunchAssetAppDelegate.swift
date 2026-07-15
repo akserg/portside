@@ -13,9 +13,9 @@ enum LaunchAssetBootstrap {
     /// Retains the explicit pose `NSWindow` (WindowGroup alone is unreliable under CLI launch).
     @MainActor static var poseWindow: NSWindow?
 
-    /// Deterministic pose window (pt). Narrow enough that a README-width (~880px) GIF
-    /// keeps diagnosis text / footer readable (~85% scale).
-    static let poseWindowSize = NSSize(width: 1_050, height: 700)
+    /// Deterministic pose window (pt). Sized to the flattened three-column layout's
+    /// comfortable width; a README-width (~880px) GIF stays legible (~80% scale).
+    static let poseWindowSize = NSSize(width: 1_100, height: 700)
 
     @MainActor
     static func openPoseWindow() {

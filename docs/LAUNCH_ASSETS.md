@@ -66,6 +66,6 @@ See `DiagnosisPrivacyCopy` and [`.private/show-hn-draft.md`](../.private/show-hn
 
 Window IDs are resolved via Swift/CoreGraphics (not PyObjC). Pose holds ~900ms after each
 `POSED <step>` so captures land on the announced frame. The pose window is forced to
-**1050×700 pt** before capture (deterministic; reclaiming dead horizontal space). GIF encode
-**autocrops** near-black margins from `-l` frames (keeps ~12px shadow) then scales to
-**880px** wide (~85% of the pose window — README-legible diagnosis text / footer).
+**1100×700 pt** before capture (deterministic; matches the flattened three-column layout).
+GIF encode **autocrops** near-black margins from `-l` frames (keeps ~12px shadow) then scales
+to **880px** wide (~80% of the pose window — README-legible diagnosis text / footer).

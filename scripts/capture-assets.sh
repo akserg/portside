@@ -246,7 +246,7 @@ if [[ ${#FRAMES[@]} -lt 2 ]]; then
 fi
 
 # Window-tight encode: trim near-black margins from screencapture -l (keeps a few px of
-# shadow), then scale to README-friendly width. Pose window is ~1050pt; 880px ≈ 85% scale
+# shadow), then scale to README-friendly width. Pose window is ~1100pt; 880px ≈ 80% scale
 # so diagnosis text / footer stay legible in the README hero.
 GIF_WIDTH="${WHARFSIDE_GIF_WIDTH:-880}"
 PAD_COLOR="1C1C1E"

@@ -28,6 +28,14 @@ purity:
 	  Packages/WharfsideAnalysis/Sources/ \
 	  Packages/RulebookCore/Sources/ \
 	  || (echo "WharfsideAnalysis and RulebookCore must stay pure (AI_INTEGRATION.md §2)"; exit 1)
+	# Nested NavigationSplitViews do not negotiate column mins (resize half-hide). Exactly one.
+	@count=$$(grep -rEn 'NavigationSplitView[[:space:]]*[({]' Wharfside --include='*.swift' \
+	  | wc -l | tr -d ' '); \
+	  if [ "$$count" -ne 1 ]; then \
+	    echo "expected exactly one NavigationSplitView in Wharfside/ (found $$count)"; \
+	    grep -rEn 'NavigationSplitView[[:space:]]*[({]' Wharfside --include='*.swift' || true; \
+	    exit 1; \
+	  fi
 
 verify-rulebook:
 	cd Packages/RulebookCore && swift run -c release rulebook-tool verify \
