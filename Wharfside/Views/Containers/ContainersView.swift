@@ -25,7 +25,7 @@ struct ContainersView: View {
 
         listColumn
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .searchable(text: $viewModel.searchText, prompt: "Search containers…")
+            .searchable(text: $viewModel.searchText, prompt: "Search…")
             .focused($isSearchFocused)
             .navigationTitle("Containers")
             .toolbar { toolbarContent }

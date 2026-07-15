@@ -183,20 +183,25 @@ private struct LogLineRow: View {
     let wraps: Bool
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Text(line.level.label)
-                .font(.caption2.weight(.semibold).monospaced())
-                .foregroundStyle(levelColor)
-                .frame(width: 52, alignment: .leading)
-
-            Text(line.text)
-                .foregroundStyle(textColor)
-                .textSelection(.enabled)
-                .lineLimit(wraps ? nil : 1)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 1)
+        // The message must be a standalone Text (not an HStack sibling of the fixed-width
+        // level label): in an HStack, SwiftUI's width negotiation makes the message fall back
+        // to word-wrap-with-truncation, so a long tail shows a stray "…" even at lineLimit(nil).
+        // Reserving a leading gutter and floating the level label in an overlay keeps the
+        // aligned column while letting the message wrap like a lone Text.
+        Text(line.text)
+            .foregroundStyle(textColor)
+            .textSelection(.enabled)
+            .lineLimit(wraps ? nil : 1)
+            .padding(.leading, 60)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .overlay(alignment: .topLeading) {
+                Text(line.level.label)
+                    .font(.caption2.weight(.semibold).monospaced())
+                    .foregroundStyle(levelColor)
+                    .frame(width: 52, alignment: .leading)
+                    .padding(.top, 2)
+            }
+            .padding(.vertical, 1)
     }
 
     private var levelColor: Color {

@@ -86,6 +86,14 @@ including purity grep.
 - Timing note: `fm` CLI on macOS 27 means anyone can pipe logs into the raw model and
   get the confident-wrong OOM answer — that side-by-side is the strongest demo asset.
 
+## Post-launch polish — 0.1.2 (not a launch blocker)
+
+- Cache completed diagnosis cards across section switches / detail recreation so a
+  model-path result survives sidebar browsing (exit backfill already persists in
+  `AppState`; card state today lives only in `ContainerDetailView` `@State`). Prefetch
+  invalidation mirrors the backfill restart/stale rules. Skip for 0.1.1 — precheck
+  re-runs are free; model re-runs are the Show HN cost.
+
 ## Milestone 2b — 0.2.0 "Advice" (post-launch)
 
 *The remaining diagnosis-story work from the original M2.*
