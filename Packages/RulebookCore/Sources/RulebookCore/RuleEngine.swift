@@ -66,7 +66,9 @@ public enum RuleEngine {
                     precheckConclusion = PrecheckConclusion(
                         ruleID: rule.id,
                         category: category,
-                        summary: summary
+                        summary: summary,
+                        confidence: rule.conclusionConfidence,
+                        suggestedActions: rule.conclusionActions
                     )
                 }
             case .noise(let rule):
@@ -130,6 +132,18 @@ public enum RuleEngine {
             for pattern in patterns {
                 guard anyLineMatches(pattern, lines: context.logLines) else { return false }
             }
+        }
+        if let maxErrorCount = criteria.maxErrorCount, context.errorLineCount > maxErrorCount {
+            return false
+        }
+        if let excluded = criteria.excludesLogPatterns {
+            for pattern in excluded where anyLineMatches(pattern, lines: context.logLines) {
+                return false
+            }
+        }
+        if let excludedCodes = criteria.excludesExitCodes,
+           let exit = context.exitCode, excludedCodes.contains(exit) {
+            return false
         }
         return true
     }

@@ -163,6 +163,61 @@ private let report2Context = MatchContext(
     #expect(!RuleEngine.anyLineMatches("([unclosed", lines: ["([unclosed"]))
 }
 
+// MARK: - B8 wire-vocabulary predicates
+
+private func context(
+    exitCode: Int?,
+    logLines: [String],
+    errorLineCount: Int = 0
+) -> MatchContext {
+    MatchContext(
+        image: "docker.io/library/alpine:latest",
+        exitCode: exitCode,
+        source: "bootLogOnly",
+        logLines: logLines,
+        errorLineCount: errorLineCount
+    )
+}
+
+@Test func maxErrorCountBlocksWhenErrorsExceedThreshold() {
+    let criteria = MatchCriteria(maxErrorCount: 0)
+    #expect(!RuleEngine.matches(criteria, context: context(exitCode: 1, logLines: ["boom"], errorLineCount: 1)))
+    #expect(RuleEngine.matches(criteria, context: context(exitCode: 1, logLines: ["quiet"], errorLineCount: 0)))
+}
+
+@Test func excludesLogPatternsBlocksWhenAnyPatternMatches() {
+    let criteria = MatchCriteria(excludesLogPatterns: ["sending signal 15 to process"])
+    let withSignal = context(exitCode: 137, logLines: ["id: hello sending signal 15 to process 109"])
+    let withoutSignal = context(exitCode: 1, logLines: ["id: crush, status: 1 managed process exit"])
+    #expect(!RuleEngine.matches(criteria, context: withSignal))
+    #expect(RuleEngine.matches(criteria, context: withoutSignal))
+}
+
+@Test func excludesExitCodesBlocksListedCodeButAllowsOthersAndNil() {
+    let criteria = MatchCriteria(excludesExitCodes: [0])
+    #expect(!RuleEngine.matches(criteria, context: context(exitCode: 0, logLines: ["x"])))
+    #expect(RuleEngine.matches(criteria, context: context(exitCode: 1, logLines: ["x"])))
+    // A nil (unresolved) exit is treated as "not excluded" so evidence-free digests still match.
+    #expect(RuleEngine.matches(criteria, context: context(exitCode: nil, logLines: ["x"])))
+}
+
+@Test func precheckConclusionCarriesRuleConfidenceAndActions() {
+    let rule = Rule.precheck(PrecheckRule(
+        id: "precheck.no-evidence",
+        criteria: MatchCriteria(sources: ["bootLogOnly"], maxErrorCount: 0, excludesExitCodes: [0]),
+        emitsFact: "EVIDENCE: none",
+        conclusionCategory: "unknown",
+        conclusionSummary: "The container exited{exit_status} without writing any application output.",
+        conclusionConfidence: "low",
+        conclusionActions: ["Run `container logs {container}` to confirm no output was produced"]
+    ))
+    let book = Rulebook(version: "test", minAppVersion: "0.1.1", rules: [rule])
+    let evaluation = RuleEngine.evaluate(book, context: context(exitCode: 1, logLines: ["quiet"]))
+    let conclusion = evaluation.precheckConclusion
+    #expect(conclusion?.confidence == "low")
+    #expect(conclusion?.suggestedActions == ["Run `container logs {container}` to confirm no output was produced"])
+}
+
 @Test func signatureVerificationAcceptsValidRejectsTampered() throws {
     let key = Curve25519.Signing.PrivateKey()
     let document = try JSONEncoder().encode(SeedRulebook.make())

@@ -91,15 +91,32 @@ struct DiagnosisRuleMetadata: Sendable, Equatable {
 enum PrecheckDiagnosisBuilder {
     static func diagnosis(
         from conclusion: PrecheckConclusion,
-        containerName: String
+        containerName: String,
+        exitStatus: ExitStatus
     ) -> ContainerDiagnosis? {
         guard let category = failureCategory(for: conclusion.category) else { return nil }
+        // Absent confidence/actions preserve the pre-B8 stop-escalation shape byte-for-byte.
+        let confidence = conclusion.confidence.flatMap(Confidence.init(rawValue:)) ?? .high
+        let rawActions = conclusion.suggestedActions ?? orderlyStopActions(containerName: containerName)
         return ContainerDiagnosis(
-            summary: conclusion.summary,
+            summary: substitute(conclusion.summary, containerName: containerName, exitStatus: exitStatus),
             category: category,
-            suggestedActions: orderlyStopActions(containerName: containerName),
-            confidence: .high
+            suggestedActions: rawActions.map { substitute($0, containerName: containerName, exitStatus: exitStatus) },
+            confidence: confidence
         )
+    }
+
+    /// Fills `{container}` with the container id and `{exit_status}` with " (status N)"
+    /// when the exit code is resolved, or "" when it is not (drop, never guess).
+    private static func substitute(
+        _ text: String,
+        containerName: String,
+        exitStatus: ExitStatus
+    ) -> String {
+        let exitPhrase = exitStatus.knownCode.map { " (status \($0))" } ?? ""
+        return text
+            .replacingOccurrences(of: "{container}", with: containerName)
+            .replacingOccurrences(of: "{exit_status}", with: exitPhrase)
     }
 
     private static func orderlyStopActions(containerName: String) -> [String] {

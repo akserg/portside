@@ -22,6 +22,37 @@ import Testing
     #expect(!matchContext.logLines.contains { $0.contains("sending signal 15") && $0.contains("2026-07-06") })
 }
 
+@Test func matchContextCountsErrorLevelLinesInWindow() throws {
+    // diag-crash: boot-only, exit 1, only vminitd info/warn lines → zero ERROR level.
+    let clean = try LabeledFixtureLoader.loadLog(named: "exit_no_output_misdiagnosed_or_timeout.log")
+    let cleanContext = MatchContextBuilder.make(
+        entries: clean,
+        context: ContainerContext(
+            containerName: "diag-crush",
+            image: "docker.io/library/alpine:latest",
+            exitStatus: .known(1, source: .bootLog),
+            restartCount: 0
+        )
+    )
+    #expect(cleanContext.source == "bootLogOnly")
+    #expect(cleanContext.exitCode == 1)
+    #expect(cleanContext.errorLineCount == 0)
+
+    // boot_only_crash: boot-only WITH ERROR/FATAL content → nonzero error count.
+    let errored = try LabeledFixtureLoader.loadLog(named: "boot_only_crash.log")
+    let errContext = MatchContextBuilder.make(
+        entries: errored,
+        context: ContainerContext(
+            containerName: "crash",
+            image: "alpine:latest",
+            exitStatus: .unavailable(reason: .noEvidence),
+            restartCount: 0
+        )
+    )
+    #expect(errContext.source == "bootLogOnly")
+    #expect(errContext.errorLineCount >= 1)
+}
+
 @Test func report2DigestDemotesVminitdNoiseAndEmitsPrecheckFact() throws {
     let entries = try BootFixtureEntries.loadBootLog(named: "stop_timeout_misdiagnosed_as_oom.log")
     let context = ContainerContext(

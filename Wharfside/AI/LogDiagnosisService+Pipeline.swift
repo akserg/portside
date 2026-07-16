@@ -24,7 +24,8 @@ extension LogDiagnosisService {
         if let conclusion = context.evaluation.precheckConclusion,
            let diagnosis = PrecheckDiagnosisBuilder.diagnosis(
                from: conclusion,
-               containerName: context.digest.containerName
+               containerName: context.digest.containerName,
+               exitStatus: context.digest.exitStatus
            ) {
             return DiagnosisResult(
                 diagnosis: diagnosis,
@@ -70,7 +71,8 @@ extension LogDiagnosisService {
         if let conclusion = context.evaluation.precheckConclusion,
            let diagnosis = PrecheckDiagnosisBuilder.diagnosis(
                from: conclusion,
-               containerName: context.digest.containerName
+               containerName: context.digest.containerName,
+               exitStatus: context.digest.exitStatus
            ) {
             return DiagnosisResult(
                 diagnosis: diagnosis,
