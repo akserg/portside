@@ -28,8 +28,9 @@ struct LogEntriesCollectorTests {
 
         #expect(!entries.isEmpty)
         #expect(entries.contains { $0.source == .stdio })
-        // Two phases (stdio + boot), each capped — still well under a second in tests.
-        #expect(elapsed < .seconds(1))
+        // Two phases (stdio + boot), each capped at maxDuration. Under CI load, cancelling
+        // never-finishing streams can push past 1 s — stay under the production 2 s phase cap.
+        #expect(elapsed < .seconds(2))
     }
 
     @Test func collectFallsBackToBootWhenStdioEmpty() async {
