@@ -15,6 +15,9 @@ extension LogSource {
 public enum DigestSourceMode: String, Sendable, Equatable {
     case stdio
     case bootLogOnly
+    /// Historical name; since B8.2 boot evidence is always collected — this value means
+    /// "stdio present, boot appended." Renaming has rulebook signing implications; leave the
+    /// wire string alone.
     case stdioWithBootFallback
 
     public var ruleIdentifier: String { rawValue }
