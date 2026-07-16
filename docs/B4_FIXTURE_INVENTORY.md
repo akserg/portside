@@ -34,7 +34,8 @@ Two-tier structure:
 | Ambiguous exit + stop signals | no precheck | I6 | `unavailableExitDoesNotFireStopPrecheck` |
 | `exit_status_user_stop_boot.log` | BootLogExitStatusParser | B1 | `BootLogExitStatusParserTests` |
 | `exit_status_multicycle_hello_boot.log` | final-cycle exit | multi-cycle | `BootLogExitStatusParserTests` |
-| `exit_status_ambiguous_boot.log` | within-cycle ambiguity | I6 | `BootLogExitStatusParserTests` |
+| `exit_status_ambiguous_boot.log` | multi-terminal → final-cycle scoping (resolves most recent exit) | I6 | `BootLogExitStatusParserTests` |
+| within-cycle ambiguity (two status lines, one segment) | boot exit parser fails closed | I6 | `BootLogExitStatusParserTests.parseFinalCycleFailsClosedOnTwoStatusLinesInOneSegment` |
 | `exit_status_no_evidence_boot.log` | no evidence | I6 | `BootLogExitStatusParserTests` |
 | `exit_status_hostile_stdio.log` | hostile stdio ≠ precheck | I5/I6 | `RulebookPipelineTests`, `BootLogExitStatusParserTests` |
 | `boot_noise_contamination.log` | noise demotion / crashy | I5 | `RulebookPipelineTests`; nightly `DiagnosisRegressionTests` |

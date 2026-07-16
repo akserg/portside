@@ -3,8 +3,12 @@ import Foundation
 /// Parses init-process exit evidence from **boot-source log lines only** (`LogSource.boot`).
 ///
 /// Anchored to `Docs/OBSERVED_STOP_SIGNATURE.md`: scopes to the **final lifecycle cycle**,
-/// then requires SIGTERM (15) → SIGKILL (9) → `status: <code> managed process exit`.
-/// Fails closed on ambiguity within that cycle.
+/// then resolves the sole terminal `status: <code> managed process exit` line. The
+/// SIGTERM (15) → SIGKILL (9) sequence is the stop-request signature that
+/// `precheck.stop-escalation` keys on — it is *not* required to resolve the exit code
+/// itself (a `sh -c 'exit 1'` container exits with a bare `status: 1` line and no signals).
+/// Fails closed on ambiguity within that cycle (two status lines with no intervening
+/// terminal boundary → `.ambiguousEvidence`).
 public struct BootLogExitStatusParser: Sendable {
   private let managedExitPattern: NSRegularExpression
 
@@ -51,14 +55,10 @@ public struct BootLogExitStatusParser: Sendable {
       return .unavailable(reason: .ambiguousEvidence)
     }
 
-    let prefix = lines[0...sole.index]
-    let hasSignal15 = prefix.contains { Self.lineSignalsSIGTERM($0) }
-    let hasSignal9 = prefix.contains { Self.lineSignalsSIGKILL($0) }
-
-    guard hasSignal15, hasSignal9 else {
-      return .unavailable(reason: .ambiguousEvidence)
-    }
-
+    // A single, unambiguous terminal status line resolves the exit code regardless of
+    // whether the SIGTERM/SIGKILL sequence preceded it. The signal sequence is the
+    // stop-request evidence for `precheck.stop-escalation`, not a precondition for
+    // reading the exit code.
     return .known(sole.code, source: .bootLog)
   }
 
@@ -73,13 +73,5 @@ public struct BootLogExitStatusParser: Sendable {
       let code = Int32(line[codeRange])
     else { return nil }
     return code
-  }
-
-  private static func lineSignalsSIGTERM(_ line: String) -> Bool {
-    line.contains("sending signal 15")
-  }
-
-  private static func lineSignalsSIGKILL(_ line: String) -> Bool {
-    line.contains("sending signal 9")
   }
 }

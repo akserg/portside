@@ -43,9 +43,7 @@ struct BootLogExitStatusParserTests {
   /// removes the wrapper.
   @Test func exitOneNoOutputBootFixtureResolvesKnownOne() throws {
     let entries = try LabeledFixtureLoader.loadLog(named: "exit_no_output_misdiagnosed_or_timeout.log")
-    withKnownIssue("B8: parser requires signal sequence even for a single unambiguous status line") {
-      #expect(parser.parse(bootEntries: entries) == .known(1, source: .bootLog))
-    }
+    #expect(parser.parse(bootEntries: entries) == .known(1, source: .bootLog))
   }
 
   @Test func cycleSegmenterUsesTerminalExitAsBoundary() {
@@ -87,9 +85,23 @@ struct BootLogExitStatusParserTests {
     #expect(parser.parse(bootEntries: entries) == .unavailable(reason: .noEvidence))
   }
 
-  @Test func ambiguousWhenMultipleStopSequences() throws {
+  @Test func multiTerminalBootResolvesMostRecentCycleExit() throws {
+    // Each `status: N managed process exit` is a cycle terminal, so two back-to-back
+    // status lines belong to separate cycles. Final-cycle scoping resolves the most
+    // recent lifecycle's exit (here, `status: 0`) rather than failing closed.
     let entries = try LabeledFixtureLoader.loadLog(named: "exit_status_ambiguous_boot.log")
-    #expect(parser.parse(bootEntries: entries) == .unavailable(reason: .ambiguousEvidence))
+    #expect(parser.parse(bootEntries: entries) == .known(0, source: .bootLog))
+  }
+
+  @Test func parseFinalCycleFailsClosedOnTwoStatusLinesInOneSegment() {
+    // Genuine within-cycle ambiguity (I6): two status lines with no intervening terminal
+    // boundary in a single segment still fails closed after the 4a fix.
+    let segment = [
+      "info vminitd: id: x sending signal 15 to process 1",
+      "info vminitd: id: x, status: 137 managed process exit",
+      "info vminitd: id: x, status: 0 managed process exit"
+    ]
+    #expect(parser.parseFinalCycle(lines: segment) == .unavailable(reason: .ambiguousEvidence))
   }
 
   @Test func hostileStdioCannotForgeExitEvidence() throws {
@@ -97,7 +109,10 @@ struct BootLogExitStatusParserTests {
     #expect(parser.parse(bootEntries: entries) == .unavailable(reason: .noEvidence))
   }
 
-  @Test func statusWithoutSignalSequenceIsAmbiguous() throws {
+  @Test func singleStatusWithoutSignalSequenceResolvesExitCode() throws {
+    // B8 (fix 4a): a lone unambiguous terminal status line resolves the exit code even
+    // without the SIGTERM/SIGKILL sequence. Ambiguity (multiple status lines) still
+    // fails closed — see `ambiguousWhenMultipleStopSequences`.
     let entries = [
       LogEntry(
         timestamp: nil,
@@ -107,7 +122,7 @@ struct BootLogExitStatusParserTests {
         source: .boot
       )
     ]
-    #expect(parser.parse(bootEntries: entries) == .unavailable(reason: .ambiguousEvidence))
+    #expect(parser.parse(bootEntries: entries) == .known(137, source: .bootLog))
   }
 
   @Test func resolverPrefersRuntimeOverBootLog() {
