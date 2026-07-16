@@ -32,9 +32,15 @@ struct DiagnosisReportEnvironment: Sendable, Equatable {
     nonisolated static func formatRuntimeLabel(version: String?, commit: String?) -> String {
         guard let version, !version.isEmpty else { return unknownVersion }
         let semver = extractSemver(from: version)
-        guard let commit, !commit.isEmpty else { return semver }
+        // Omit the parenthetical when the daemon reports no commit or a non-hex
+        // placeholder (e.g. "unspecified", which otherwise short-hashes to "unspeci").
+        guard let commit, isHexCommit(commit) else { return semver }
         let shortCommit = String(commit.prefix(7))
         return "\(semver) (commit \(shortCommit))"
+    }
+
+    nonisolated private static func isHexCommit(_ commit: String) -> Bool {
+        !commit.isEmpty && commit.allSatisfy(\.isHexDigit)
     }
 
     nonisolated private static func extractSemver(from versionString: String) -> String {

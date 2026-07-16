@@ -197,6 +197,16 @@ struct DiagnosisReportFormatterTests {
         #expect(label == "1.0.0 (commit ee848e3)")
     }
 
+    @Test func nonHexCommitOmitsParenthetical() {
+        // Regression: daemon 1.1.0 reported no commit; the placeholder "unspecified"
+        // short-hashed to "unspeci" and leaked into the footer as "(commit unspeci)".
+        let label = DiagnosisReportEnvironment.formatRuntimeLabel(
+            version: "1.1.0",
+            commit: "unspecified"
+        )
+        #expect(label == "1.1.0")
+    }
+
     /// Digest16 — hello / report2 precheck path golden (formatter acceptance).
     @Test func digest16PrecheckGoldenReportContract() {
         let report = DiagnosisReportFormatter.render(
