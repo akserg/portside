@@ -136,8 +136,18 @@ complete signal sequence → `.ambiguousEvidence`).
 `finalCycleEntries` feed both `MatchContext` (precheck/noise) and `LogDigestBuilder`
 (boot-primary clustering / LAST_LINES). Exit-status parsing uses the same segment.
 
+**Canonical evidence (not UI state):** Diagnosis assembles its own window at diagnose
+time — it does not trust the Logs tab buffer's source filter or accumulation history.
+Stdio may come from the display buffer's `recentEntries` when present; **boot evidence is
+always cold-fetched** (not gated on empty stdio). Digest-primary clustering stays
+stdio-led when application output exists; evidence extraction (exit status, MatchContext
+boot lines, BOOT_LOG appendix, noise demotion) always includes the boot final-cycle
+window. Diagnosing from the stdio tab, the boot tab, or without opening Logs must produce
+byte-identical digests.
+
 Evidence extraction: `BootLogCycleSegmenter.finalCycleLines` → `BootLogExitStatusParser.parseFinalCycle`.
-Fixtures: `exit_status_multicycle_hello_boot.log` (real `hello` tail), `stop_timeout_misdiagnosed_as_oom.log` → `.known(137, .bootLog)` on final cycle.
+Fixtures: `exit_status_multicycle_hello_boot.log` (real `hello` tail), `stop_timeout_misdiagnosed_as_oom.log` → `.known(137, .bootLog)` on final cycle;
+`stdio_primary_loses_boot_evidence.log` → stdio-primary + boot final-cycle (Digest18).
 
 ## Cross-version verification
 
