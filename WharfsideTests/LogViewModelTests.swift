@@ -265,17 +265,13 @@ struct LogViewModelTests {
         #expect(await TestPolling.waitUntil { service.logStreamCallCount == 3 })
         #expect(await TestPolling.waitUntil { viewModel.isStreamFinished })
 
-        withKnownIssue(
-            "B8.2: buffer clear belongs at stream (re)attach, not only at sourceFilter.didSet"
-        ) {
-            let lineTexts = viewModel.displayRows.compactMap { row -> String? in
-                guard case .line(let line) = row else { return nil }
-                return line.text
-            }
-            #expect(lineTexts == ["ERROR boom"])
-
-            let windowEntries = viewModel.recentEntries(window: .seconds(3600))
-            #expect(windowEntries.filter { $0.raw == "ERROR boom" }.count == 1)
+        let lineTexts = viewModel.displayRows.compactMap { row -> String? in
+            guard case .line(let line) = row else { return nil }
+            return line.text
         }
+        #expect(lineTexts == ["ERROR boom"])
+
+        let windowEntries = viewModel.recentEntries(window: .seconds(3600))
+        #expect(windowEntries.filter { $0.raw == "ERROR boom" }.count == 1)
     }
 }

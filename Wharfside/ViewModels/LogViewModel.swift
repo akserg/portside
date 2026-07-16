@@ -31,11 +31,6 @@ final class LogViewModel {
     var sourceFilter: LogViewSourceFilter = .stdio {
         didSet {
             guard oldValue != sourceFilter else { return }
-            // A source toggle restarts the stream, and `logStream` re-delivers a whole-file
-            // snapshot — appending onto the existing buffer would duplicate every prior line.
-            // Clear first so the buffer holds exactly one copy of the newly selected source(s).
-            buffer.clear()
-            bufferRevision += 1
             restartStream()
         }
     }
@@ -159,6 +154,13 @@ final class LogViewModel {
         streamTask = nil
         isStreamFinished = false
         isStreamActive = false
+
+        // Every (re)attach re-delivers a whole-file snapshot from `logStream` (XPC FileHandle
+        // reads from byte 0 — no incremental-only attach mode on the pinned revision). Clear
+        // before consuming so filter toggles, Logs↔Overview round trips, and reconnects do not
+        // accrete duplicate display rows.
+        buffer.clear()
+        bufferRevision += 1
 
         streamTask = Task { [weak self] in
             guard let self else { return }
