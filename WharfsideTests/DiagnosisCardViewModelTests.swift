@@ -272,12 +272,14 @@ struct DiagnosisCardViewModelTests {
             sessionFactory: session
         )
         let containerService = MockContainerService()
-        return DiagnosisCardViewModel(
+        let viewModel = DiagnosisCardViewModel(
             containerID: "app",
             diagnosisService: service,
             containerService: containerService,
             logEntriesProvider: { cardSampleEntries() }
         )
+        viewModel.coldFetchPhaseDuration = .milliseconds(50)
+        return viewModel
     }
 }
 

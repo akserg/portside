@@ -247,6 +247,22 @@ struct DiagnosisReportFormatterTests {
         #expect(report.contains("Rules fired: precheck.no-evidence, noise.vminitd-memory-threshold"))
         #expect(!report.contains("precheck.stop-escalation"))
     }
+
+    /// Digest18 — diag-loud / stdio-primary with canonical boot evidence (B8.2).
+    /// Digest15/16/17 stay byte-identical; this is the expected stdio-primary golden churn.
+    @Test func digest18StdioPrimaryBootEvidenceGoldenReportContract() {
+        let report = DiagnosisReportFormatter.render(
+            result: digest18GoldenResult(),
+            container: sampleContainer(id: "diag-loud", image: "docker.io/library/alpine:latest"),
+            environment: digestGoldenEnvironment()
+        )
+        #expect(report == goldenFixture("Digest18.report.md"))
+        #expect(report.contains("EXIT_CODE: 1 (from boot log)"))
+        #expect(report.contains("BOOT_LOG (runtime init, usually not the app's crash cause):"))
+        #expect(report.contains("Rules fired: noise.vminitd-memory-threshold"))
+        #expect(!report.contains("precheck.no-evidence"))
+        #expect(report.contains("Diagnosed by: on-device model over digest"))
+    }
 }
 
 private func digestGoldenEnvironment() -> DiagnosisReportEnvironment {
@@ -380,6 +396,50 @@ private func digest17GoldenResult() -> DiagnosisResult {
             precheckRuleID: "precheck.no-evidence"
         ),
         source: .deterministicPrecheck(ruleID: "precheck.no-evidence")
+    )
+}
+
+private func digest18GoldenResult() -> DiagnosisResult {
+    let digest = """
+        CONTAINER: diag-loud
+        IMAGE: docker.io/library/alpine:latest
+        EXIT_CODE: 1 (from boot log)
+        WINDOW: logs before container exit
+        RESTARTS: 0
+        COUNTS: ERROR=1
+        FIRST_ERROR:
+        ERROR boom
+        LAST_ERROR:
+        ERROR boom
+        TOP_PATTERNS:
+        1. [1x] boom (first=1970-01-01T00:00:00Z, last=1970-01-01T00:00:00Z)
+        LAST_LINES:
+        ERROR boom
+        BOOT_LOG (runtime init, usually not the app's crash cause):
+        2026-07-16T12:47:10.870Z info vminitd: id: diag-loud, pid: 109 got back pid data
+        2026-07-16T12:47:10.876Z info vminitd: id: diag-loud, pid: 109 started managed process
+        2026-07-16T12:47:10.877Z info vminitd: id: diag-loud, status: 1 managed process exit
+        2026-07-16T12:47:10.877Z info vminitd: id: diag-loud closing relay for StandardIO stdout
+        2026-07-16T12:47:10.877Z info vminitd: id: diag-loud closing relay for StandardIO stderr
+        """
+    return DiagnosisResult(
+        diagnosis: ContainerDiagnosis(
+            summary: "Application printed an error before exit.",
+            category: .applicationBug,
+            suggestedActions: ["Inspect the application command"],
+            confidence: .medium
+        ),
+        wasDegraded: false,
+        telemetry: DiagnosisTelemetry(violations: [], retryCount: 0, wasDegraded: false),
+        renderedDigest: digest,
+        ruleMetadata: DiagnosisRuleMetadata(
+            rulebookVersion: "0.1.0",
+            rulebookSource: .bundled,
+            matchedRuleIDs: ["noise.vminitd-memory-threshold"],
+            skippedUnknownKinds: [],
+            precheckRuleID: nil
+        ),
+        source: .onDeviceModel
     )
 }
 

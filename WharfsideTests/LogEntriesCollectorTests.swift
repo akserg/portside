@@ -10,9 +10,11 @@ struct LogEntriesCollectorTests {
     @Test func collectReturnsAfterTimeoutWhenStreamNeverFinishes() async {
         let service = MockContainerService()
         service.logStreamFactory = { _, source in
-            #expect(source == .stdio)
-            return AsyncThrowingStream { continuation in
-                continuation.yield(LogChunk(source: .stdio, data: Data("ERROR: disk full\n".utf8)))
+            AsyncThrowingStream { continuation in
+                if source == .stdio {
+                    continuation.yield(LogChunk(source: .stdio, data: Data("ERROR: disk full\n".utf8)))
+                }
+                // Never finish — mimics live XPC log handles that poll indefinitely.
             }
         }
 
@@ -25,7 +27,8 @@ struct LogEntriesCollectorTests {
         let elapsed = start.duration(to: .now)
 
         #expect(!entries.isEmpty)
-        #expect(entries.allSatisfy { $0.source == .stdio })
+        #expect(entries.contains { $0.source == .stdio })
+        // Two phases (stdio + boot), each capped — still well under a second in tests.
         #expect(elapsed < .seconds(1))
     }
 
@@ -54,13 +57,20 @@ struct LogEntriesCollectorTests {
         #expect(entries.first?.raw.contains("rootfs mount failed") == true)
     }
 
-    @Test func collectPrefersStdioOverBoot() async {
+    @Test func collectIncludesBootAlongsideStdio() async {
         let service = MockContainerService()
         service.logStreamFactory = { _, source in
             AsyncThrowingStream { continuation in
                 if source == .stdio {
                     continuation.yield(
                         LogChunk(source: .stdio, data: Data("ERROR: No space left on device\n".utf8))
+                    )
+                } else if source == .boot {
+                    continuation.yield(
+                        LogChunk(
+                            source: .boot,
+                            data: Data("info vminitd: id: crashy, status: 1 managed process exit\n".utf8)
+                        )
                     )
                 }
                 continuation.finish()
@@ -73,7 +83,47 @@ struct LogEntriesCollectorTests {
             maxDuration: .milliseconds(100)
         )
 
-        #expect(entries.count == 1)
-        #expect(entries.first?.source == .stdio)
+        #expect(entries.contains { $0.source == .stdio })
+        #expect(entries.contains { $0.source == .boot })
+        #expect(entries.contains { $0.raw.contains("No space left on device") })
+        #expect(entries.contains { $0.raw.contains("status: 1 managed process exit") })
+    }
+
+    @Test func assembleEvidenceUsesBufferedStdioAndColdBoot() async {
+        let service = MockContainerService()
+        service.logStreamFactory = { _, source in
+            AsyncThrowingStream { continuation in
+                if source == .boot {
+                    continuation.yield(
+                        LogChunk(
+                            source: .boot,
+                            data: Data("info vminitd: id: app, status: 1 managed process exit\n".utf8)
+                        )
+                    )
+                }
+                continuation.finish()
+            }
+        }
+
+        let buffered = [
+            LogEntry(
+                timestamp: nil,
+                level: .error,
+                message: "boom",
+                raw: "ERROR boom",
+                source: .stdio
+            )
+        ]
+        let entries = await LogEntriesCollector.assembleEvidence(
+            from: service,
+            containerID: "app",
+            buffered: buffered,
+            maxDuration: .milliseconds(100)
+        )
+
+        #expect(service.logStreamCallCount == 1)
+        #expect(service.lastLogStreamSource == .boot)
+        #expect(entries.filter { $0.source == .stdio }.map(\.raw) == ["ERROR boom"])
+        #expect(entries.contains { $0.source == .boot && $0.raw.contains("status: 1") })
     }
 }

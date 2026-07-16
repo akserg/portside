@@ -44,6 +44,9 @@ final class DiagnosisCardViewModel {
     private var container: ContainerDetail?
     private var resultContainerID: String?
     var logEntriesProvider: () -> [LogEntry]
+    /// Wall-clock cap per cold-fetch phase (stdio / boot). Tests shorten this so a
+    /// buffered diagnose is not blocked on the production 2 s XPC drain timeout.
+    var coldFetchPhaseDuration: Duration = LogEntriesCollector.phaseDuration
     /// Issue 1.11 — resolved lazily at copy time so the report always carries whatever
     /// version info is cached then, without this view model owning any AppState reference.
     private let reportEnvironmentProvider: () -> DiagnosisReportEnvironment
@@ -172,16 +175,17 @@ final class DiagnosisCardViewModel {
     private func runDiagnosis(container: ContainerDetail, containerID: String) async {
         DiagnosisLog.info("diagnosis started for \(containerID)")
         do {
-            var entries = logEntriesProvider()
-            if entries.isEmpty {
-                DiagnosisLog.info("buffer empty — cold-fetching logs for \(containerID)")
-                entries = await LogEntriesCollector.collect(
-                    from: containerService,
-                    containerID: containerID
-                )
-            } else {
-                DiagnosisLog.info("using \(entries.count) buffered log entries for \(containerID)")
-            }
+            let buffered = logEntriesProvider()
+            let entries = await LogEntriesCollector.assembleEvidence(
+                from: containerService,
+                containerID: containerID,
+                buffered: buffered,
+                maxDuration: coldFetchPhaseDuration
+            )
+            DiagnosisLog.info(
+                "assembled \(entries.count) evidence entries for \(containerID) "
+                    + "(buffered=\(buffered.count))"
+            )
 
             let stream = diagnosisService.streamingDiagnose(container: container, entries: entries)
             for try await event in stream {
