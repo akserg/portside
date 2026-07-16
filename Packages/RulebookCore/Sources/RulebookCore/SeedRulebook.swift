@@ -12,6 +12,7 @@ public enum SeedRulebook {
             minAppVersion: "0.1.1",
             rules: [
                 stopEscalationPrecheck,
+                noEvidencePrecheck,
                 vminitdMemoryThresholdNoise,
             ]
         )
@@ -40,6 +41,31 @@ public enum SeedRulebook {
         conclusionCategory: "stopped",
         conclusionSummary: "Container stopped via SIGTERM/SIGKILL (orderly stop); "
             + "boot log shows signal 15 → grace period → signal 9 → exit 137."
+    ))
+
+    /// Evidence-free exit: boot-log-only, no error content, no stop signature, non-zero
+    /// exit. Kept in the seed so a rejected bundled rulebook still fails closed on the
+    /// class B8 targets — otherwise a signature/malformed fallback would leak these
+    /// digests back to the model (the exact timeout/fabrication B8 prevents). Mirrors the
+    /// bundled Rulebook.json entry byte-for-byte so seed == bundled stays invariant.
+    static let noEvidencePrecheck = Rule.precheck(PrecheckRule(
+        id: "precheck.no-evidence",
+        criteria: MatchCriteria(
+            sources: ["bootLogOnly"],
+            maxErrorCount: 0,
+            excludesLogPatterns: [#"sending signal 15 to process"#],
+            excludesExitCodes: [0]
+        ),
+        emitsFact: "EVIDENCE: container exited without writing any application output",
+        conclusionCategory: "unknown",
+        conclusionSummary: "The container exited{exit_status} without writing any application output — "
+            + "there is nothing in the logs to analyze. If this exit is unexpected, "
+            + "check whether the command writes errors to stdout/stderr.",
+        conclusionConfidence: "low",
+        conclusionActions: [
+            "Run `container logs {container}` to confirm no output was produced",
+            "If unexpected, run the container's command manually to see its error output",
+        ]
     ))
 
     /// Fires only when the pattern hits a log line (can appear multiple times per cycle).
