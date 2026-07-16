@@ -35,6 +35,19 @@ struct BootLogExitStatusParserTests {
     #expect(parser.parse(bootEntries: entries) == .known(137, source: .bootLog))
   }
 
+  /// B8 discovery 1: a `sh -c 'exit 1'` container produces an unambiguous single
+  /// `status: 1 managed process exit` in its final cycle but no SIGTERM/SIGKILL sequence.
+  /// The parser currently requires the signal sequence, so this resolves to
+  /// `.ambiguousEvidence` instead of `.known(1, .bootLog)` — the exit-status gap.
+  /// Wrapped in `withKnownIssue` so the suite stays green for bisect; commit 2 (fix 4a)
+  /// removes the wrapper.
+  @Test func exitOneNoOutputBootFixtureResolvesKnownOne() throws {
+    let entries = try LabeledFixtureLoader.loadLog(named: "exit_no_output_misdiagnosed_or_timeout.log")
+    withKnownIssue("B8: parser requires signal sequence even for a single unambiguous status line") {
+      #expect(parser.parse(bootEntries: entries) == .known(1, source: .bootLog))
+    }
+  }
+
   @Test func cycleSegmenterUsesTerminalExitAsBoundary() {
     let lines = [
       "warning vminitd: vminitd memory threshold exceeded",

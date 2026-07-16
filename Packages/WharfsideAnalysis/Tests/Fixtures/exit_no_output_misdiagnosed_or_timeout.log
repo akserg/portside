@@ -1,0 +1,75 @@
+@boot
+[    0.077361] random: crng init done
+[    0.079042] brd: module loaded
+[    0.080022] loop: module loaded
+[    0.080236] virtio_blk virtio2: 1/0/0 default/read/poll queues
+[    0.080486] virtio_blk virtio2: [vda] 1048576 512-byte logical blocks (537 MB/512 MiB)
+[    0.080880] virtio_blk virtio3: 1/0/0 default/read/poll queues
+[    0.081104] virtio_blk virtio3: [vdb] 1073741824 512-byte logical blocks (550 GB/512 GiB)
+[    0.081427] tun: Universal TUN/TAP device driver, 1.6
+[    0.082104] VFIO - User Level meta-driver version: 0.3
+[    0.082317] rtc-pl031 20050000.pl031: registered as rtc0
+[    0.082404] rtc-pl031 20050000.pl031: setting system clock to 2026-07-16T07:49:10 UTC (1784188150)
+[    0.082880] xt_time: kernel timezone is -0000
+[    0.082956] IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
+[    0.083024] IPVS: Connection hash table configured (size=4096, memory=32Kbytes)
+[    0.083129] IPVS: ipvs loaded.
+[    0.083176] IPVS: [rr] scheduler registered.
+[    0.083215] IPVS: [wrr] scheduler registered.
+[    0.083276] IPVS: [lc] scheduler registered.
+[    0.083338] IPVS: [wlc] scheduler registered.
+[    0.083387] IPVS: [fo] scheduler registered.
+[    0.083439] IPVS: [ovf] scheduler registered.
+[    0.083496] IPVS: [lblc] scheduler registered.
+[    0.083544] IPVS: [lblcr] scheduler registered.
+[    0.083606] IPVS: [dh] scheduler registered.
+[    0.083659] IPVS: [sh] scheduler registered.
+[    0.083693] IPVS: [sed] scheduler registered.
+[    0.083750] IPVS: [nq] scheduler registered.
+[    0.083808] IPVS: [sip] pe registered.
+[    0.083894] Initializing XFRM netlink socket
+[    0.083963] NET: Registered PF_INET6 protocol family
+[    0.084354] Segment Routing with IPv6
+[    0.084419] In-situ OAM (IOAM) with IPv6
+[    0.084481] NET: Registered PF_PACKET protocol family
+[    0.084565] Bridge firewalling registered
+[    0.084606] 9pnet: Installing 9P2000 support
+[    0.084731] NET: Registered PF_VSOCK protocol family
+[    0.086040] registered taskstats version 1
+[    0.087356] Demotion targets for Node 0: null
+[    0.088219] alg: No test for fips(ansi_cprng) (fips_ansi_cprng)
+[    0.089631] clk: Disabling unused clocks
+[    0.089735] check access for rdinit=/init failed: -2, ignoring
+[    0.090711] EXT4-fs (vda): mounted filesystem 4b876520-0344-4e53-a727-f29d10b29911 ro without journal. Quota mode: disabled.
+[    0.090828] VFS: Mounted root (ext4 filesystem) readonly on device 254:0.
+[    0.091120] devtmpfs: mounted
+[    0.091505] Freeing unused kernel memory: 1920K
+[    0.091623] Run /sbin/vminitd as init process
+2026-07-16T07:49:10.543Z info vminitd: built: 2026-06-26T21:58:16Z, commit: 44bec8b9933bc491d0cbf44abac90a1f6aaebf6b, tag: 0.35.0 vminitd booting
+2026-07-16T07:49:10.544Z info vminitd: mounting /run
+2026-07-16T07:49:10.544Z info vminitd: mounting /sys
+2026-07-16T07:49:10.544Z info vminitd: mounting /sys/fs/cgroup
+2026-07-16T07:49:10.569Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/vminitd creating cgroup manager
+2026-07-16T07:49:10.570Z info vminitd: events_path: /sys/fs/cgroup/vminitd/memory.events, threshold_bytes: 83886080 Started memory monitoring
+2026-07-16T07:49:10.571Z info vminitd: serving vminitd API
+2026-07-16T07:49:10.572Z info vminitd: port: 1024 booting gRPC server on vsock
+2026-07-16T07:49:10.574Z info vminitd: port: 1024 gRPC API serving on vsock
+[    0.259431] EXT4-fs (vdb): mounted filesystem aa598811-9809-4d4d-9c06-5de0b5962e0c r/w without journal. Quota mode: disabled.
+2026-07-16T07:49:10.820Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/diag-crush creating cgroup manager
+2026-07-16T07:49:10.821Z info vminitd: id: diag-crush starting I/O
+2026-07-16T07:49:10.821Z info vminitd: id: diag-crush setting up relay for StandardIO stdout
+2026-07-16T07:49:10.821Z info vminitd: id: diag-crush setting up relay for StandardIO stderr
+2026-07-16T07:49:10.821Z info vminitd: created vmexec init process
+2026-07-16T07:49:10.822Z info vminitd: id: diag-crush starting managed process
+2026-07-16T07:49:10.831Z warning vminitd: current_bytes: 83279872, high_events_total: 2, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-16T07:49:10.844Z warning vminitd: current_bytes: 84168704, high_events_total: 32, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-16T07:49:10.862Z warning vminitd: current_bytes: 83550208, high_events_total: 45, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-16T07:49:10.870Z info vminitd: id: diag-crush, pid: 109 got back pid data
+2026-07-16T07:49:10.870Z info vminitd: id: diag-crush, pid: 109 sending pid acknowledgement
+2026-07-16T07:49:10.876Z info vminitd: id: diag-crush, pid: 109 started managed process
+2026-07-16T07:49:10.877Z warning vminitd: current_bytes: 82833408, high_events_total: 47, threshold_bytes: 83886080 vminitd memory threshold exceeded
+2026-07-16T07:49:10.877Z info vminitd: id: diag-crush, status: 1 managed process exit
+2026-07-16T07:49:10.877Z info vminitd: id: diag-crush closing relay for StandardIO stdout
+2026-07-16T07:49:10.877Z info vminitd: id: diag-crush closing relay for StandardIO stderr
+[    0.502572] EXT4-fs (vdb): unmounting filesystem aa598811-9809-4d4d-9c06-5de0b5962e0c.
+2026-07-16T07:49:10.926Z info vminitd: mountpoint: /sys/fs/cgroup, path: /sys/fs/cgroup/container/diag-crush deleting cgroup manager
