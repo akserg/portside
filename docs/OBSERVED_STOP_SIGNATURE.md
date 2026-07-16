@@ -3,7 +3,10 @@
 **Recorded:** 2026-07-13 (B1 discovery)  
 **Observed on:** SPM pin `container` **1.0.0** @ `ee848e3` / `containerization` **0.33.3** (transitive)  
 **Runtime check:** `container system version` → CLI + apiserver **1.0.0**, commit `ee848e3` (matches pin)  
-**Environment:** macOS 26, Wharfside manual repro aligned with `ManualTesting/report2.md`
+**Environment:** macOS 26, Wharfside manual repro aligned with `ManualTesting/report2.md`  
+**Cross-version verification:** daemon **1.1.0** verified 2026-07-16 — see
+[version table](#cross-version-verification) below. Signature, wait semantics, and diagnosis
+pipeline behave identically; boot-log fallback remains required.
 
 ## Version labels (read before B3)
 
@@ -19,7 +22,9 @@ Our SPM pin, installed daemon, and manual session all agree on **1.0.0 / `ee848e
 0.12.x, paginate or reload; **1.1.0 is current latest** as of July 2026.
 
 Claims below are **on the pinned revision**, not “on 1.0.0 generically” or “on 0.12.x”. The
-observations stand; re-verify after daemon upgrades (especially across 0.12 → 1.0 or 1.0 → 1.1).
+observations stand; re-verify after daemon upgrades. **1.0 → 1.1 verified 2026-07-16** (see
+[Cross-version verification](#cross-version-verification)); 0.12 → 1.0 remains unverified and
+out of scope (1.0.0 removed 0.x XPC compatibility).
 
 ### Changelog entries that touched this path
 
@@ -48,8 +53,27 @@ After `container stop` / `XPCContainerService.stop(id:timeout:)` on a running `a
 |-------|----------------|
 | XPC route | `containerWait` with `processIdentifier == containerID` (init process) |
 | Exit code | **137** (SIGKILL after SIGTERM grace) |
-| Boot log sequence | `sending signal 15` → ~10 s → `sending signal 9` → `status: 137 managed process exit` |
+| Boot log sequence | `sending signal 15` → grace (~10 s on pinned; ~5 s observed on 1.1.0) → `sending signal 9` → `status: 137 managed process exit` |
 | vminitd WARN | `vminitd memory threshold exceeded` on **boot** (present regardless of outcome) |
+
+**Grace duration is environment-dependent — do not key rules or docs on it.** The precheck
+matches the signal *sequence*, never the interval. Any copy citing “10 s” verbatim should say
+“a grace period (~5–10 s observed)”.
+
+### `containerWait` semantics (clarified during 1.1.0 session)
+
+`containerWait` is a **blocking wait**, not a poll: a call issued while the container runs
+blocks until exit and receives the status **once, at exit time** (a probe issued at 12:02:21
+against a running container returned `137` at 12:03:13 — the moment `container stop`
+completed). Immediately after exit the runtime client is torn down and all subsequent calls
+return `invalidState` (“no runtime client exists: container is stopped”). There is no
+post-exit retrieval window to race for. Consequences:
+
+- A non-blocking caller (Wharfside’s diagnosis-time fetch) effectively never observes the
+  runtime status unless it happens to be waiting across the exit → `.unavailable` reasons
+  (`stillRunning` before, `runtimeGone` after) are the normal outcome.
+- The boot-log fallback is not a workaround for a narrow timing window; it is the only
+  after-the-fact evidence source the platform offers. Identical on 1.0.0 and 1.1.0.
 
 ### Log excerpt (report2.md / `stop_timeout_misdiagnosed_as_oom.log`)
 
@@ -114,6 +138,38 @@ complete signal sequence → `.ambiguousEvidence`).
 
 Evidence extraction: `BootLogCycleSegmenter.finalCycleLines` → `BootLogExitStatusParser.parseFinalCycle`.
 Fixtures: `exit_status_multicycle_hello_boot.log` (real `hello` tail), `stop_timeout_misdiagnosed_as_oom.log` → `.known(137, .bootLog)` on final cycle.
+
+## Cross-version verification
+
+One row per daemon session against the **pinned client** (`container` 1.0.0 / `containerization`
+0.33.3 — both the app and `Spikes/xpc-probe` pin `exact:` these versions, so probe results and
+in-app results measure the same client↔daemon pair). Every cell is “matches pinned” or the
+observed difference — no blank cells.
+
+### Session 2026-07-16 — daemon 1.1.0
+
+| Field | Result |
+|-------|--------|
+| Daemon | **1.1.0** (brew; commit not reported to pinned client — see notes) |
+| vminitd (guest) | **0.35.0**, commit `44bec8b`, built 2026-06-26 |
+| Kernel (guest) | 3.28.0 |
+| App build | `3543f5b` (0.1.1, main merge head), local Release build |
+| Host | MacBook Pro M1 Pro 16 GB, macOS Tahoe 26.5.2 |
+| XPC connectivity (pinned client) | **OK** — list, inspect, boot-log stream, start/stop lifecycle |
+| Pre-1.0 daemon banner | Correctly hidden (version parse handles `1.1.0`) |
+| Stop signature | **Matches pinned verbatim**: `sending signal 15` → grace (~5 s observed) → `sending signal 9` → `status: 137 managed process exit`; threshold WARNs fire every boot |
+| `containerWait` — running | Blocks (no status until exit) — matches pinned |
+| `containerWait` — at exit | `137` delivered once to the blocked waiter — matches pinned |
+| `containerWait` — long-stopped | `invalidState` (“no runtime client exists: container is stopped”), verbatim identical to pinned — **boot-log fallback still required** |
+| Precheck diagnose (fresh stop) | Orderly stop, `precheck.stop-escalation` + `noise.vminitd-memory-threshold` fired, model not invoked, `EXIT_CODE: 137 (from boot log)` (report3.md) |
+| Multi-cycle diagnose (RESTARTS: 2) | Final-cycle scoping correct — LAST_LINES contain only the last lifecycle (report4.md) |
+| Digest quality | Known teardown-spill / TOP_PATTERNS kernel-spam issue **reproduces on 1.1.0** (report4.md shows `[2x]` teardown lines and `1970-01-01` kernel timestamps) — 0.1.2 issue updated |
+| Report footer | Renders `container runtime 1.1.0 (commit unspeci)` — daemon reports no commit hash and the formatter short-hashes the placeholder string; fix: omit parenthetical when commit is absent/non-hex |
+| Model path | `diag-crash` (exit 1, correctly no precheck) → “Diagnosis timed out” — **open**, under investigation; reproduce on pinned dev machine to separate daemon effect from 0.1.1 model-path behavior. Model itself works on this host (verified via 0.1.0 build) |
+
+**Conclusion:** the deterministic pipeline (evidence layer, segmenter, noise rule, precheck)
+is verified identical on 1.0.0 and 1.1.0. README may claim “pinned to 1.0.0, additionally
+verified against 1.1.0”; the API-not-frozen caveat stays.
 
 ## Deferred: generic kernel-boot pattern demotion (0.1.2)
 

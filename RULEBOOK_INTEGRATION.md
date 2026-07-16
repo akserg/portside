@@ -70,6 +70,16 @@ These strings appear in published rulebooks. They are a wire protocol:
 additive changes only; renames are schema-breaking and require a
 `schemaVersion` bump plus migration notes in `wharfside-rules/README.md`.
 
+**Forward compatibility (promise, not accident):** new `MatchCriteria` fields
+MUST be optional with absent-means-no-constraint semantics, so existing rules
+decode byte-for-byte unchanged and behave identically. Cross-version skew rides
+on the existing fail-closed machinery rather than on silent field-dropping: a
+change that could broaden matches for older readers requires a `schemaVersion`
+bump, unknown rule *kinds* are skipped-and-counted (I6), and any
+signature/schema mismatch falls closed to the seed (§5). `Codable` provides the
+optional-field decoding for free; stating the rule here makes it a contract
+instead of an accident.
+
 ### 4.1 Source identifiers (`MatchCriteria.sources`)
 | Identifier | Meaning |
 | --- | --- |
