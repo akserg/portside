@@ -43,6 +43,9 @@ final class LogViewModel {
     private var buffer = LogRingBuffer()
     private var containerIsRunning = false
     private var streamTask: Task<Void, Never>?
+    /// Bumped on every `restartStream` so a cancelled consumer cannot append or flip
+    /// `isStreamFinished` after a newer attach has taken over (filter toggles / reattach).
+    private var streamGeneration: UInt64 = 0
     private let service: any ContainerServicing
 
     init(containerID: String, service: any ContainerServicing) {
@@ -162,24 +165,29 @@ final class LogViewModel {
         buffer.clear()
         bufferRevision += 1
 
+        streamGeneration += 1
+        let generation = streamGeneration
         streamTask = Task { [weak self] in
             guard let self else { return }
-            await self.consumeStream()
+            await self.consumeStream(generation: generation)
         }
     }
 
-    private func consumeStream() async {
+    private func consumeStream(generation: UInt64) async {
         isStreamActive = true
         defer {
-            isStreamActive = false
-            isStreamFinished = true
-            bufferRevision += 1
+            // Stale consumers must not mark the active attach finished / inactive.
+            if generation == streamGeneration {
+                isStreamActive = false
+                isStreamFinished = true
+                bufferRevision += 1
+            }
         }
 
         let stream = service.logStream(id: containerID, source: sourceFilter.logSource)
         do {
             for try await chunk in stream {
-                guard !Task.isCancelled else { return }
+                guard !Task.isCancelled, generation == streamGeneration else { return }
                 guard !isPaused else { continue }
                 buffer.append(chunk: chunk)
                 bufferRevision += 1
@@ -191,9 +199,9 @@ final class LogViewModel {
             return
         }
 
-        if !Task.isCancelled && containerIsRunning {
+        if !Task.isCancelled && containerIsRunning && generation == streamGeneration {
             try? await Task.sleep(for: .milliseconds(250))
-            guard !Task.isCancelled && containerIsRunning else { return }
+            guard !Task.isCancelled && containerIsRunning && generation == streamGeneration else { return }
             restartStream()
         }
     }

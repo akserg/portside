@@ -202,7 +202,13 @@ struct LogViewModelTests {
         #expect(await TestPolling.waitUntil { service.logStreamCallCount == 2 })
         viewModel.sourceFilter = .stdio
         #expect(await TestPolling.waitUntil { service.logStreamCallCount == 3 })
-        #expect(await TestPolling.waitUntil { viewModel.isStreamFinished })
+        #expect(await TestPolling.waitUntil {
+            viewModel.isStreamFinished
+                && viewModel.displayRows.compactMap { row -> String? in
+                    guard case .line(let line) = row else { return nil }
+                    return line.text
+                } == ["ERROR boom"]
+        })
 
         // Display layer: buffer cleared on each toggle — no visible triples, no Copy triples.
         let lineTexts = viewModel.displayRows.compactMap { row -> String? in
