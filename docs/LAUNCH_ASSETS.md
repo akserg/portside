@@ -46,6 +46,12 @@ cut (display-only; keeps captures deterministic). Then regenerate once
 (`make snapshot-assets` + pose GIF sync into `docs/assets/` and `site/assets/`). Only
 `report-markdown.png` and the hero GIF are expected to change; the rest stay byte-stable.
 
+**Signing-key history (pre-public):** path log for `.private/` empty; `-S` / `git grep` over
+all revs for the private key’s base64 prefix empty; private blob never entered the object
+store. Only docs mention the local path (`RULEBOOK_INTEGRATION.md`). No rotate needed for
+`wharfside-rulebook-2026-01`. Re-run the greps if the key file is ever moved/renamed before
+tag.
+
 ## Snapshot set
 
 | File | Content |

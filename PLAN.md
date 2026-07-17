@@ -83,6 +83,8 @@ including purity grep.
   ~14:00–16:00 UTC). Tag-day: bump the fixture report clock in
   `FixtureReplay.reportEnvironment()` near the cut, then one asset regen
   (see `docs/LAUNCH_ASSETS.md`) so `report-markdown` isn't stamped a month early.
+  Signing-key history grepped clean (`.private/` never tracked; private key bytes
+  absent from all revs) — noted under Tag-day in `docs/LAUNCH_ASSETS.md`.
 - Prepare one ambiguous-failure example beyond report2.md where the model adds value
   over rules alone — the answer to "the AI is just decoration."
 - Timing note: `fm` CLI on macOS 27 means anyone can pipe logs into the raw model and
