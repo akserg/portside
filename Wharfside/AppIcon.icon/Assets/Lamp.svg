@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Wharfside icon — lamp glyph layer.
+     Dock-light: ball + tapered stem (wider at base, per the maritime read) + base plinth.
+     Glyph spans ~70% of frame height (y 145..880) so it survives 16px.
+     Flat-ish fills with minimal shading: the system supplies depth/gloss on Tahoe. -->
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Lamp ball: warm amber, brand palette (BrandLamp dark variant #E8B44A family) -->
+    <radialGradient id="ball" cx="0.42" cy="0.36" r="0.75">
+      <stop offset="0"    stop-color="#FBDA8F"/>
+      <stop offset="0.45" stop-color="#F0BE55"/>
+      <stop offset="1"    stop-color="#D99A2B"/>
+    </radialGradient>
+    <!-- Tower/stem: cool gray, slightly darker at the edges for roundness -->
+    <linearGradient id="stem" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0"    stop-color="#5E6B78"/>
+      <stop offset="0.5"  stop-color="#8593A1"/>
+      <stop offset="1"    stop-color="#57636F"/>
+    </linearGradient>
+    <linearGradient id="base" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"   stop-color="#7C8A98"/>
+      <stop offset="1"   stop-color="#4C5762"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Base plinth: shallow rounded slab, wider than the stem foot -->
+  <rect x="352" y="836" width="320" height="44" rx="22" fill="url(#base)"/>
+
+  <!-- Tapered stem: 84px wide at the collar under the ball, 148px at the foot.
+       The taper is the "maritime, not desk lamp" cue. -->
+  <path d="M 470 636
+           L 554 636
+           L 586 840
+           L 438 840
+           Z"
+        fill="url(#stem)"/>
+
+  <!-- Collar where ball meets stem -->
+  <rect x="452" y="612" width="120" height="36" rx="18" fill="#6B7885"/>
+
+  <!-- Lamp ball -->
+  <circle cx="512" cy="400" r="255" fill="url(#ball)"/>
+
+  <!-- Specular highlight: single soft ellipse, upper-left -->
+  <ellipse cx="428" cy="308" rx="64" ry="42" fill="#FFF3CE" opacity="0.85"/>
+</svg>

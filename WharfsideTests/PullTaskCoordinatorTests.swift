@@ -74,9 +74,13 @@ struct PullTaskCoordinatorTests {
 
     @Test func progressCallbackUpdatesActivePull() async {
         let service = MockImageService()
+        // Hold the mock pull open after the first progress event so MainActor can
+        // apply it to activePulls before the stream finishes (CI was racing past
+        // "layer 1" into completion in one turn).
+        let releaseAfterFirstProgress = PullGate()
         service.pullHandler = { _, onProgress in
             onProgress?(PullProgress(description: "layer 1", completedUnits: 1, totalUnits: 3))
-            try await Task.sleep(for: .milliseconds(20))
+            await releaseAfterFirstProgress.waitUntilStarted()
             onProgress?(PullProgress(description: "layer 2", completedUnits: 2, totalUnits: 3))
             return ImageSummary.mock(reference: "alpine:latest")
         }
@@ -86,6 +90,7 @@ struct PullTaskCoordinatorTests {
         #expect(await TestPolling.waitUntil {
             coordinator.activePulls.first?.progress?.description == "layer 1"
         })
+        await releaseAfterFirstProgress.markStarted()
 
         #expect(await TestPolling.waitUntil { coordinator.activePulls.isEmpty })
     }

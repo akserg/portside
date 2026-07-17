@@ -98,8 +98,10 @@ enum FixtureReplay {
     }
 
     static func reportEnvironment() -> DiagnosisReportEnvironment {
-        // Deterministic, fixture-plausible: matches report2 / hello boot-log clock
-        // (2026-07-09), not the 2023 scaffold epoch.
+        // Deterministic display clock for launch stills (not live wall time).
+        // Tag-day: bump `generatedAt` near the 0.1.1 cut so report-markdown isn't a
+        // month-old stamp on a just-launched product — then `make snapshot-assets` once
+        // (only report-markdown + GIF need refreshing). See docs/LAUNCH_ASSETS.md.
         DiagnosisReportEnvironment(
             wharfsideVersion: "0.1.1",
             runtimeVersionLabel: "1.0.0 (commit ee848e3)",

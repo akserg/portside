@@ -39,13 +39,26 @@ Without `--purge`, the script refuses when non-demo containers exist.
 
 Or `make snapshot-assets` for the snapshot smoke only.
 
+## Tag-day (0.1.1 cut)
+
+Before tagging, bump `FixtureReplay.reportEnvironment().generatedAt` to a date near the
+cut (display-only; keeps captures deterministic). Then regenerate once
+(`make snapshot-assets` + pose GIF sync into `docs/assets/` and `site/assets/`). Only
+`report-markdown.png` and the hero GIF are expected to change; the rest stay byte-stable.
+
+**Signing-key history (pre-public):** path log for `.private/` empty; `-S` / `git grep` over
+all revs for the private key’s base64 prefix empty; private blob never entered the object
+store. Only docs mention the local path (`RULEBOOK_INTEGRATION.md`). No rotate needed for
+`wharfside-rulebook-2026-01`. Re-run the greps if the key file is ever moved/renamed before
+tag.
+
 ## Snapshot set
 
 | File | Content |
 |------|---------|
 | `diagnosis-idle.png` | Pre-diagnosis: Explain CTA + “Nothing leaves your Mac” tagline |
 | `diagnosis-hero.png` | Corrected report2 card + Copy report / Regenerate |
-| `report-markdown.png` | Formatter output (`Generated: 2026-07-09T05:54:57Z`) |
+| `report-markdown.png` | Formatter output (`Generated:` from `FixtureReplay.reportEnvironment()`) |
 | `wrong-diagnosis.png` | Historical OOM misdiagnosis caption + copy-report toast |
 | `log-viewer.png` | Mixed INFO/ERROR lines (`2026-07-09…` timestamps) |
 | `containers-list.png` | Curated list |
