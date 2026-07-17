@@ -80,7 +80,9 @@ including purity grep.
 - Pre-post checklist lives in the launch draft (notarized artifact verified, README
   rewritten diagnosis-first, demo GIF/screenshot regenerated via B5's
   `capture-assets.sh`, scratch issue with a pasted report, post Tue–Thu
-  ~14:00–16:00 UTC).
+  ~14:00–16:00 UTC). Tag-day: bump the fixture report clock in
+  `FixtureReplay.reportEnvironment()` near the cut, then one asset regen
+  (see `docs/LAUNCH_ASSETS.md`) so `report-markdown` isn't stamped a month early.
 - Prepare one ambiguous-failure example beyond report2.md where the model adds value
   over rules alone — the answer to "the AI is just decoration."
 - Timing note: `fm` CLI on macOS 27 means anyone can pipe logs into the raw model and
