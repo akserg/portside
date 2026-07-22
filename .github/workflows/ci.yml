@@ -259,6 +259,7 @@ jobs:
           files: |
             dist/Wharfside.dmg
             dist/Wharfside.dmg.sha256
+          body_path: RELEASE_NOTES.md
           generate_release_notes: true
 
       - name: Read DMG sha256
