@@ -47,11 +47,11 @@ Settings UI.
 ### 3.1 Phases
 | Phase | Manifest form | When |
 | --- | --- | --- |
-| P1 (now) | `.package(path: "../wharfside-rules")` | Schema churn during R2–R5 |
+| P1 (now) | Vendored tree at `Packages/RulebookCore` (path dep from WharfsideAnalysis) | Schema churn; feature ports from `wharfside-rules`, not a live sibling checkout |
 | P2 (optional) | `.package(url: …, branch: "main")` | Post-churn, pre-first-tag |
 | P3 (release) | `.package(url: …, from: "0.1.0")` | First tagged release |
 
-- P1: app CI checks out both repos as siblings (`actions/checkout` × 2 with `path:`).
+- P1: the app carries a forked vendored copy; upstream `wharfside-rules` is read-only input for ports (not wired as an SPM sibling path in CI).
 - P2, if used: release workflow MUST fail if any manifest contains
   `branch: "main"` (grep pre-check). Branch deps never ship.
 - P3: `Package.resolved` committed in app repo. Note SPM pre-1.0 semantics:

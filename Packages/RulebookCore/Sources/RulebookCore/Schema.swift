@@ -29,6 +29,43 @@ public struct Rulebook: Sendable, Equatable {
 
 // MARK: - Rules
 
+/// Provenance for a claim made by a rule.
+public struct RuleReference: Codable, Sendable, Equatable {
+    /// An open string-backed reference kind. Unknown values are preserved so
+    /// older clients can continue decoding rulebooks with newer metadata.
+    public struct Kind: RawRepresentable, Codable, Sendable, Equatable {
+        public let rawValue: String
+
+        public init(rawValue: String) {
+            self.rawValue = rawValue
+        }
+
+        public static let runtimeSource = Kind(rawValue: "runtime-source")
+        public static let runtimeBehavior = Kind(rawValue: "runtime-behavior")
+        public static let issue = Kind(rawValue: "issue")
+        public static let releaseNote = Kind(rawValue: "release-note")
+        public static let documentation = Kind(rawValue: "documentation")
+        public static let observed = Kind(rawValue: "observed")
+    }
+
+    public let type: Kind
+    public let title: String
+    public let url: String?
+    public let runtimeVersions: [String]?
+
+    public init(
+        type: Kind,
+        title: String,
+        url: String? = nil,
+        runtimeVersions: [String]? = nil
+    ) {
+        self.type = type
+        self.title = title
+        self.url = url
+        self.runtimeVersions = runtimeVersions
+    }
+}
+
 public enum Rule: Sendable, Equatable {
     case precheck(PrecheckRule)
     case noise(NoiseRule)
@@ -59,6 +96,7 @@ public enum Rule: Sendable, Equatable {
 public struct PrecheckRule: Sendable, Equatable, Codable {
     public let id: String
     public let criteria: MatchCriteria
+    public let references: [RuleReference]
     public let emitsFact: String
     public let suppressesCategories: [String]
     /// When set with `conclusionSummary`, diagnosis bypasses the model (deterministic).
@@ -76,6 +114,7 @@ public struct PrecheckRule: Sendable, Equatable, Codable {
         criteria: MatchCriteria,
         emitsFact: String,
         suppressesCategories: [String] = [],
+        references: [RuleReference] = [],
         conclusionCategory: String? = nil,
         conclusionSummary: String? = nil,
         conclusionConfidence: String? = nil,
@@ -83,12 +122,31 @@ public struct PrecheckRule: Sendable, Equatable, Codable {
     ) {
         self.id = id
         self.criteria = criteria
+        self.references = references
         self.emitsFact = emitsFact
         self.suppressesCategories = suppressesCategories
         self.conclusionCategory = conclusionCategory
         self.conclusionSummary = conclusionSummary
         self.conclusionConfidence = conclusionConfidence
         self.conclusionActions = conclusionActions
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, criteria, references, emitsFact, suppressesCategories
+        case conclusionCategory, conclusionSummary, conclusionConfidence, conclusionActions
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.criteria = try container.decode(MatchCriteria.self, forKey: .criteria)
+        self.references = try container.decodeReferences(forKey: .references)
+        self.emitsFact = try container.decode(String.self, forKey: .emitsFact)
+        self.suppressesCategories = try container.decode([String].self, forKey: .suppressesCategories)
+        self.conclusionCategory = try container.decodeIfPresent(String.self, forKey: .conclusionCategory)
+        self.conclusionSummary = try container.decodeIfPresent(String.self, forKey: .conclusionSummary)
+        self.conclusionConfidence = try container.decodeIfPresent(String.self, forKey: .conclusionConfidence)
+        self.conclusionActions = try container.decodeIfPresent([String].self, forKey: .conclusionActions)
     }
 }
 
@@ -97,40 +155,101 @@ public struct PrecheckRule: Sendable, Equatable, Codable {
 public struct NoiseRule: Sendable, Equatable, Codable {
     public let id: String
     public let criteria: MatchCriteria
+    public let references: [RuleReference]
     public let linePattern: String
 
-    public init(id: String, criteria: MatchCriteria, linePattern: String) {
+    public init(
+        id: String,
+        criteria: MatchCriteria,
+        linePattern: String,
+        references: [RuleReference] = []
+    ) {
         self.id = id
         self.criteria = criteria
         self.linePattern = linePattern
+        self.references = references
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, criteria, references, linePattern
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.criteria = try container.decode(MatchCriteria.self, forKey: .criteria)
+        self.references = try container.decodeReferences(forKey: .references)
+        self.linePattern = try container.decode(String.self, forKey: .linePattern)
     }
 }
 
 public struct PromptRule: Sendable, Equatable, Codable {
     public let id: String
     public let criteria: MatchCriteria
+    public let references: [RuleReference]
     public let text: String
     public let priority: Int
 
-    public init(id: String, criteria: MatchCriteria, text: String, priority: Int = 100) {
+    public init(
+        id: String,
+        criteria: MatchCriteria,
+        text: String,
+        priority: Int = 100,
+        references: [RuleReference] = []
+    ) {
         self.id = id
         self.criteria = criteria
         self.text = text
         self.priority = priority
+        self.references = references
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, criteria, references, text, priority
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.criteria = try container.decode(MatchCriteria.self, forKey: .criteria)
+        self.references = try container.decodeReferences(forKey: .references)
+        self.text = try container.decode(String.self, forKey: .text)
+        self.priority = try container.decode(Int.self, forKey: .priority)
     }
 }
 
 public struct ValidatorRule: Sendable, Equatable, Codable {
     public let id: String
     public let criteria: MatchCriteria
+    public let references: [RuleReference]
     public let category: String
     public let requiredEvidence: [String]
 
-    public init(id: String, criteria: MatchCriteria, category: String, requiredEvidence: [String]) {
+    public init(
+        id: String,
+        criteria: MatchCriteria,
+        category: String,
+        requiredEvidence: [String],
+        references: [RuleReference] = []
+    ) {
         self.id = id
         self.criteria = criteria
         self.category = category
         self.requiredEvidence = requiredEvidence
+        self.references = references
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, criteria, references, category, requiredEvidence
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.criteria = try container.decode(MatchCriteria.self, forKey: .criteria)
+        self.references = try container.decodeReferences(forKey: .references)
+        self.category = try container.decode(String.self, forKey: .category)
+        self.requiredEvidence = try container.decode([String].self, forKey: .requiredEvidence)
     }
 }
 
@@ -221,5 +340,13 @@ public struct PrecheckConclusion: Sendable, Equatable {
         self.summary = summary
         self.confidence = confidence
         self.suggestedActions = suggestedActions
+    }
+}
+
+private extension KeyedDecodingContainer {
+    /// Absent `references` → `[]`; present-but-malformed or explicit null → throws.
+    func decodeReferences(forKey key: Key) throws -> [RuleReference] {
+        guard contains(key) else { return [] }
+        return try decode([RuleReference].self, forKey: key)
     }
 }

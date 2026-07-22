@@ -1,4 +1,4 @@
 {
   "keyId" : "wharfside-rulebook-2026-01",
-  "signature" : "hG7dTolOgNY8hW\/rPdO4SKCTnt9+Xm\/mrk+DJCXtidAgndv6iv7LVp+Ab4NiEBLvW29hTwb2QwNFMZYqUSSLDQ=="
+  "signature" : "\/40S9fYyaMMGm8G+ve+pxIFxVJ\/MRnB0I0d88WvsigVZR8HTLKKxpxrAyoNmwWphl+6y9UclX0KRKuSTqDFOBA=="
 }
