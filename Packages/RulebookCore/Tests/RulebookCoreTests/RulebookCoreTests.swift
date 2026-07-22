@@ -119,6 +119,12 @@ private let report2Context = MatchContext(
 @Test func bundledJSONMatchesSeedRulebook() throws {
     let decoded = try RulebookLoader.loadBundled(SeedRulebook.bundledJSON)
     #expect(decoded == SeedRulebook.make())
+
+    let resource = try Data(
+        contentsOf: Bundle.module.url(forResource: "Rulebook", withExtension: "json")!
+    )
+    let fromResource = try RulebookLoader.loadBundled(resource)
+    #expect(fromResource == SeedRulebook.make())
 }
 
 @Test func unknownRuleKindsAreSkippedNotFatal() throws {

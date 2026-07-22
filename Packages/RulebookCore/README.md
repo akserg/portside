@@ -2,8 +2,10 @@
 
 Deterministic precheck + noise rule engine for Wharfside diagnosis (Layer 1).
 
-Vendored from [wharfside/wharfside-rules](https://github.com/wharfside/wharfside-rules) during
-schema churn; promote to a path/URL dependency when the rulebook stabilizes.
+Vendored from [wharfside/wharfside-rules](https://github.com/wharfside/wharfside-rules)
+during schema churn; promote to a path/URL dependency when the rulebook stabilizes.
+References support ported from wharfside-rules @ `5b93292` (not a full mirror —
+app-local trust/engine/tooling surfaces remain).
 
 ## Linux build (purity gate)
 

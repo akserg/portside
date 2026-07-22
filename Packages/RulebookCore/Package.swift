@@ -26,7 +26,8 @@ let package = Package(
         ),
         .testTarget(
             name: "RulebookCoreTests",
-            dependencies: ["RulebookCore"]
+            dependencies: ["RulebookCore"],
+            exclude: ["Fixtures"]
         ),
     ]
 )

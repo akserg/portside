@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "minAppVersion": "0.1.1",
+  "rules": [
+    {
+      "kind": "precheck",
+      "id": "precheck.stop-escalation",
+      "criteria": {
+        "exitCodes": [137],
+        "logPatterns": [
+          "sending signal 15 to process",
+          "sending signal 9 to process",
+          "status: 137 managed process exit"
+        ]
+      },
+      "emitsFact": "TERMINATION: container stopped via SIGTERM then SIGKILL (orderly stop, exit 137)",
+      "suppressesCategories": ["outOfMemory", "crash"],
+      "conclusionCategory": "stopped",
+      "conclusionSummary": "Container stopped via SIGTERM/SIGKILL (orderly stop); boot log shows signal 15 → grace period → signal 9 → exit 137."
+    },
+    {
+      "kind": "precheck",
+      "id": "precheck.no-evidence",
+      "criteria": {
+        "sources": ["bootLogOnly"],
+        "maxErrorCount": 0,
+        "excludesLogPatterns": ["sending signal 15 to process"],
+        "excludesExitCodes": [0]
+      },
+      "emitsFact": "EVIDENCE: container exited without writing any application output",
+      "suppressesCategories": [],
+      "conclusionCategory": "unknown",
+      "conclusionSummary": "The container exited{exit_status} without writing any application output — there is nothing in the logs to analyze. If this exit is unexpected, check whether the command writes errors to stdout/stderr.",
+      "conclusionConfidence": "low",
+      "conclusionActions": [
+        "Run `container logs {container}` to confirm no output was produced",
+        "If unexpected, run the container's command manually to see its error output"
+      ]
+    },
+    {
+      "kind": "noise",
+      "id": "noise.vminitd-memory-threshold",
+      "criteria": {},
+      "linePattern": "vminitd memory threshold exceeded"
+    }
+  ]
+}

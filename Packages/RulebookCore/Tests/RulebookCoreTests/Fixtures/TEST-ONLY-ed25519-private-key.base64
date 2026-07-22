@@ -1,0 +1,3 @@
+# TEST-ONLY Ed25519 private key. Never use or describe this as a production key.
+# Freshly generated solely to verify the legacy fixture in RulebookCoreTests.
+AMUyNPFahpKliadsCXzZsDd+0SX3HAyUtian2DS4D2I=

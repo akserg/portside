@@ -38,6 +38,20 @@ public enum SeedRulebook {
         ),
         emitsFact: "TERMINATION: container stopped via SIGTERM then SIGKILL (orderly stop, exit 137)",
         suppressesCategories: ["outOfMemory", "crash"],
+        references: [
+            RuleReference(
+                type: .runtimeSource,
+                title: "gracefulStopContainer races wait against kill(signal)→sleep(timeout)→kill(SIGKILL), synthesizing exit 137 on escalation; stop signal defaults to SIGTERM",
+                url: "https://github.com/apple/container/blob/ee848e3ebfd7c73b04dd419683be54fb450b8779/Sources/Services/RuntimeLinux/Server/RuntimeService.swift#L1214-L1246",
+                runtimeVersions: ["1.0.0"]
+            ),
+            RuleReference(
+                type: .runtimeSource,
+                title: "containerWait resolves ExitStatus through the live container state; after stop's handleContainerExit cleanup the client is unreachable, so status is only observable during the stopping window",
+                url: "https://github.com/apple/container/blob/ee848e3ebfd7c73b04dd419683be54fb450b8779/Sources/Services/ContainerAPIService/Server/Containers/ContainersService.swift#L675-L698",
+                runtimeVersions: ["1.0.0"]
+            ),
+        ],
         conclusionCategory: "stopped",
         conclusionSummary: "Container stopped via SIGTERM/SIGKILL (orderly stop); "
             + "boot log shows signal 15 → grace period → signal 9 → exit 137."
@@ -57,6 +71,12 @@ public enum SeedRulebook {
             excludesExitCodes: [0]
         ),
         emitsFact: "EVIDENCE: container exited without writing any application output",
+        references: [
+            RuleReference(
+                type: .observed,
+                title: "A boot-log-only container exit with no application errors or orderly-stop signal can leave no application output to analyze"
+            ),
+        ],
         conclusionCategory: "unknown",
         conclusionSummary: "The container exited{exit_status} without writing any application output — "
             + "there is nothing in the logs to analyze. If this exit is unexpected, "
@@ -72,6 +92,12 @@ public enum SeedRulebook {
     static let vminitdMemoryThresholdNoise = Rule.noise(NoiseRule(
         id: "noise.vminitd-memory-threshold",
         criteria: .always,
-        linePattern: #"vminitd memory threshold exceeded"#
+        linePattern: #"vminitd memory threshold exceeded"#,
+        references: [
+            RuleReference(
+                type: .observed,
+                title: "vminitd memory threshold exceeded fires on every VM boot regardless of the container exit outcome"
+            ),
+        ]
     ))
 }
